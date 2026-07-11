@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tixtee</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  <meta name="description" content="Tixtee is zero-friction event ticketing built for Nigeria — discover events, buy tickets, and join the group chat, all in one place.">
+<meta property="og:title" content="Tixtee — Zero Friction Event Ticketing">
+<meta property="og:description" content="Discover live events, grab your ticket, and show up. Built in Ado-Ekiti, for Nigeria's events.">
+<meta property="og:image" content="images/tix.jpg">
+<meta property="og:type" content="website">
+</head>
+<body>
+  <script src="common.js"></script>
+
+  <header class="prompt-hero">
+    <nav class="navbar">
+      <div class="logo">TIXTEE<span>.XYZ</span></div>
+      <ul class="nav-links">
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="signup.html">SignUp</a></li>
+        <li><a href="login.html">login</a></li>
+      </ul>
+    </nav>
+
+    <div class="prompt-hero-content">
+      <h1>Every event worth showing up for, in one place</h1>
+      <p class="prompt-subtitle">Zero friction ticketing, built for Nigeria's events. Taking the stress of ticketing away. <br>SMARTTICKETING.</p>
+      <a href="#events-section" class="prompt-cta">View Events →</a>
+
+      <div class="carousel-track-wrap">
+        <div class="carousel-track" id="carouselTrack">
+        </div>
+      </div>
+
+      <div class="caption-row">
+        <div class="caption-item">
+          <h4>Real event photos</h4>
+          <p>Creators upload their own banners or upload photos from the event.</p>
+        </div>
+        <div class="caption-item">
+          <h4>Live ticket sales</h4>
+          <p>Multiple ticket tiers, priced however the creator wants.</p>
+        </div>
+        <div class="caption-item">
+          <h4>Group chats built in</h4>
+          <p>Every event can have its own space for ticket holders.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="intro-section reveal">
+    <div class="intro-eyebrow">What is Tixtee?</div>
+    <h2>Ticketing that actually gets what an event creator or buyer needs</h2>
+    <p>Tixtee is a full ticketing platform built from the ground up somewhere in the world. Creators get real tools: multiple ticket tiers, group chats for attendees, custom event links, and other crazy mechanics that makes ticketing alot easier, and not just a transaction. Attendees get a straightforward way to discover, register, and show up.</p>
+  </section>
+
+  <section class="how-section reveal">
+  <div class="how-grid">
+    
+    <div class="how-card">
+      <div class="card-image-wrapper">
+        <img src="images/discover.jpg" alt="Connect your repo" class="card-image">
+      </div>
+      <div class="card-content">
+        <h3>Discover An Event</h3>
+        <p>Find what is live right now, filtered by category, or find the specific one someone shared with you.</p>
+      </div>
+    </div>
+
+    <div class="how-card">
+      <div class="card-image-wrapper">
+        <img src="grab.jpg" alt="Build & deploy" class="card-image">
+      </div>
+      <div class="card-content">
+        <h3>Grab Your Ticket</h3>
+        <p>Pick a tier, purchase, and get access to the event's group chat if the creator's turned one on.</p>
+        <a href="#" class="btn-get-started">Explore Events</a>
+      </div>
+    </div>
+
+    <div class="how-card">
+      <div class="card-image-wrapper">
+        <img src="images/this.jpg" alt="Go live instantly" class="card-image">
+      </div>
+      <div class="card-content">
+        <h3>Show Up</h3>
+        <p>That's it. No extra cost of printed tickets, no confusion at the door, just you and the event.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="features-section">
+
+    <div class="features-head">
+        <span class="intro-eyebrow">WHAT EVERYONE GETS</span>
+        <h2>Built for everyone in the show.</h2>
+    </div>
+
+    <div class="feature-stack">
+        <article class="feature-card">
+            <div class="feature-image">
+                <img src="images/com.jpg" alt="Ticket Tier">
+            </div>
+            <div class="feature-content">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M3 9V5h18v4a2 2 0 0 0 0 6v4H3v-4a2 2 0 0 0 0-6z"/>
+                    </svg>
+                </div>
+                <h3>COMMUNITY CHAT</h3>
+                <p>Create your event community (GROUP) chat, share updates about the event, boost ticket sales without the stress or going to another app to make the group chat. Do everything in one place.</p>
+            </div>
+        </article>
+        <article class="feature-card">
+            <div class="feature-image">
+                <img src="images/.jpg" alt="Group Chat">
+            </div>
+            <div class="feature-content">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <h3>CREATOR RATINGS</h3>
+                <p>Rate every event creator and check out most event creator ratings before getting a ticket or attending the event to prevent regrets or scams. Legit event creators will always have good ratings.</p>
+            </div>
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-image">
+                <img src="images/this.jpg" alt="Links">
+            </div>
+            <div class="feature-content">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 1 1 7 7l-1 1"/>
+                        <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 1 1-7-7l1-1"/>
+                    </svg>
+                </div>
+                <h3>TEE BLOG</h3>
+                <p>Creators, Event Organisers, Buyers cann all create blogs about a creator or his events whilst tagging them, hence reducing the cases of frauds or bad events and giving users creators events to look forward to</p>
+            </div>
+        </article>
+        <article class="feature-card">
+
+            <div class="feature-image">
+                <img src="images/.jpg" alt="Group Chat">
+            </div>
+
+            <div class="feature-content">
+
+                <div class="feature-icon">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <h3>NO QR CODE TICKETS</h3>
+                <p>Get to the venue, go to ticket, click on the "im here" button get a one time unique code that expires in a minute, show your code and you are in, mind you, the code comes in the blink of an eye.</p>
+
+            </div>
+
+        </article>
+
+        <article class="feature-card">
+            <div class="feature-content">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <h3>CREATOR'S UPDATE</h3>
+                <p>As a creator,, yoou can choose to send out mails to your buyers to update them on your event </p>
+            </div>
+            
+            <div class="feature-image">
+                <img src="images/com.jpg" alt="Group Chat">
+            </div>
+        </article>
+        <article class="feature-card">
+            <div class="feature-image">
+                <img src="images/.jpg" alt="Group Chat">
+            </div>
+            <div class="feature-content">
+                <div class="feature-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <h3>MULTIPLE TICKET TIERS</h3>
+                <p>Create Early Bird, VIP, Student and Regular tickets with different pricing for every event.</p>
+            </div>
+        </article>
+    </div>
+
+</section>
+
+<section class="monocad-hero-section">
+  <div class="grid-line line-vertical"></div>
+  <div class="grid-line line-horizontal"></div>
+
+  <div class="section-nav">
+    <a href="#events-section" class="nav-item" style="text-decoration:none; color:inherit;">EXPLORE EVENTS!</a>
+    <a href="dashboard.html" class="nav-item text-right" style="text-decoration:none; color:inherit;">LIST SHOWS!</a>
+  </div>
+
+  <div class="focus-target">
+    <div class="corner-brackets"></div>
+    <div class="center-square"></div>
+  </div>
+
+  <div class="hero-content">
+    <h1 class="main-heading">
+      GO FROM AN IDEA<br>
+      TO SELLING OUT.
+    </h1>
+    
+    <a href="dashboard.html" class="action-link">
+      <span class="red-block"></span>
+      SELL YOUR TICKETS!!
+      <span class="red-block"></span>
+    </a>
+  </div>
+</section>
+
+<section class="lyria-faq-section">
+  <div class="faq-card-wrapper">
+    
+    <div class="faq-header">
+      <span class="faq-pill-label">FAQ.</span>
+      <h2 class="faq-title">Common Questions</h2>
+    </div>
+
+    <div class="faq-accordion-container">
+        
+        <div class="faq-item active">
+          <button class="faq-trigger" aria-expanded="true">
+            <span class="faq-number">1</span>
+            <span class="faq-question-text">What's TIXTEE All About?</span>
+            <span class="faq-icon-box"></span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              <p>Tixtee is all about getting tickets and sellling tickets with ZERO stress. Planning an event is already enough stress to pass through, so let's make ticketing easier for you.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-number">2</span>
+            <span class="faq-question-text">What Actually Makes TIXTEE Stand Out?</span>
+            <span class="faq-icon-box"></span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              <p>Our features are what makes us standout, as those are the most important things and those are the exact things that reduces the stress of ticketing.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-number">3</span>
+            <span class="faq-question-text">How does the group chat feature work?</span>
+            <span class="faq-icon-box"></span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              <p>The goup chat feature works when the creator has turned it on. Instead of gtaking your event gc to whatsapp or snap, why not run everything in one place since the gc is to boost the ticket sales and also establish a connection with the attendee and the event, so the group chat feature makes you think less of all of that. WE SORT IT OUT FOR YOU!!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-number">4</span>
+            <span class="faq-question-text">Can I host a virtual or recurring event?</span>
+            <span class="faq-icon-box"></span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              <p>Yes. When creating an event, you can mark it as virtual (with a link instead of a venue) and as recurring (e.g. weekly), instead of a one-off in-person show.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-number">5</span>
+            <span class="faq-question-text">What does it cost to list an event?</span>
+            <span class="faq-icon-box"></span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              <p>Check out our <a href="pricing.html" style="text-decoration:underline;">Pricing page</a> for the full breakdown — short version: it's free to start, with a small percentage per ticket sold once you're charging for entry.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    <div class="faq-footer">
+      <p>Have any other questions?</p>
+      <a href="mailto:hello@tixtee.xyz" class="faq-contact-link">Contact us <span class="arrow">↗</span></a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="lyria-footer-section">
+  <div class="footer-container">
+    
+    <div class="footer-top-row">
+      <div class="meta-block">
+        <p>Events &amp; Tickets</p>
+        <p>#smartticketing</p>
+      </div>
+      
+      <div class="meta-block text-center">
+        <p>Coming To You Soon!!</p>
+        <p><span class="footer-underline-link" id="comingSoonLink" style="cursor:not-allowed; opacity:0.6;">View Blog</span></p>
+      </div>
+      
+      <div class="meta-block text-right">
+        <p>2026</p>
+      </div>
+    </div>
+
+    <div class="footer-brand-display">
+      <h1 class="brand-text">TIXTEE</h1>
+    </div>
+
+    <div class="footer-bottom-row">
+      <div class="utility-block">
+        <a href="mailto:hello@tixtee.xyz" class="footer-underline-link">Contact</a>
+      </div>
+      
+      <div class="utility-block text-center">
+        <a href="mailto:hello@tixtee.xyz" class="footer-underline-link">hello@tixtee.xyz</a>
+      </div>
+      
+      <div class="utility-block text-right">
+        <p class="copyright-text">
+          &copy; 2026 built by remomhe
+        </p>
+        <a href="privacy.html" class="footer-underline-link privacy-link">Privacy Policy</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+</body>
+<script>
+  const API = 'http://127.0.0.1:4000/api';
+  let allEvents = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll('.metric-card h2');
+    
+    counters.forEach(counter => {
+      const targetText = counter.innerText.trim();
+      const targetNum = parseInt(targetText.replace(/[^0-9]/g, ''), 10);
+      const suffix = targetText.replace(/[0-9]/g, '');
+      
+      let count = 0;
+      const duration = 1500;
+      const frameRate = 1000 / 60;
+      const totalSteps = duration / frameRate;
+      const increment = targetNum / totalSteps;
+
+      const updateCounter = () => {
+        count += increment;
+        if (count < targetNum) {
+          counter.innerText = Math.floor(count) + suffix;
+          setTimeout(updateCounter, frameRate);
+        } else {
+          counter.innerText = targetNum + suffix;
+        }
+      };
+
+      updateCounter();
+    });
+
+    loadEvents();
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(el => io.observe(el));
+  });
+
+  document.querySelectorAll('.lyria-faq-section .faq-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const currentItem = trigger.closest('.faq-item');
+      const isOpen = currentItem.classList.contains('active');
+      
+      document.querySelectorAll('.lyria-faq-section .faq-item').forEach(item => {
+        item.classList.remove('active');
+        item.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false');
+      });
+
+      if (!isOpen) {
+        currentItem.classList.add('active');
+        trigger.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+
+  document.getElementById('comingSoonLink').addEventListener('click', () => {
+    alert("This isn't live yet — we'll let you know the moment it's ready!");
+  });
+
+  async function loadEvents(){
+      try{
+        const res = await fetch(`${API}/events`);
+        allEvents = await res.json();
+
+        if(allEvents.length){
+          const featured = allEvents[0];
+          const imgSrc = featured.image_url
+            ? (featured.image_url.startsWith('/uploads') ? 'http://127.0.0.1:4000' + featured.image_url : featured.image_url)
+            : 'images/tix.jpg';
+          document.getElementById('heroImage').src = imgSrc;
+          document.getElementById('heroBadgeTitle').textContent = featured.title.toUpperCase();
+          document.getElementById('heroBadgeSub').textContent = featured.venue || 'See details';
+          document.getElementById('learnMoreLink').href = `event.html?id=${featured.id}`;
+          document.getElementById('heroBadgeLink').href = `event.html?id=${featured.id}`;
+        } else {
+          document.getElementById('heroBadgeTitle').textContent = 'NOTHING LIVE YET';
+          document.getElementById('heroBadgeSub').textContent = 'Check back soon';
+          document.getElementById('learnMoreLink').href = '#events-section';
+          document.getElementById('heroBadgeLink').href = '#events-section';
+        }
+
+       renderEvents('all');
+        buildCarousel();
+      }catch(err){
+        document.getElementById('eventsList').innerHTML = `<p style="color:#909090; font-size:13px;">Could not load events — is the backend running?</p>`;
+        buildCarousel();
+      }
+    }
+
+    function buildCarousel(){
+      const track = document.getElementById('carouselTrack');
+      let images = allEvents.map(ev =>
+        ev.image_url
+          ? (ev.image_url.startsWith('/uploads') ? 'http://127.0.0.1:4000' + ev.image_url : ev.image_url)
+          : 'images/tix.jpg'
+      );
+
+      if(!images.length){
+        images = ['images/tix.jpg','images/tix.jpg','images/tix.jpg','images/tix.jpg','images/tix.jpg','images/tix.jpg'];
+      }
+
+      // duplicate the list so the scrolling loop looks seamless
+      const doubled = [...images, ...images];
+      track.innerHTML = doubled.map(src => `
+        <div class="carousel-card"><img src="${src}" alt=""></div>
+      `).join('');
+    }
+  function renderEvents(category){
+      const container = document.getElementById('eventsList');
+      const filtered = category === 'all' ? allEvents : allEvents.filter(e => e.category === category);
+
+      if(!filtered.length){
+        container.innerHTML = `<p style="color:#909090; font-size:13px;">No events live yet — check back soon.</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(ev => {
+        const imgSrc = ev.image_url
+          ? (ev.image_url.startsWith('/uploads') ? 'http://127.0.0.1:4000' + ev.image_url : ev.image_url)
+          : 'images/tix.jpg';
+        return `
+        <div class="event-card">
+          <div class="event-image-wrapper">
+            <img src="${imgSrc}" alt="${ev.title}" class="event-thumb">
+          </div>
+          <div class="event-details">
+            <div class="meta-row">
+              <span class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                ${new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}
+              </span>
+              <span class="meta-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                ${ev.start_time || ''} ${ev.end_time ? '- ' + ev.end_time : ''}
+              </span>
+            </div>
+            <h3 class="event-title">${ev.title.toUpperCase()}</h3>
+            <div class="location-row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <span>${(ev.is_virtual ? 'VIRTUAL' : (ev.venue || 'TBA')).toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="event-action-block">
+            <a href="event.html?id=${ev.id}" style="text-decoration:none;"><button class="ticket-btn">Buy Tickets</button></a>
+            <div class="speakers-avatars">
+              <div class="avatar-stack">
+                <div class="avatar-item placeholder-avatar"></div>
+                <div class="avatar-item placeholder-avatar"></div>
+                ${ev.has_groupchat
+                  ? `<a href="chat.html?id=${ev.id}" class="avatar-item label-avatar" style="text-decoration:none;">Group chat</a>`
+                  : `<div class="avatar-item label-avatar">Sponsors</div>`}
+              </div>
+            </div>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+  document.getElementById('categoryTabs').addEventListener('click', (e) => {
+    if(!e.target.classList.contains('tab-btn')) return;
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    renderEvents(e.target.dataset.category);
+  });no
+</script>
+</html>

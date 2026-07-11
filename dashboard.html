@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — tixtee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="common.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; display:flex;}
+  .sidebar{
+    width:240px; background:#150017; color:#fff;
+    min-height:100vh; padding:28px 20px; display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0;
+  }
+  .sidebar .logo{font-size:15px; font-weight:700; letter-spacing:1px; margin-bottom:40px; padding-left:6px;}
+  .sidebar .logo span{color:rgba(255,255,255,0.4); font-weight:400;}
+  .nav-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 14px; border-radius:10px; margin-bottom:4px;
+    font-size:13px; font-weight:500; color:rgba(255,255,255,0.65);
+    cursor:pointer; transition:background 0.2s ease, color 0.2s ease;
+  }
+  .nav-item svg{width:17px; height:17px; flex-shrink:0;}
+  .nav-item:hover{background:rgba(255,255,255,0.06); color:#fff;}
+  .nav-item.active{background:#47034E; color:#fff;}
+  .nav-spacer{flex:1;}
+  .nav-item.logout{color:#e07a7a;}
+  .nav-item.logout:hover{background:rgba(224,122,122,0.1); color:#ff9b9b;}
+  .main{margin-left:240px; flex:1; padding:36px 44px; max-width:1200px;}
+  .main-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px; flex-wrap:wrap; gap:16px;}
+  .main-header h1{font-size:26px; font-weight:700; letter-spacing:-0.5px;}
+  .main-header .sub{font-size:13px; color:#8c8c8c; margin-top:4px;}
+  .btn-primary{
+    background:#47034E; color:#fff; border:none;
+    padding:12px 22px; border-radius:10px; font-size:13px; font-weight:600;
+    cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+    transition:background 0.2s ease;
+  }
+  .btn-primary:hover{background:#5c0665;}
+  .btn-secondary{
+    background:#eee; color:#1a1a1a; border:none; padding:12px 22px; border-radius:10px;
+    font-size:13px; font-weight:600; cursor:pointer;
+  }
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:36px;}
+  .stat-card{
+    background:#fff; border-radius:16px; padding:20px 22px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.03);
+  }
+  .stat-card .label{font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:#9a9a9a; margin-bottom:10px;}
+  .stat-card .value{font-size:28px; font-weight:700; letter-spacing:-0.5px;}
+  .stat-card .value span{font-size:13px; color:#47034E; font-weight:600; margin-left:6px;}
+  .section-card{background:#fff; border-radius:20px; padding:28px; box-shadow:0 4px 20px rgba(0,0,0,0.03);}
+  .section-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;}
+  .section-head h2{font-size:17px; font-weight:700;}
+  .tabs{display:flex; gap:22px; border-bottom:1px solid #eee; margin-bottom:22px;}
+  .tab{font-size:13px; font-weight:600; color:#9a9a9a; padding-bottom:12px; cursor:pointer; border-bottom:2px solid transparent;}
+  .tab.active{color:#47034E; border-color:#47034E;}
+  .events-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:18px;}
+  .event-card{
+    border:1px solid #efefef; border-radius:16px; overflow:hidden; position:relative;
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .event-card:hover{transform:translateY(-3px); box-shadow:0 10px 26px rgba(0,0,0,0.06);}
+  .event-card .thumb{width:100%; height:130px; background:#eee; object-fit:cover; display:block;}
+  .event-card .body{padding:16px;}
+  .event-card .date{font-size:11px; color:#9a9a9a; font-weight:600; text-transform:uppercase; margin-bottom:6px;}
+  .event-card .title{font-size:14px; font-weight:700; margin-bottom:6px; line-height:1.4;}
+  .event-card .venue{font-size:12px; color:#9a9a9a;}
+  .event-card .tag{
+    display:inline-block; margin-top:10px; font-size:10px; font-weight:700;
+    background:#f3e9f4; color:#47034E; padding:4px 9px; border-radius:100px; text-transform:uppercase;
+  }
+  .delete-btn{
+    position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px;
+    background:rgba(255,255,255,0.95); border:1px solid #eee; color:#b3261e; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:13px; z-index:2;
+  }
+  .delete-btn:hover{background:#fdecea;}
+  .empty-state{text-align:center; padding:60px 20px; color:#9a9a9a;}
+  .empty-state .icon{font-size:40px; margin-bottom:16px;}
+  .empty-state h3{font-size:16px; color:#1a1a1a; margin-bottom:6px;}
+  .empty-state p{font-size:13px; margin-bottom:24px;}
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(21,0,23,0.5);
+    display:none; align-items:center; justify-content:center; z-index:500; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{
+    background:#fff; border-radius:20px; padding:32px; width:100%; max-width:520px;
+    max-height:88vh; overflow-y:auto;
+  }
+  .modal h2{font-size:19px; font-weight:700; margin-bottom:4px;}
+  .modal .sub{font-size:12px; color:#9a9a9a; margin-bottom:22px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .full{grid-column:1 / -1;}
+  label{display:block; font-size:12px; font-weight:600; color:#4a4a4a; margin-bottom:6px;}
+  input, textarea{
+    width:100%; padding:11px 13px; margin-bottom:16px;
+    border:1px solid #e0e0e0; border-radius:10px; font-size:13px;
+    outline:none; font-family:'Inter',sans-serif;
+  }
+  input:focus, textarea:focus{border-color:#47034E;}
+  textarea{min-height:70px; resize:vertical;}
+  .checkbox-row{display:flex; align-items:center; gap:10px; margin-bottom:20px;}
+  .checkbox-row input{width:auto; margin:0;}
+  .checkbox-row label{margin:0; font-size:13px; color:#1a1a1a;}
+  .msg{font-size:13px; margin-bottom:16px; padding:10px 12px; border-radius:8px; display:none;}
+  .msg.error{background:#fdecea; color:#b3261e; display:block;}
+  .msg.success{background:#eafaf0; color:#1e7a3d; display:block;}
+  .step-indicator{display:flex; align-items:center; margin-bottom:26px;}
+  .step{display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:#c8c8c8;}
+  .step.active{color:#47034E;}
+  .step .dot{
+    width:20px; height:20px; border-radius:50%; border:2px solid #d5d5d5;
+    display:flex; align-items:center; justify-content:center; font-size:10px; color:#c8c8c8; flex-shrink:0;
+  }
+  .step.active .dot{border-color:#47034E; background:#47034E; color:#fff;}
+  .step-line{flex:1; height:1px; background:#e5e5e5; margin:0 10px;}
+  select{
+    width:100%; padding:11px 13px; margin-bottom:16px;
+    border:1px solid #e0e0e0; border-radius:10px; font-size:13px;
+    outline:none; font-family:'Inter',sans-serif; background:#fff;
+  }
+  .toggle-group{display:flex; gap:8px; margin-bottom:16px;}
+  .toggle-btn{
+    flex:1; text-align:center; padding:10px; border:1px solid #e0e0e0; border-radius:10px;
+    font-size:12px; font-weight:600; color:#6a6a6a; cursor:pointer; transition:all 0.15s ease;
+  }
+  .toggle-btn.active{border-color:#47034E; background:#f3e9f4; color:#47034E;}
+  .field-group{
+    border:1px solid #f0f0f0; border-radius:12px; padding:16px; margin-bottom:16px; background:#fbfafc;
+  }
+  .field-group-title{font-size:12px; font-weight:700; color:#4a4a4a; margin-bottom:12px;}
+  .lineup-row, .ticket-row{display:flex; gap:8px; margin-bottom:10px; align-items:center;}
+  .lineup-row input, .ticket-row input{margin-bottom:0;}
+  .lineup-row input.lineup-name{flex:2;}
+  .lineup-row select{margin-bottom:0; flex:1;}
+  .ticket-row input.ticket-name{flex:2;}
+  .ticket-row input.ticket-price, .ticket-row input.ticket-qty{flex:1;}
+  .remove-row{
+    width:28px; height:28px; flex-shrink:0; border-radius:8px; border:1px solid #e0e0e0;
+    background:#fff; color:#b3261e; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center;
+  }
+  .add-row-btn{
+    font-size:12px; font-weight:600; color:#47034E; background:none; border:1px dashed #47034E;
+    border-radius:8px; padding:9px; width:100%; cursor:pointer; margin-bottom:6px;
+  }
+  .url-preview{font-size:11px; color:#9a9a9a; margin:-10px 0 16px;}
+  .url-preview b{color:#47034E;}
+  .wizard-step{display:none;}
+  .wizard-step.active{display:block;}
+  .dropzone{
+    border:2px dashed #d5d5d5; border-radius:14px; padding:30px 20px; text-align:center;
+    cursor:pointer; margin-bottom:16px; transition:border-color 0.2s ease, background 0.2s ease;
+  }
+  .dropzone.dragover{border-color:#47034E; background:#f3e9f4;}
+  .dropzone .icon{font-size:28px; margin-bottom:10px;}
+  .dropzone p{font-size:13px; color:#6a6a6a; margin-bottom:4px;}
+  .dropzone .hint{font-size:11px; color:#b0b0b0;}
+  .dropzone input[type="file"]{display:none;}
+  .image-preview{width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin-bottom:16px; display:none;}
+  .upload-status{font-size:12px; color:#47034E; margin-bottom:12px; display:none;}
+  #gate{display:flex; align-items:center; justify-content:center; min-height:100vh; font-size:13px; color:#9a9a9a; width:100%;}
+</style>
+</head>
+<body>
+  <script src="common.js"></script>
+
+<div id="gate">Checking your session…</div>
+
+<div id="dashboardContent" style="display:none; width:100%;">
+  <div class="sidebar">
+    <div class="logo">TIXTEE<span>.XYZ</span></div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      Overview
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Events
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M1 21v-2a4 4 0 013-3.87"/></svg>
+      Followers
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
+      Ratings
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Settings
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="nav-item logout" id="logoutBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Log out
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="main-header">
+      <div>
+        <h1>Overview</h1>
+        <div class="sub">Welcome back — here's what's happening with your events.</div>
+      </div>
+      <button class="btn-primary" id="openModalBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add new event
+      </button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Total events</div>
+        <div class="value" id="statEvents">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Tickets sold</div>
+        <div class="value">0 <span>coming soon</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Revenue</div>
+        <div class="value">₦0 <span>coming soon</span></div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Group chats active</div>
+        <div class="value" id="statChats">0</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <h2>Your events</h2>
+      </div>
+      <div class="tabs">
+        <div class="tab active">All Events</div>
+        <div class="tab">Published</div>
+        <div class="tab">Drafts</div>
+        <div class="tab">Ended</div>
+      </div>
+      <div id="eventsContainer">
+        <div class="empty-state">
+          <div class="icon">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="currentColor"
+  >
+    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V9h14v10zm0-12H5V6h14v1z"/>
+  </svg>
+</div>
+          <h3>Loading your events…</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="step-indicator">
+      <div class="step active" id="stepDot1"><div class="dot">1</div>Details</div>
+      <div class="step-line"></div>
+      <div class="step" id="stepDot2"><div class="dot">2</div>Theme</div>
+      <div class="step-line"></div>
+      <div class="step" id="stepDot3"><div class="dot">3</div>Tickets</div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <form id="eventForm">
+
+      <div class="wizard-step active" data-step="1">
+        <h2>Event details</h2>
+        <p class="sub">Let's set up your event — this is the info people will see first.</p>
+
+        <label>Event name</label>
+        <input type="text" id="title" required placeholder="The Low Light Sessions">
+
+        <label>Describe your event</label>
+        <textarea id="description" placeholder="What should people expect?"></textarea>
+
+        <div class="grid2">
+          <div>
+            <label>Category</label>
+            <select id="category">
+              <option value="Corporate event">Corporate event</option>
+              <option value="Club Gigs">Club Gigs</option>
+              <option value="Indoor Concerts">Indoor Concerts</option>
+            </select>
+          </div>
+          <div>
+            <label>Event format</label>
+            <input type="text" id="event_format" placeholder="e.g. Open mic, Panel, Concert">
+          </div>
+        </div>
+
+        <label>Is this a single or recurring event?</label>
+        <div class="toggle-group" id="recurringToggle">
+          <div class="toggle-btn active" data-value="single">Single event</div>
+          <div class="toggle-btn" data-value="recurring">Recurring event</div>
+        </div>
+        <div id="recurrenceFieldWrap" style="display:none;">
+          <label>How often?</label>
+          <input type="text" id="recurrence_pattern" placeholder="e.g. Every Friday">
+        </div>
+
+        <label>Is this a virtual or in-person event?</label>
+        <div class="toggle-group" id="virtualToggle">
+          <div class="toggle-btn active" data-value="inperson">In-person</div>
+          <div class="toggle-btn" data-value="virtual">Virtual</div>
+        </div>
+        <div id="locationFieldWrap">
+          <label>Location</label>
+          <input type="text" id="venue" placeholder="Café One, Ado-Ekiti">
+        </div>
+        <div id="virtualFieldWrap" style="display:none;">
+          <label>Virtual event link</label>
+          <input type="text" id="virtual_link" placeholder="https://meet.google.com/...">
+        </div>
+
+        <div class="grid2">
+          <div>
+            <label>Date</label>
+            <input type="date" id="event_date" required>
+          </div>
+          <div>
+            <label>Capacity</label>
+            <input type="number" id="capacity">
+          </div>
+          <div>
+            <label>Start time</label>
+            <input type="text" id="start_time" placeholder="6:00 PM">
+          </div>
+          <div>
+            <label>End time</label>
+            <input type="text" id="end_time" placeholder="9:00 PM">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-group-title">Social media handles (optional)</div>
+          <input type="text" id="social_instagram" placeholder="Instagram handle">
+          <input type="text" id="social_twitter" placeholder="X / Twitter handle">
+          <input type="text" id="social_tiktok" placeholder="TikTok handle" style="margin-bottom:0;">
+        </div>
+
+        <label>Custom event URL</label>
+        <input type="text" id="custom_url" placeholder="low-light-sessions">
+        <div class="url-preview">Your event will be shareable at <b>tixtee.xyz/e/<span id="urlPreview">your-url</span></b></div>
+
+        <div class="field-group">
+          <div class="field-group-title">Event lineup</div>
+          <div id="lineupRows"></div>
+          <button type="button" class="add-row-btn" id="addLineupBtn">+ Add lineup member</button>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="has_groupchat">
+          <label for="has_groupchat">This event has a group chat</label>
+        </div>
+        <div id="groupchatFieldWrap" style="display:none;">
+          <label>Group chat name</label>
+          <input type="text" id="groupchat_name" placeholder="e.g. Low Light Sessions Crew">
+          <label>Group chat rules</label>
+          <textarea id="groupchat_rules" placeholder="Be kind. No spam. Stay on topic."></textarea>
+        </div>
+
+        <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="goToStep(2)">Next: Theme →</button>
+      </div>
+
+      <div class="wizard-step" data-step="2">
+        <h2>Theme &amp; extras</h2>
+        <p class="sub">Add a banner image and any surprise features for this event.</p>
+
+        <label>Event banner image</label>
+        <img class="image-preview" id="imagePreview" src="" alt="">
+        <div class="upload-status" id="uploadStatus"></div>
+        <div class="dropzone" id="dropzone">
+          <div class="icon">📷</div>
+          <p>Drag and drop your image here</p>
+          <div class="hint">or click to choose from your device</div>
+          <input type="file" id="imageInput" accept="image/*">
+        </div>
+        <input type="hidden" id="image_url">
+
+        <div class="field-group">
+          <div class="field-group-title">Special features (optional)</div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="has_secret_guest">
+            <label for="has_secret_guest">This event has a secret/surprise guest</label>
+          </div>
+          <div id="secretGuestWrap" style="display:none;">
+            <textarea id="secret_guest_note" placeholder="A short teaser shown to guests (without giving it away)"></textarea>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="has_golden_seat">
+            <label for="has_golden_seat">This event has a "golden seat" surprise</label>
+          </div>
+          <div id="goldenSeatWrap" style="display:none;">
+            <textarea id="golden_seat_note" placeholder="Describe the surprise for the lucky ticket holder"></textarea>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(1)">← Back</button>
+          <button type="button" class="btn-primary" style="flex:1; justify-content:center;" onclick="goToStep(3)">Next: Tickets →</button>
+        </div>
+      </div>
+
+      <div class="wizard-step" data-step="3">
+        <h2>Tickets</h2>
+        <p class="sub">Add one or more ticket types for this event.</p>
+
+        <div class="field-group">
+          <div class="field-group-title">Ticket tiers</div>
+          <div id="ticketRows"></div>
+          <button type="button" class="add-row-btn" id="addTicketBtn">+ Add ticket tier</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(2)">← Back</button>
+          <button type="submit" class="btn-primary" style="flex:1; justify-content:center;">Publish event</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  const API = 'http://127.0.0.1:4000/api';
+
+  async function checkSession(){
+    try{
+      const res = await fetch(`${API}/auth/me`, { credentials:'include' });
+      if(!res.ok) return window.location.href = 'login.html';
+      const data = await res.json();
+      if(!data.isAdmin) return window.location.href = 'pending.html';
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dashboardContent').style.display = 'flex';
+      loadEvents();
+    }catch(err){
+      window.location.href = 'login.html';
+    }
+  }
+  checkSession();
+
+  document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+    await fetch(`${API}/auth/logout`, { method:'POST', credentials:'include' });
+    window.location.href = 'login.html';
+  });
+
+  const modalOverlay = document.getElementById('modalOverlay');
+  document.getElementById('openModalBtn').addEventListener('click', ()=>{
+    modalOverlay.classList.add('show');
+    goToStep(1);
+  });
+
+  function showMsg(text, type){
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  function goToStep(n){
+    document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.wizard-step[data-step="${n}"]`).classList.add('active');
+    [1,2,3].forEach(i => {
+      document.getElementById('stepDot'+i).classList.toggle('active', i <= n);
+    });
+  }
+
+  function setupToggle(groupId, onChange){
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        onChange(btn.dataset.value);
+      });
+    });
+  }
+  setupToggle('recurringToggle', (value) => {
+    document.getElementById('recurrenceFieldWrap').style.display = value === 'recurring' ? 'block' : 'none';
+  });
+  setupToggle('virtualToggle', (value) => {
+    document.getElementById('locationFieldWrap').style.display = value === 'inperson' ? 'block' : 'none';
+    document.getElementById('virtualFieldWrap').style.display = value === 'virtual' ? 'block' : 'none';
+  });
+
+  document.getElementById('has_groupchat').addEventListener('change', (e) => {
+    document.getElementById('groupchatFieldWrap').style.display = e.target.checked ? 'block' : 'none';
+  });
+  document.getElementById('has_secret_guest').addEventListener('change', (e) => {
+    document.getElementById('secretGuestWrap').style.display = e.target.checked ? 'block' : 'none';
+  });
+  document.getElementById('has_golden_seat').addEventListener('change', (e) => {
+    document.getElementById('goldenSeatWrap').style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  document.getElementById('custom_url').addEventListener('input', (e) => {
+    const slug = e.target.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    document.getElementById('urlPreview').textContent = slug || 'your-url';
+  });
+
+  function addLineupRow(){
+    const row = document.createElement('div');
+    row.className = 'lineup-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Name" class="lineup-name">
+      <select class="lineup-role">
+        <option value="Performer">Performer</option>
+        <option value="Speaker">Speaker</option>
+        <option value="DJ">DJ</option>
+        <option value="Host">Host</option>
+        <option value="Other">Other</option>
+      </select>
+      <div class="remove-row">✕</div>
+    `;
+    row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+    document.getElementById('lineupRows').appendChild(row);
+  }
+  document.getElementById('addLineupBtn').addEventListener('click', addLineupRow);
+  addLineupRow();
+
+  function addTicketRow(){
+    const row = document.createElement('div');
+    row.className = 'ticket-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Tier name (e.g. Early Bird)" class="ticket-name">
+      <input type="number" placeholder="Price ₦" class="ticket-price">
+      <input type="number" placeholder="Qty" class="ticket-qty">
+      <div class="remove-row">✕</div>
+    `;
+    row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+    document.getElementById('ticketRows').appendChild(row);
+  }
+  document.getElementById('addTicketBtn').addEventListener('click', addTicketRow);
+  addTicketRow();
+
+  const dropzone = document.getElementById('dropzone');
+  const imageInput = document.getElementById('imageInput');
+  const imagePreview = document.getElementById('imagePreview');
+  const uploadStatus = document.getElementById('uploadStatus');
+
+  dropzone.addEventListener('click', () => imageInput.click());
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleImageFile(e.dataTransfer.files[0]);
+  });
+  imageInput.addEventListener('change', (e) => {
+    if(e.target.files.length) handleImageFile(e.target.files[0]);
+  });
+
+  async function handleImageFile(file){
+    if(!file.type.startsWith('image/')){
+      uploadStatus.style.display = 'block';
+      uploadStatus.style.color = '#b3261e';
+      uploadStatus.textContent = 'Please choose an image file.';
+      return;
+    }
+
+    uploadStatus.style.display = 'block';
+    uploadStatus.style.color = '#47034E';
+    uploadStatus.textContent = 'Uploading…';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try{
+      const res = await fetch(`${API}/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      const data = await res.json();
+      if(!res.ok){
+        uploadStatus.style.color = '#b3261e';
+        uploadStatus.textContent = data.error || 'Upload failed';
+        return;
+      }
+
+      document.getElementById('image_url').value = data.url;
+      imagePreview.src = `http://127.0.0.1:4000${data.url}`;
+      imagePreview.style.display = 'block';
+      uploadStatus.style.color = '#1e7a3d';
+      uploadStatus.textContent = 'Image uploaded ✓';
+    }catch(err){
+      uploadStatus.style.color = '#b3261e';
+      uploadStatus.textContent = 'Could not reach the server.';
+    }
+  }
+
+  document.getElementById('eventForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const lineup = Array.from(document.querySelectorAll('.lineup-row')).map(row => ({
+      name: row.querySelector('.lineup-name').value,
+      role: row.querySelector('.lineup-role').value,
+    })).filter(person => person.name.trim());
+
+    const tickets = Array.from(document.querySelectorAll('.ticket-row')).map(row => ({
+      tier_name: row.querySelector('.ticket-name').value,
+      price: row.querySelector('.ticket-price').value,
+      quantity: row.querySelector('.ticket-qty').value,
+    })).filter(t => t.tier_name.trim() && t.price);
+
+    const isRecurring = document.querySelector('#recurringToggle .toggle-btn.active').dataset.value === 'recurring';
+    const isVirtual = document.querySelector('#virtualToggle .toggle-btn.active').dataset.value === 'virtual';
+
+    const body = {
+      title: document.getElementById('title').value,
+      description: document.getElementById('description').value,
+      event_date: document.getElementById('event_date').value,
+      start_time: document.getElementById('start_time').value,
+      end_time: document.getElementById('end_time').value,
+      venue: document.getElementById('venue').value,
+      capacity: document.getElementById('capacity').value || null,
+      price: tickets.length ? tickets[0].price : null,
+      image_url: document.getElementById('image_url').value,
+      has_groupchat: document.getElementById('has_groupchat').checked,
+      category: document.getElementById('category').value,
+      event_format: document.getElementById('event_format').value,
+      is_recurring: isRecurring,
+      recurrence_pattern: isRecurring ? document.getElementById('recurrence_pattern').value : null,
+      is_virtual: isVirtual,
+      virtual_link: isVirtual ? document.getElementById('virtual_link').value : null,
+      social_instagram: document.getElementById('social_instagram').value,
+      social_twitter: document.getElementById('social_twitter').value,
+      social_tiktok: document.getElementById('social_tiktok').value,
+      custom_url: document.getElementById('custom_url').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') || null,
+      groupchat_name: document.getElementById('has_groupchat').checked ? document.getElementById('groupchat_name').value : null,
+      groupchat_rules: document.getElementById('has_groupchat').checked ? document.getElementById('groupchat_rules').value : null,
+      has_secret_guest: document.getElementById('has_secret_guest').checked,
+      secret_guest_note: document.getElementById('has_secret_guest').checked ? document.getElementById('secret_guest_note').value : null,
+      has_golden_seat: document.getElementById('has_golden_seat').checked,
+      golden_seat_note: document.getElementById('has_golden_seat').checked ? document.getElementById('golden_seat_note').value : null,
+      lineup,
+      tickets,
+    };
+
+    try{
+      const res = await fetch(`${API}/events`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(!res.ok){ showMsg(data.error || 'Could not create event', 'error'); return; }
+      showMsg('Event published — check the homepage.', 'success');
+      document.getElementById('eventForm').reset();
+      loadEvents();
+      setTimeout(()=> modalOverlay.classList.remove('show'), 900);
+    }catch(err){
+      showMsg('Could not reach the server — is the backend running?', 'error');
+    }
+  });
+
+  async function loadEvents(){
+    const container = document.getElementById('eventsContainer');
+    try{
+      const res = await fetch(`${API}/events`);
+      const events = await res.json();
+      document.getElementById('statEvents').textContent = events.length;
+      document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
+
+      if(!events.length){
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="currentColor"
+  >
+    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V9h14v10zm0-12H5V6h14v1z"/>
+  </svg>
+</div>
+            <h3>You have no events yet</h3>
+            <p>Click "Add new event" above to create your first one.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `<div class="events-grid">${events.map(ev => `
+        <div class="event-card">
+          <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
+          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'http://127.0.0.1:4000' + ev.image_url : ev.image_url) : 'images/tix.jpg'}" alt="">
+          <div class="body">
+            <div class="date">${new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div class="title">${ev.title}</div>
+            <div class="venue">${ev.venue || 'Venue TBA'}</div>
+            ${ev.has_groupchat ? '<div class="tag">Group chat on</div>' : ''}
+          </div>
+        </div>
+      `).join('')}</div>`;
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          if(!confirm('Delete this event? This cannot be undone.')) return;
+          try{
+            const res = await fetch(`${API}/events/${id}`, { method: 'DELETE', credentials: 'include' });
+            if(!res.ok) throw new Error();
+            loadEvents();
+          }catch(err){
+            alert('Could not delete this event. Is the backend running?');
+          }
+        });
+      });
+    }catch(err){
+      container.innerHTML = `<div class="empty-state"><h3>Could not load events</h3><p>Check that the backend is running.</p></div>`;
+    }
+  }
+</script>
+</body>
+</html>

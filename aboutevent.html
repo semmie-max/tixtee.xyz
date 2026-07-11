@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Mic Experience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#ffffff;
+    --ink-2:#f4f4f4;
+    --parchment:#111111;
+    --parchment-dim:#6b6b6b;
+    --amber:#111111;
+    --amber-dim:#4d4d4d;
+    --wine:#111111;
+    --line:rgba(17,17,17,0.12);
+    --shadow: 0 20px 60px rgba(0,0,0,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--parchment);
+    font-family:'Inter',sans-serif;
+    overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    pointer-events:none;
+    z-index:9999;
+    opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .display{font-family:'Fraunces',serif;}
+  .mono{font-family:'IBM Plex Mono',monospace; letter-spacing:0.04em;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---------- reveal-on-scroll ---------- */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity 0.9s ease, transform 0.9s ease;}
+  .reveal.in-view{opacity:1; transform:translateY(0);}
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1!important; transform:none!important; transition:none!important;}
+    *{animation:none!important;}
+  }
+
+  /* ---------- nav ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:22px clamp(20px,5vw,64px);
+    background:linear-gradient(to bottom, rgba(255,255,255,0.92), transparent);
+  }
+  .brand{font-family:'Fraunces',serif; font-weight:500; font-size:15px; letter-spacing:0.02em;}
+  .brand span{color:var(--amber);}
+  .nav-mono{font-size:11px;color:var(--parchment-dim);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; align-items:center;
+    padding:120px clamp(20px,5vw,64px) 80px;
+  }
+  .hero-glow{
+    position:absolute; top:50%; left:18%;
+    width:520px; height:520px;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(17,17,17,0.06) 0%, rgba(17,17,17,0.03) 40%, transparent 70%);
+    filter:blur(10px);
+    animation:flicker 6s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes flicker{
+    0%,100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+    25%{opacity:0.85; transform:translate(-52%,-48%) scale(0.97);}
+    50%{opacity:1; transform:translate(-49%,-51%) scale(1.03);}
+    75%{opacity:0.9; transform:translate(-51%,-49%) scale(0.99);}
+  }
+  .hero-grid{
+    position:relative; z-index:2;
+    display:grid; grid-template-columns:0.9fr 1.1fr;
+    gap:60px; align-items:center;
+    max-width:1200px; width:100%; margin:0 auto;
+  }
+  .mic-art{
+    position:relative;
+    width:100%; aspect-ratio:3/4;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-img{
+    width:100%; height:100%;
+    object-fit:contain;
+    background:var(--ink-2);
+    border-radius:8px;
+    box-shadow:var(--shadow);
+  }
+  .capacity-tag{
+    position:absolute; bottom:18px; left:18px;
+    background:var(--ink-2); border:1px solid var(--line);
+    padding:10px 16px; border-radius:100px;
+    font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--parchment-dim);
+  }
+  .capacity-tag b{color:var(--amber); font-weight:500;}
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:11px; text-transform:uppercase; letter-spacing:0.16em;
+    color:var(--amber); margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--amber);}
+  h1.title{
+    font-size:clamp(40px,5.5vw,68px);
+    font-weight:500; line-height:1.02; letter-spacing:-0.01em;
+    margin-bottom:18px;
+  }
+  h1.title em{font-style:italic; font-weight:400; color:var(--amber);}
+  .subtitle{
+    font-size:16px; line-height:1.65; color:var(--parchment-dim);
+    max-width:46ch; margin-bottom:32px;
+  }
+
+  .spec-sheet{
+    display:grid; grid-template-columns:repeat(2,1fr);
+    gap:1px; background:var(--line);
+    border:1px solid var(--line);
+    margin-bottom:32px;
+  }
+  .spec-item{background:var(--ink); padding:16px 18px;}
+  .spec-label{font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--parchment-dim); margin-bottom:6px;}
+  .spec-value{font-size:15px; font-weight:500;}
+
+  .cta-row{display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--amber); color:var(--ink);
+    padding:16px 32px; border-radius:4px;
+    font-weight:600; font-size:14px; letter-spacing:0.02em;
+    border:none; cursor:pointer;
+    transition:transform 0.25s ease, box-shadow 0.25s ease;
+    display:inline-block;
+  }
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 12px 24px rgba(17,17,17,0.2);}
+  .price-hint{font-size:13px; color:var(--parchment-dim);}
+  .price-hint b{color:var(--parchment); font-weight:500;}
+
+  /* ---------- section shell ---------- */
+  section{padding:100px clamp(20px,5vw,64px);}
+  .section-inner{max-width:1200px; margin:0 auto;}
+  .section-head{display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:48px; flex-wrap:wrap;}
+  .section-num{font-size:11px; color:var(--amber-dim); margin-bottom:10px;}
+  .section-title{font-family:'Fraunces',serif; font-size:clamp(28px,3.5vw,40px); font-weight:500;}
+  .section-note{max-width:32ch; font-size:14px; color:var(--parchment-dim); line-height:1.6;}
+
+  /* ---------- about ---------- */
+  .about{border-top:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:60px;}
+  .about-text p{font-size:16px; line-height:1.8; color:var(--parchment-dim); margin-bottom:18px;}
+  .about-text strong{color:var(--parchment); font-weight:500;}
+  .rules-list{list-style:none; display:flex; flex-direction:column; gap:14px;}
+  .rules-list li{
+    display:flex; gap:14px; align-items:flex-start;
+    font-size:14px; color:var(--parchment-dim); line-height:1.6;
+    padding-bottom:14px; border-bottom:1px solid var(--line);
+  }
+  .rules-list li .dot{width:6px;height:6px;border-radius:50%;background:var(--amber); margin-top:7px; flex-shrink:0;}
+  .rules-list li b{color:var(--parchment); font-weight:500;}
+
+  /* ---------- lineup ---------- */
+  .lineup{border-top:1px solid var(--line);}
+  .lineup-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  .act-card{
+    background:var(--ink-2); border:1px solid var(--line);
+    padding:24px 20px; border-radius:6px;
+    transition:transform 0.35s ease, border-color 0.35s ease;
+    position:relative; overflow:hidden;
+  }
+  .act-card:hover{transform:translateY(-6px); border-color:var(--amber-dim);}
+  .act-avatar{
+    width:44px; height:44px; border-radius:50%;
+    background:linear-gradient(135deg, var(--amber-dim), var(--wine));
+    margin-bottom:18px;
+  }
+  .act-name{font-family:'Fraunces',serif; font-size:19px; margin-bottom:6px;}
+  .act-role{font-size:12px; color:var(--parchment-dim); text-transform:uppercase; letter-spacing:0.05em;}
+
+  .secret-card{
+    grid-column:span 2;
+    background:linear-gradient(135deg, rgba(17,17,17,0.06), rgba(17,17,17,0.02));
+    border:1px solid rgba(17,17,17,0.25);
+    position:relative;
+    display:flex; align-items:center; gap:24px;
+    cursor:pointer;
+  }
+  .seal{
+    width:56px; height:56px; border-radius:50%; flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, #3a3a3a, var(--wine) 70%);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-style:italic; font-size:20px; color:#ffffff;
+    box-shadow:0 8px 18px rgba(0,0,0,0.25);
+    transition:transform 0.4s ease;
+  }
+  .secret-card:hover .seal{transform:rotate(-8deg) scale(1.06);}
+  .secret-copy .act-name{color:var(--amber);}
+  .secret-copy p{font-size:13px; color:var(--parchment-dim); line-height:1.5; max-width:38ch;}
+
+  /* ---------- golden ticket strip ---------- */
+  .golden-strip{
+    margin-top:24px;
+    border:1px dashed var(--amber-dim);
+    border-radius:6px;
+    padding:20px 24px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:20px; flex-wrap:wrap;
+    background:rgba(17,17,17,0.03);
+  }
+  .golden-strip .label{font-size:13px; color:var(--parchment-dim); line-height:1.5; max-width:52ch;}
+  .golden-strip .label b{color:var(--amber); font-weight:600;}
+  .golden-pill{
+    font-size:10px; text-transform:uppercase; letter-spacing:0.1em;
+    background:var(--amber); color:var(--ink); padding:6px 12px; border-radius:100px; font-weight:600;
+    flex-shrink:0;
+  }
+
+  /* ---------- tickets ---------- */
+  .tickets{border-top:1px solid var(--line);}
+  .tier-strip{display:flex; gap:14px; margin-bottom:40px; flex-wrap:wrap;}
+  .tier{
+    flex:1; min-width:180px;
+    border:1px solid var(--line); border-radius:6px;
+    padding:22px 20px; cursor:pointer;
+    transition:border-color 0.25s ease, background 0.25s ease;
+    position:relative;
+  }
+  .tier.selected{border-color:var(--amber); background:rgba(17,17,17,0.04);}
+  .tier-name{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--parchment-dim); margin-bottom:10px;}
+  .tier-price{font-family:'Fraunces',serif; font-size:26px; margin-bottom:8px;}
+  .tier-desc{font-size:12px; color:var(--parchment-dim);}
+  .tier-badge{
+    position:absolute; top:-10px; right:14px;
+    background:var(--wine); color:#ffffff;
+    font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    padding:4px 9px; border-radius:100px;
+  }
+
+  /* ---------- testimonials as "flame rating" ---------- */
+  .rating-block{
+    display:grid; grid-template-columns:0.6fr 1.4fr; gap:60px; align-items:center;
+    border-top:1px solid var(--line);
+  }
+  .rating-big{font-family:'Fraunces',serif; font-size:64px; font-weight:500;}
+  .flames{display:flex; gap:4px; margin:14px 0;}
+  .flames svg{width:16px; height:16px; fill:var(--amber);}
+  .rating-sub{font-size:12px; color:var(--parchment-dim);}
+  .quote-list{display:flex; flex-direction:column; gap:26px;}
+  .quote{border-left:2px solid var(--amber-dim); padding-left:20px;}
+  .quote p{font-size:15px; line-height:1.7; color:var(--parchment); margin-bottom:8px; font-style:italic; font-family:'Fraunces',serif; font-weight:400;}
+  .quote span{font-size:12px; color:var(--parchment-dim); text-transform:uppercase; letter-spacing:0.04em;}
+
+  /* ---------- more events ---------- */
+  .more{border-top:1px solid var(--line);}
+  .more-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .more-card{
+    border:1px solid var(--line); border-radius:6px; padding:28px 22px;
+    transition:transform 0.3s ease, border-color 0.3s ease;
+  }
+  .more-card:hover{transform:translateY(-5px); border-color:var(--amber-dim);}
+  .more-tag{font-size:10px; color:var(--amber); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:14px;}
+  .more-title{font-family:'Fraunces',serif; font-size:20px; margin-bottom:10px;}
+  .more-desc{font-size:13px; color:var(--parchment-dim); line-height:1.6;}
+
+  footer{
+    border-top:1px solid var(--line);
+    padding:40px clamp(20px,5vw,64px) 120px;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  footer .mono{font-size:11px; color:var(--parchment-dim);}
+
+  /* ---------- sticky bottom bar ---------- */
+  .sticky-bar{
+    position:fixed; bottom:0; left:0; right:0; z-index:200;
+    background:rgba(255,255,255,0.94);
+    backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    padding:16px clamp(20px,5vw,64px);
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    transform:translateY(100%);
+    transition:transform 0.4s ease;
+  }
+  .sticky-bar.show{transform:translateY(0);}
+  .sticky-left{display:flex; flex-direction:column;}
+  .sticky-left .mono{font-size:10px; color:var(--parchment-dim);}
+  .sticky-left .name{font-family:'Fraunces',serif; font-size:16px;}
+
+  @media(max-width:860px){
+    .hero-grid{grid-template-columns:1fr; gap:40px;}
+    .about-grid{grid-template-columns:1fr; gap:36px;}
+    .lineup-grid{grid-template-columns:repeat(2,1fr);}
+    .secret-card{grid-column:span 2;}
+    .rating-block{grid-template-columns:1fr; gap:30px;}
+    .more-grid{grid-template-columns:1fr;}
+    section{padding:70px 20px;}
+  }
+  @media(max-width:520px){
+    .lineup-grid{grid-template-columns:1fr;}
+    .secret-card{grid-column:span 1;}
+    .spec-sheet{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">tixtee. <span>×</span> Karaoke Night.</div>
+  <div class="nav-mono mono">ADO-EKITI</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-grid">
+    <div class="mic-art reveal">
+      <img src="images/tix.jpg" alt="The Low Light Sessions" class="hero-img">
+      <div class="capacity-tag">Go Grab Your <b>TICKETS!!!</b></div>
+    </div>
+
+    <div class="hero-copy reveal">
+      <h1 class="title display">The Open Mic Experience<br></h1>
+      <p class="subtitle"></p>
+
+      <div class="spec-sheet">
+        <div class="spec-item">
+          <div class="spec-label">Date</div>
+          <div class="spec-value">Sat, 25 July 2026</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Time</div>
+          <div class="spec-value">6:00 PM – 9:00 PM</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Venue</div>
+          <div class="spec-value">Como Restaurant, Ado-Ekiti</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Format</div>
+          <div class="spec-value">Circle seating · 50 only</div>
+        </div>
+      </div>
+
+      <div class="cta-row">
+        <a href="#tickets" class="btn-primary">Get Your Ticket</a>
+        <div class="price-hint">From <b>₦5,000</b>·</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">01 / ABOUT THE NIGHT</div>
+        <div class="section-title">About Open Mic</div>
+      </div>
+      <div class="section-note">This isn't built to be loud. It's built to be close.</div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>You won't know the full lineup until you're in the room. One name on the bill is being kept sealed a performer confirmed, identity withheld, revealed only when they stand up to go. Something to genuinely look forward to, not just a name on a flyer.</p>
+        <p>Bring a piece, bring nothing, just come and listen. Both are welcome here.</p>
+      </div>
+      <ul class="rules-list reveal">
+        <li><span class="dot"></span><span><b>The Dedication Draw -</b> Upon entry, every guest writes one word or a name on a small card and drops it in a bowl. Performers pull a card before their set and dedicate/reference it in what they perform.</span></li>
+        <li><span class="dot"></span><span><b>Text To Stage -</b> audience can text/DM a prompt during the night, and one performer has to respond to it live</span></li>
+        <li><span class="dot"></span><span><b>One "Mystery Seat" -</b> a specific seat in the room comes with an unknown perk, nobody knows till the night which seat it is.</span></li>
+        <li><span class="dot"></span><span><b>Raffle Draw -</b></span></li>
+        <li><span class="dot"></span><span><b>Raffle Draw -</b></span></li>
+        <li><span class="dot"></span><span><b>Raffle Draw -</b></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="lineup" id="lineup">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">02 / WHO'S IN THE ROOM</div>
+        <div class="section-title">Confirmed, and one that isn't</div>
+      </div>
+      <div class="section-note">Tap the sealed card. It won't tell you much — that's the point.</div>
+    </div>
+    <div class="lineup-grid reveal">
+      <div class="act-card">
+        <div class="act-avatar"></div>
+        <div class="act-name">Tolu Ade</div>
+        <div class="act-role">Spoken Word</div>
+      </div>
+      <div class="act-card">
+        <div class="act-avatar"></div>
+        <div class="act-name">Femi K.</div>
+        <div class="act-role">Acoustic Guitar</div>
+      </div>
+      <div class="act-card">
+        <div class="act-avatar"></div>
+        <div class="act-name">Deja</div>
+        <div class="act-role">Storytelling</div>
+      </div>
+      <div class="secret-card" id="sealCard">
+        <div class="seal">?</div>
+        <div class="secret-copy">
+          <div class="act-name">Sealed until 8:40 PM</div>
+          <p id="sealText">One performer on tonight's bill is being kept off this page entirely. You'll know when they stand up.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="golden-strip reveal">
+      <div class="label"><b>The "Mystery Seat".</b> One ticket, chosen at random on the night, gets pulled up to perform, whether they signed up or not. Every ticket qualifies.</div>
+      <div class="golden-pill">It could Possibly be Your Ticket</div>
+    </div>
+  </div>
+</section>
+
+<section class="tickets" id="tickets">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">03 / RESERVE A SEAT</div>
+        <div class="section-title">Fifty chairs, no more</div>
+      </div>
+      <div class="section-note">Once they're gone, they're gone — we don't add extra seats on the night.</div>
+    </div>
+    <div class="tier-strip reveal">
+      <div class="tier selected" data-price="5000" data-name="Early Bird">
+        <div class="tier-badge">Best value</div>
+        <div class="tier-name">Early Bird</div>
+        <div class="tier-price display">₦5,000</div>
+        <div class="tier-desc">Ends 7 days before the night</div>
+      </div>
+      <div class="tier" data-price="8000" data-name="Regular">
+        <div class="tier-name">Regular</div>
+        <div class="tier-price display">₦8,000</div>
+        <div class="tier-desc">Standard entry, any time before the night</div>
+      </div>
+      <div class="tier" data-price="15000" data-name="At the Door">
+        <div class="tier-badge">win amazing prizes</div>
+        <div class="tier-name">RAFFLE DRAW TICKET</div>
+        <div class="tier-price display">₦15,000</div>
+        <div class="tier-desc">Subject to availability — often sells out</div>
+      </div>
+    </div>
+
+    <div class="cta-row reveal">
+      <a href="#" class="btn-primary" id="buyBtn">Reserve — ₦2,000</a>
+      <div class="price-hint">Ticket includes entry, one drink at Café One, and a shot at the Golden Seat.</div>
+    </div>
+  </div>
+</section>
+
+<section class="rating-block">
+  <div class="section-inner" style="display:contents;">
+    <div class="reveal">
+      <div class="rating-big">4.9</div>
+      <div class="flames">
+        <svg viewBox="0 0 24 24"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-2-1-3-1-3s2 1 2 4a5 5 0 01-10 0c0-5 4-6 4-10 0 0 1 0 2 0z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-2-1-3-1-3s2 1 2 4a5 5 0 01-10 0c0-5 4-6 4-10 0 0 1 0 2 0z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-2-1-3-1-3s2 1 2 4a5 5 0 01-10 0c0-5 4-6 4-10 0 0 1 0 2 0z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-2-1-3-1-3s2 1 2 4a5 5 0 01-10 0c0-5 4-6 4-10 0 0 1 0 2 0z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 2c1 4-3 5-3 9a3 3 0 006 0c0-2-1-3-1-3s2 1 2 4a5 5 0 01-10 0c0-5 4-6 4-10 0 0 1 0 2 0z" opacity="0.4"/></svg>
+      </div>
+      <div class="rating-sub mono">FROM OUR LAST ROOM OF 30</div>
+    </div>
+    <div class="quote-list reveal">
+      <div class="quote">
+        <p>"I came to watch. Ended up on the mic by the second hour. Nobody made it weird."</p>
+        <span>— Guest, June session</span>
+      </div>
+      <div class="quote">
+        <p>"Didn't expect a room that small to feel that full."</p>
+        <span>— Guest, June session</span>
+      </div>
+      <div class="quote">
+        <p>"The sealed act at the end genuinely got the whole room quiet."</p>
+        <span>— Guest, May session</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="more" id="more">
+  <div class="section-inner">
+    <div class="section-head reveal">
+      <div>
+        <div class="section-num mono">04 / ALSO AT CAFÉ ONE</div>
+        <div class="section-title">More rooms worth showing up for</div>
+      </div>
+    </div>
+    <div class="more-grid reveal">
+      <div class="more-card">
+        <div class="more-tag">Coming next</div>
+        <div class="more-title display">Build Night</div>
+        <div class="more-desc">An evening of working on your own thing at the co-working floor, capped with a show-and-tell.</div>
+      </div>
+      <div class="more-card">
+        <div class="more-tag">Coming next</div>
+        <div class="more-title display">Pitch & Perform</div>
+        <div class="more-desc">Half open mic, half 60-second idea pitches. The room votes on both.</div>
+      </div>
+      <div class="more-card">
+        <div class="more-tag">Ongoing</div>
+        <div class="more-title display">Café One Co-work</div>
+        <div class="more-desc">Daily co-working and digital banking services, same floor, same building.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="mono">CAFÉ ONE × LOW LIGHT SESSIONS — ADO-EKITI</div>
+  <div class="mono">30 SEATS, EVERY TIME</div>
+</footer>
+
+<div class="sticky-bar" id="stickyBar">
+  <div class="sticky-left">
+    <div class="mono">SELECTED — <span id="stickyTier">EARLY BIRD</span></div>
+    <div class="name">₦<span id="stickyPrice">5,000</span> / seat</div>
+  </div>
+  <a href="#tickets" class="btn-primary">Reserve your seat</a>
+</div>
+
+<script>
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target); }
+    });
+  },{threshold:0.15});
+  revealEls.forEach(el=>io.observe(el));
+
+  // sticky bar shows after hero
+  const stickyBar = document.getElementById('stickyBar');
+  const hero = document.querySelector('.hero');
+  const stickyIO = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      stickyBar.classList.toggle('show', !e.isIntersecting && window.scrollY > 200);
+    });
+  },{threshold:0});
+  stickyIO.observe(hero);
+
+  // ticket tier selection
+  const tiers = document.querySelectorAll('.tier');
+  const buyBtn = document.getElementById('buyBtn');
+  const stickyPrice = document.getElementById('stickyPrice');
+  const stickyTier = document.getElementById('stickyTier');
+  tiers.forEach(t=>{
+    t.addEventListener('click', ()=>{
+      tiers.forEach(x=>x.classList.remove('selected'));
+      t.classList.add('selected');
+      const price = t.dataset.price;
+      const name = t.dataset.name;
+      buyBtn.textContent = `Reserve — ₦${Number(price).toLocaleString()}`;
+      stickyPrice.textContent = Number(price).toLocaleString();
+      stickyTier.textContent = name.toUpperCase();
+    });
+  });
+
+  // sealed act card — small reveal interaction, still keeps the mystery
+  const sealCard = document.getElementById('sealCard');
+  const sealText = document.getElementById('sealText');
+  let sealed = true;
+  sealCard.addEventListener('click', ()=>{
+    sealed = !sealed;
+    sealText.textContent = sealed
+      ? "One performer on tonight's bill is being kept off this page entirely. You'll know when they stand up."
+      : "Nice try. Still sealed. Some things you find out by being in the room.";
+    sealCard.querySelector('.seal').style.transform = sealed ? '' : 'rotate(-12deg) scale(1.08)';
+  });
+</script>
+
+</body>
+</html>

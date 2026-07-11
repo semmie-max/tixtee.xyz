@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Blog</title>
+  <!-- Google Fonts for Editorial Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="page-wrapper">
+    
+    <!-- Header Section -->
+    <header class="blog-header">
+      <div class="header-overlay"></div>
+      <div class="header-content">
+        <h1>THE BLOG</h1>
+        <p class="subtitle">STAY UP TO DATE ON TIPS, TRICKS, & TRENDS FOR SOCIAL MEDIA & DIGITAL MARKETING</p>
+      </div>
+    </header>
+
+    <!-- Navigation / Filter Bar -->
+    <nav class="blog-nav">
+      <span class="nav-title">Browse the blog:</span>
+      <ul class="nav-links">
+        <li><a href="index.html">Back To Home</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Featured Content Area -->
+    <main class="main-content">
+      <article class="featured-story">
+        
+        <div class="image-container">
+          <!-- "Read the Latest" Badge -->
+          <div class="badge-circle">
+            <span>READ THE<br>LATEST</span>
+          </div>
+          <!-- Placeholder Image mirroring the aesthetic -->
+          <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop" alt="Featured Story Visual">
+        </div>
+
+        <div class="text-card">
+          <h2 class="story-title">WHY TIXTEE? THESE TOOLS WILL HELP YOU SORT TICKETING QUICKLY.</h2>
+          <p class="story-excerpt">
+            Ticketing can be a stressful time for creators, especially if you're not prepared. Making tickets available can feel like a daunting task, and if you don't plan ahead  or prepare well enough, you may end up scrambling to gather all of the necessary details at the last minute. However, with a bit of preparation, ticke...
+          </p>
+          <div class="coming-soon-tag">
+            FULL DETAILS COMING SOON
+          </div>
+        </div>
+
+      </article>
+    </main>
+
+  </div>
+
+</body>
+<style>
+    /* --- Reset & Global Styles --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #ffffff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #2b2b2b;
+  min-height: 100vh;
+}
+
+/* Page Frame stretched to full width */
+.page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Full-Screen Header --- */
+.blog-header {
+  position: relative;
+  height: 400px; /* Made slightly taller for big screens */
+  background-color: #111111;
+  background-image: radial-gradient(circle at 50% 50%, #2a2a2a 0%, #111111 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 40px;
+  width: 100%;
+}
+
+/* Soft smoky texture overlay simulation */
+.header-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, rgba(255,255,255,0.03) 25%, transparent 25%), 
+              linear-gradient(-45deg, rgba(255,255,255,0.03) 25%, transparent 25%);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  filter: blur(2px);
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.blog-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 4rem;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 8px;
+  margin-bottom: 20px;
+}
+
+.blog-header .subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: #c5c5c5;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* --- Full-Width Navigation Bar --- */
+.blog-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 35px 10%; /* Uses percentages so it scales with screen width */
+  border-bottom: 1px solid #f0ede9;
+  width: 100%;
+}
+
+.nav-title {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: #444;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 40px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  font-size: 0.7rem;
+  color: #2b2b2b;
+  letter-spacing: 2px;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.nav-links a:hover {
+  opacity: 0.6;
+}
+
+/* --- Main Content Laptop/Desktop Scale --- */
+.main-content {
+  padding: 80px 10%; /* Matches nav bar padding seamlessly */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.featured-story {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr; /* Editorial asymmetrical balance */
+  align-items: center;
+  width: 100%;
+  max-width: 1400px; /* Keeps layout from over-stretching on ultra-wide monitors */
+  position: relative;
+}
+
+/* Image Wrapper and Badge Positioning */
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 580px; /* Taller on laptops to feel premium */
+  z-index: 1;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badge-circle {
+  position: absolute;
+  top: -25px;
+  left: -25px;
+  width: 85px;
+  height: 85px;
+  background-color: #1b1b1b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.badge-circle span {
+  color: #ffffff;
+  font-size: 0.6rem;
+  letter-spacing: 1px;
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Overlapping Editorial Text Card */
+.text-card {
+  background-color: #ffffff;
+  padding: 60px 50px 60px 80px;
+  margin-left: -100px; /* Deep shift overlap onto image */
+  position: relative;
+  z-index: 2;
+  box-shadow: 15px 15px 40px rgba(0, 0, 0, 0.04);
+}
+
+.story-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  line-height: 1.4;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+  color: #111;
+}
+
+.story-excerpt {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: #555;
+  margin-bottom: 35px;
+}
+
+/* Custom placeholder label element */
+.coming-soon-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 600;
+  color: #888;
+  border-bottom: 1px solid #bbb;
+  padding-bottom: 6px;
+  text-transform: uppercase;
+}
+
+/* --- Responsive Layout Breakpoints --- */
+
+@media (max-width: 1024px) {
+  .blog-nav {
+    padding: 30px 40px;
+  }
+  .main-content {
+    padding: 60px 40px;
+  }
+  .image-container {
+    height: 480px;
+  }
+  .story-title {
+    font-size: 1.65rem;
+  }
+}
+
+@media (max-width: 850px) {
+  .featured-story {
+    grid-template-columns: 1fr; /* Stacks column on small tablets/mobile */
+  }
+
+  .image-container {
+    height: 380px;
+  }
+
+  .text-card {
+    margin-left: 0;
+    margin-top: -50px; /* Shifts up over image vertically */
+    padding: 40px 30px;
+    width: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .blog-nav {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .image-container {
+    height: 280px;
+  }
+
+  .badge-circle {
+    top: -10px;
+    left: -10px;
+    width: 65px;
+    height: 65px;
+  }
+
+  .text-card {
+    width: 100%;
+    margin-top: 0;
+    padding: 30px 15px;
+  }
+
+  .story-title {
+    font-size: 1.35rem;
+  }
+}
+</style>
+</html>

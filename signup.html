@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up — tixtee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="common.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  html,body{height:100%;}
+  body{display:flex;}
+
+  .form-panel{
+    width:50%; display:flex; align-items:center; justify-content:center;
+    padding:40px; background:#000000;
+  }
+  .form-card{width:100%; max-width:360px;}
+  .form-card h1{font-size:26px; font-weight:700; letter-spacing:-0.5px; margin-bottom:6px; color:#ffffff;}
+  .form-card .sub{font-size:13px; color:#909090; margin-bottom:32px;}
+  label{display:block; font-size:12px; font-weight:600; color:#4a4a4a; margin-bottom:6px;}
+  input{
+    width:100%; padding:12px 14px; margin-bottom:18px;
+    border:1px solid #555; border-radius:10px; font-size:14px;
+    background:#555; color:#fff;
+    outline:none; transition:border-color 0.2s ease;
+  }
+  input:focus{border-color:#47034E;}
+  button.submit{
+    width:100%; background:#fff; color:#000; border:none;
+    padding:13px; border-radius:10px; font-size:14px; font-weight:600;
+    cursor:pointer; margin-top:4px; transition:background 0.2s ease;
+  }
+  button.submit:hover{background:#47034E;}
+  .divider{display:flex; align-items:center; gap:12px; margin:22px 0; color:#b0b0b0; font-size:12px;}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:#e5e5e5;}
+  #googleBtn{display:flex; justify-content:center; margin-bottom:8px;}
+  .foot{text-align:center; font-size:13px; color:#707070; margin-top:20px;}
+  .foot a{color:#fff; font-weight:600; text-decoration:none;}
+  .msg{font-size:13px; margin-bottom:16px; padding:10px 12px; border-radius:8px; display:none;}
+  .msg.error{background:#fdecea; color:#b3261e; display:block;}
+  .msg.success{background:#eafaf0; color:#1e7a3d; display:block;}
+
+  .visual-panel{
+    width:50%; position:relative;
+    background:#150017;
+    display:flex; align-items:flex-end;
+    overflow:hidden;
+  }
+  .visual-panel img{
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover; opacity:0.75;
+  }
+  .visual-overlay{
+    position:relative; z-index:2;
+    background:linear-gradient(to top, rgba(21,0,23,0.95), transparent);
+    width:100%; padding:48px;
+  }
+  .visual-panel .brand{
+    position:absolute; top:36px; left:36px; z-index:3;
+    color:#fff; font-size:14px; font-weight:700; letter-spacing:1px;
+  }
+  .visual-panel .brand span{color:rgba(255,255,255,0.5); font-weight:400;}
+  .visual-overlay h2{
+    color:#fff; font-size:26px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px; max-width:420px;
+  }
+  .visual-overlay p{
+    color:rgba(255,255,255,0.65); font-size:14px; line-height:1.6; max-width:380px;
+  }
+
+  @media(max-width:860px){
+    .visual-panel{display:none;}
+    .form-panel{width:100%;}
+  }
+</style>
+</head>
+<body>
+  <script src="common.js"></script>
+
+  <div class="form-panel">
+    <div class="form-card">
+      <h1>Create your account</h1>
+      <p class="sub">Sign up to get notified when your dashboard opens.</p>
+
+      <div class="msg" id="msg"></div>
+
+      <form id="signupForm">
+        <label>Full name</label>
+        <input type="text" id="name" required>
+        <label>Email</label>
+        <input type="email" id="email" required>
+        <label>Password</label>
+        <input type="password" id="password" required minlength="6">
+        <button type="submit" class="submit">Sign up</button>
+      </form>
+
+      <div class="divider">OR</div>
+      <div id="googleBtn"></div>
+
+      <p class="foot">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <div class="visual-panel">
+    <img src="images/log.jpg" alt="">
+    <div class="visual-overlay">
+      <h2>From idea to sold out.</h2>
+      <p>Create your account and be first in line when the doors open.</p>
+    </div>
+  </div>
+
+<script>
+  const API = 'http://127.0.0.1:4000/api';
+
+  function showMsg(text, type){
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  document.getElementById('signupForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    try{
+      const res = await fetch(`${API}/auth/signup`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+      if(!res.ok){ showMsg(data.error || 'Something went wrong', 'error'); return; }
+
+      showMsg(data.message, 'success');
+      setTimeout(()=>{
+        window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
+      }, 800);
+    }catch(err){
+      showMsg('Could not reach the server — is the backend running?', 'error');
+    }
+  });
+
+  window.onload = () => {
+    if(!window.google) return;
+    google.accounts.id.initialize({
+      client_id: '508935596129-ke8b6folv082bj3hbknm5a2c95stfvqu.apps.googleusercontent.com',
+      callback: handleGoogleCredential
+    });
+    google.accounts.id.renderButton(document.getElementById('googleBtn'), { theme:'outline', size:'large', width:300 });
+  };
+
+  async function handleGoogleCredential(response){
+    try{
+      const res = await fetch(`${API}/auth/google`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ credential: response.credential })
+      });
+      const data = await res.json();
+      if(!res.ok){ showMsg(data.error || 'Google sign-in failed', 'error'); return; }
+      window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
+    }catch(err){
+      showMsg('Could not reach the server — is the backend running?', 'error');
+    }
+  }
+</script>
+</body>
+</html>
