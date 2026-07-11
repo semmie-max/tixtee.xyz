@@ -2,11 +2,7 @@
 (function(){
   const loader = document.createElement('div');
   loader.id = 'tixteeLoader';
-  loader.innerHTML = `
-    <div class="loader-letters">
-      <span>T</span><span>I</span><span>X</span><span>T</span><span>E</span><span>E</span>
-    </div>
-  `;
+  loader.innerHTML = `<img src="images/rlogo.jpg" alt="tixtee" class="loader-logo">`;
   document.body.insertBefore(loader, document.body.firstChild);
 
   const minTime = new Promise(resolve => setTimeout(resolve, 1100));
