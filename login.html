@@ -157,7 +157,7 @@
       if(!res.ok){ showMsg(data.error || 'Google sign-in failed'); return; }
       window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
     }catch(err){
-      showMsg('Could not reach the server — is the backend running?');
+      showMsg('Could not reach the server, is the backend running?');
     }
   }
 </script>
