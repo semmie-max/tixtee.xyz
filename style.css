@@ -936,6 +936,9 @@ body {
   }
 }
 .prompt-hero{ color:#fff; padding:0 0 60px; text-align:center; overflow:hidden; position:relative;}
+.prompt-hero{
+    background: url("images/bg.jpg") center center/cover no-repeat;
+}
   .prompt-hero .navbar{padding:22px 40px;}
   .prompt-hero .navbar .logo{color: #FFF;}
   .prompt-hero .navbar .logo span{color: #555;}
@@ -943,8 +946,10 @@ body {
   .prompt-hero .navbar .nav-links a:hover,
   .prompt-hero .navbar .nav-links a.active{color:#fff;}
   .prompt-hero .navbar .nav-links a.active::after{background-color:#fff;}
+  
 
   .prompt-hero-content{padding:40px 24px 0;}
+  
   .prompt-hero h1{font-size:clamp(34px,5.5vw,58px); font-weight:800; letter-spacing:-1px; max-width:18ch; margin:0 auto 16px; line-height:1.08;}
   .prompt-hero .prompt-subtitle{color: #fff; font-size:14px; max-width:46ch; margin:0 auto 28px; line-height:1.6;}
   .prompt-cta{
@@ -1340,85 +1345,3 @@ body {
 .prompt-hero .navbar .nav-links a{color: #fff; margin: -2px;}
 
 } 
-
-
-/* ---------- ticket build horizontal scroll ---------- */
-  .ticket-build-section{
-    background:#0d0d0d; padding:90px 0 70px; overflow:hidden; position:relative;
-  }
-  .tbs-intro{max-width:1200px; margin:0 auto 40px; padding:0 40px; text-align:center;}
-  .tbs-intro .intro-eyebrow{color:#c9a227;}
-  .tbs-intro h2{font-family:'Fraunces',serif; color:#fff; font-size:clamp(26px,4vw,40px); font-weight:500; margin-bottom:10px;}
-  .tbs-intro p{color:rgba(255,255,255,0.45); font-size:13px;}
-  .tbs-hint{
-    display:inline-flex; align-items:center; gap:8px; margin-top:18px;
-    font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,255,255,0.35);
-  }
-  .tbs-hint svg{width:14px; height:14px; animation:hintSlide 1.4s ease-in-out infinite;}
-  @keyframes hintSlide{ 0%,100%{transform:translateX(0);} 50%{transform:translateX(6px);} }
-
-  .tbs-track{
-    display:flex; gap:60px; overflow-x:auto; scroll-snap-type:x mandatory;
-    padding:20px 20vw; scrollbar-width:none; cursor:grab;
-  }
-  .tbs-track::-webkit-scrollbar{ display:none; }
-  .tbs-track:active{ cursor:grabbing; }
-
-  .tbs-panel{
-    flex-shrink:0; width:340px; scroll-snap-align:center;
-    display:flex; align-items:center; justify-content:center;
-  }
-
-  .tbs-ticket{
-    width:320px; min-height:200px; background:#f6f1e6; border-radius:14px;
-    position:relative; padding:26px 24px; box-shadow:0 20px 50px rgba(0,0,0,0.5);
-    transition:box-shadow 0.4s ease;
-    font-family:'Inter',sans-serif;
-  }
-  .tbs-ticket::before, .tbs-ticket::after{
-    content:""; position:absolute; top:50%; width:22px; height:22px;
-    background:#0d0d0d; border-radius:50%; transform:translateY(-50%);
-  }
-  .tbs-ticket::before{ left:-11px; }
-  .tbs-ticket::after{ right:-11px; }
-  .tbs-gold-line{
-    position:absolute; top:0; left:0; right:0; height:3px; border-radius:14px 14px 0 0;
-    background:linear-gradient(90deg, transparent, #c9a227, transparent);
-  }
-  .tbs-panel.deep .tbs-ticket{ box-shadow:0 30px 70px rgba(0,0,0,0.65); }
-
-  .tbs-name{
-    font-family:'Fraunces',serif; font-size:19px; color:#1a1a1a; font-weight:500;
-    opacity:0; transform:translateY(10px); transition:all 0.5s ease;
-  }
-  .tbs-meta{
-    font-size:11px; color:#8a7d5f; margin-top:10px; line-height:1.7;
-    opacity:0; transform:translateY(10px); transition:all 0.5s ease 0.1s;
-  }
-  .tbs-price{
-    display:inline-block; margin-top:16px; font-size:12px; font-weight:700; color:#fff;
-    background:#1a1a1a; padding:6px 14px; border-radius:100px;
-    opacity:0; transform:scale(0.7); transition:all 0.4s ease 0.15s;
-  }
-  .tbs-stamp{
-    position:absolute; bottom:18px; right:20px;
-    font-family:'Fraunces',serif; font-style:italic; font-size:13px; font-weight:600;
-    color:#8a2b2b; border:1.5px solid #8a2b2b; padding:5px 12px; border-radius:6px;
-    transform:rotate(-8deg) scale(0.6); opacity:0; transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.1s;
-  }
-
-  .tbs-panel.in-view .tbs-name{ opacity:1; transform:translateY(0); }
-  .tbs-panel.in-view .tbs-meta{ opacity:1; transform:translateY(0); }
-  .tbs-panel.in-view .tbs-price{ opacity:1; transform:scale(1); }
-  .tbs-panel.in-view .tbs-stamp{ opacity:1; transform:rotate(-8deg) scale(1); }
-
-  .tbs-label{
-    position:absolute; top:-30px; left:0; font-size:10px; letter-spacing:0.1em;
-    text-transform:uppercase; color:rgba(255,255,255,0.3);
-  }
-
-  @media(max-width:640px){
-    .tbs-track{ padding:20px 10vw; gap:36px; }
-    .tbs-panel{ width:260px; }
-    .tbs-ticket{ width:250px; padding:20px 18px; }
-  }
