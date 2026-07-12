@@ -223,44 +223,7 @@
             </div>
         </article>
     </div>
-
-</section>
-
-<section class="charity-hero-section">
-  <div class="charity-hero-bg" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6)), url('images/sponsor.jpg');">
     
-    <div class="charity-hero-container">
-      <div class="charity-hero-content">
-        
-        <div class="charity-text-slide active" id="charitySlide0">
-          <h1 class="charity-hero-title">Donate <br><span>4 a better world</span></h1>
-        </div>
-        
-        <div class="charity-text-slide" id="charitySlide1">
-          <h1 class="charity-hero-title">Become <br><span>a valued partner</span></h1>
-        </div>
-        
-        <div class="charity-text-slide" id="charitySlide2">
-          <h1 class="charity-hero-title">Reach out <br><span>& make an impact</span></h1>
-        </div>
-        
-        <p class="charity-hero-description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tempus vestibulum mauris quis aliquam. Integer accumsan sodales odio, id tempus ullamcorper.
-        </p>
-        
-        <div class="charity-hero-actions">
-          <a href="#" class="charity-btn-donate">Donate Now</a>
-        </div>
-      </div>
-      
-      <div class="charity-hero-indicators">
-        <button type="button" class="charity-indicator-item active" data-target="0">01 Sponsor</button>
-        <button type="button" class="charity-indicator-item" data-target="1">02 Partner</button>
-        <button type="button" class="charity-indicator-item" data-target="2">03 Reach out</button>
-      </div>
-    </div>
-
-  </div>
 </section>
 
 <section class="monocad-hero-section">
@@ -587,47 +550,6 @@
     document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
     e.target.classList.add('active');
     renderEvents(e.target.dataset.category);
-  });no
-
-  (function() {
-    var slides = document.querySelectorAll(".charity-text-slide");
-    var btns = document.querySelectorAll(".charity-indicator-item");
-    var currentIndex = 0;
-    var timer = null;
-
-    if (slides.length === 0 || btns.length === 0) return;
-
-    function showSlide(index) {
-      // Loop through and deactivate everything
-      for (var i = 0; i < slides.length; i++) {
-        slides[i].classList.remove("active");
-        btns[i].classList.remove("active");
-      }
-      // Activate the single requested item
-      slides[index].classList.add("active");
-      btns[index].classList.add("active");
-      currentIndex = index;
-    }
-
-    function startTimer() {
-      timer = setInterval(function() {
-        var next = (currentIndex + 1) % slides.length;
-        showSlide(next);
-      }, 5000);
-    }
-
-    // Attach click events to make items completely interactable
-    for (var j = 0; j < btns.length; j++) {
-      (function(index) {
-        btns[index].onclick = function() {
-          clearInterval(timer);
-          showSlide(index);
-          startTimer();
-        };
-      })(j);
-    }
-
-    startTimer();
-  })();
+  });
 </script>
 </html>
