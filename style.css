@@ -1339,7 +1339,7 @@ body {
 
     background:#000;
 
-    padding:120px 30px;
+    padding:120px 1px;
 
 }
 
@@ -1368,27 +1368,21 @@ body {
 .features-head h2{
 
     color:#fff;
-
     font-size:55px;
-
     font-weight:700;
-
     margin-top:15px;
+    font-family: "Moirai One", system-ui
 
 }
 
 .feature-stack{
-
     width:100%;
-
     position:relative;
-
 }
 
 /* CARD */
 
 .feature-card{
-
     position:sticky;
 
     top:80px;
@@ -1544,9 +1538,6 @@ body {
     transition:.35s;
 
 }
-
-/* MOBILE */
-
 @media(max-width:900px){
 
 .feature-card{
@@ -1555,19 +1546,19 @@ body {
 
     height:auto;
 
-    top:20px;
+    top:10px;
 
 }
 
 .feature-image{
 
-    height:300px;
+    height:200px;
 
 }
 
 .feature-content{
 
-    padding:35px;
+    padding:10px;
 
 }
 
