@@ -936,9 +936,6 @@ body {
   }
 }
 .prompt-hero{ color:#fff; padding:0 0 60px; text-align:center; overflow:hidden; position:relative;}
-.prompt-hero{
-    background: url("images/bg.jpg") center center/cover no-repeat;
-}
   .prompt-hero .navbar{padding:22px 40px;}
   .prompt-hero .navbar .logo{color: #FFF;}
   .prompt-hero .navbar .logo span{color: #555;}
