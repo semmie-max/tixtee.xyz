@@ -1586,3 +1586,134 @@ body {
 .prompt-hero .navbar .nav-links a{color: #fff; margin: -2px;}
 
 } 
+
+
+.charity-hero-section {
+  width: 100%;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  box-sizing: border-box;
+}
+
+.charity-hero-section * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Breakout to span the entire background edge-to-edge */
+.charity-hero-bg {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+.charity-hero-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 75vh;
+}
+
+.charity-hero-content {
+  max-width: 850px;
+  color: #ffffff;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Hide/Show slide text configuration */
+.charity-text-slide {
+  display: none;
+}
+
+.charity-text-slide.active {
+  display: block;
+}
+
+/* Enforced large font size settings for laptop displays */
+.charity-hero-title {
+  font-size: 5rem; 
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 2rem;
+}
+
+.charity-hero-title span {
+  font-size: 4.5rem;
+  font-weight: 500;
+}
+
+.charity-hero-description {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  color: #e0e0e0;
+  max-width: 650px;
+}
+
+.charity-btn-donate {
+  display: inline-block;
+  background-color: #ff5500;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 1rem 2.8rem;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 15px rgba(255, 85, 0, 0.3);
+}
+
+.charity-hero-indicators {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: auto;
+}
+
+/* Clear style buttons to look clean and clickable */
+.charity-indicator-item {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer !important;
+  padding: 0.5rem 0;
+  text-align: left;
+  border-bottom: 2px solid transparent !important;
+}
+
+.charity-indicator-item.active {
+  color: #ff5500 !important;
+  border-bottom: 2px solid #ff5500 !important;
+}
+
+/* Screen Size Media Queries */
+@media (max-width: 1024px) {
+  .charity-hero-title { font-size: 3.8rem; }
+  .charity-hero-title span { font-size: 3.2rem; }
+}
+
+@media (max-width: 768px) {
+  .charity-hero-bg { 
+    padding: 2rem 1rem; 
+    left: 0; right: 0; margin-left: 0; margin-right: 0; width: 100%;
+  }
+  .charity-hero-container { min-height: 85vh; }
+  .charity-hero-title { font-size: 2.8rem; }
+  .charity-hero-title span { font-size: 2.3rem; }
+  .charity-hero-indicators { flex-direction: column; gap: 1rem; }
+}
