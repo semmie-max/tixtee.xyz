@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Users — tixtee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; padding:40px 44px;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
+  a.back{font-size:12px; color:#47034E; text-decoration:none;}
+  h1{font-size:24px; font-weight:700; margin:10px 0 6px;}
+  .sub{font-size:13px; color:#8c8c8c; margin-bottom:28px;}
+
+  .layout{display:grid; grid-template-columns:1.4fr 1fr; gap:24px; align-items:start;}
+  .card{background:#fff; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.03);}
+
+  table{width:100%; border-collapse:collapse; font-size:13px;}
+  th{text-align:left; font-size:11px; text-transform:uppercase; color:#9a9a9a; padding-bottom:12px; border-bottom:1px solid #eee;}
+  td{padding:12px 0; border-bottom:1px solid #f4f4f4;}
+  td input{margin:0;}
+  .badge{font-size:10px; background:#f3e9f4; color:#47034E; padding:3px 8px; border-radius:100px; font-weight:600;}
+  .count{font-size:12px; color:#8c8c8c; margin-bottom:14px;}
+
+  label{display:block; font-size:12px; font-weight:600; margin-bottom:6px;}
+  input[type="text"], textarea{
+    width:100%; padding:11px 13px; margin-bottom:16px; border:1px solid #e0e0e0;
+    border-radius:10px; font-size:13px; font-family:'Inter',sans-serif; outline:none;
+  }
+  textarea{min-height:160px; resize:vertical;}
+  button{
+    width:100%; background:#47034E; color:#fff; border:none; padding:13px;
+    border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  button:hover{background:#5c0665;}
+  .msg{font-size:13px; margin-bottom:14px; padding:10px 12px; border-radius:8px; display:none;}
+  .msg.error{background:#fdecea; color:#b3261e; display:block;}
+  .msg.success{background:#eafaf0; color:#1e7a3d; display:block;}
+  #gate{padding:60px; text-align:center; color:#9a9a9a; font-size:13px;}
+</style>
+</head>
+<body>
+
+<div id="gate">Checking your session…</div>
+
+<div id="content" style="display:none;">
+  <div class="topbar">
+    <a class="back" href="dashboard.html">← Back to dashboard</a>
+  </div>
+  <h1>Users</h1>
+  <p class="sub">Everyone who's signed up so far.</p>
+
+  <div class="layout">
+    <div class="card">
+      <div class="count" id="userCount">Loading…</div>
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll"></th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+          </tr>
+        </thead>
+        <tbody id="userRows"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:14px; font-size:14px;">Send an email</h3>
+      <div class="msg" id="msg"></div>
+      <label>Subject</label>
+      <input type="text" id="subject" placeholder="We're launching soon!">
+      <label>Message (HTML allowed)</label>
+      <textarea id="message" placeholder="Hey! Just wanted to let you know..."></textarea>
+      <button id="sendBtn">Send to selected (or all if none checked)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://tixtee-xyz-backend.onrender.com/api';
+  let users = [];
+
+  async function checkSession(){
+    try{
+      const res = await fetch(`${API}/auth/me`, { credentials:'include' });
+      if(!res.ok) return window.location.href = 'login.html';
+      const data = await res.json();
+      if(!data.isAdmin) return window.location.href = 'pending.html';
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+      loadUsers();
+    }catch(err){
+      window.location.href = 'login.html';
+    }
+  }
+  checkSession();
+
+  async function loadUsers(){
+    try{
+      const res = await fetch(`${API}/auth/users`, { credentials:'include' });
+      users = await res.json();
+      document.getElementById('userCount').textContent = `${users.length} account${users.length === 1 ? '' : 's'} created`;
+
+      document.getElementById('userRows').innerHTML = users.map(u => `
+        <tr>
+          <td><input type="checkbox" class="userCheck" value="${u.id}"></td>
+          <td>${u.name || '—'} ${u.is_admin ? '<span class="badge">Admin</span>' : ''}</td>
+          <td>${u.email}</td>
+          <td>${new Date(u.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</td>
+        </tr>
+      `).join('');
+    }catch(err){
+      document.getElementById('userCount').textContent = 'Could not load users — is the backend running?';
+    }
+  }
+
+  document.getElementById('selectAll').addEventListener('change', (e) => {
+    document.querySelectorAll('.userCheck').forEach(cb => cb.checked = e.target.checked);
+  });
+
+  function showMsg(text, type){
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  document.getElementById('sendBtn').addEventListener('click', async () => {
+    const subject = document.getElementById('subject').value;
+    const message = document.getElementById('message').value;
+    if(!subject || !message){ showMsg('Add a subject and message first', 'error'); return; }
+
+    const checked = Array.from(document.querySelectorAll('.userCheck:checked')).map(cb => Number(cb.value));
+
+    try{
+      const res = await fetch(`${API}/broadcast`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ subject, message, recipientIds: checked.length ? checked : undefined })
+      });
+      const data = await res.json();
+      if(!res.ok){ showMsg(data.error || 'Could not send', 'error'); return; }
+      showMsg(data.message, 'success');
+    }catch(err){
+      showMsg('Could not reach the server — is the backend running?', 'error');
+    }
+  });
+</script>
+</body>
+</html>
