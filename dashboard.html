@@ -183,10 +183,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Events
     </div>
-    <div class="nav-item">
+    <a href="users.html" class="nav-item" style="text-decoration:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M1 21v-2a4 4 0 013-3.87"/></svg>
-      Followers
-    </div>
+      Users
+    </a>
     <div class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
       Ratings
@@ -438,7 +438,7 @@
 </div>
 
 <script>
-  const API = 'http://127.0.0.1:4000/api';
+  const API = 'https://tixtee-xyz-backend.onrender.com/api';
 
   async function checkSession(){
     try{
@@ -597,7 +597,7 @@
       }
 
       document.getElementById('image_url').value = data.url;
-      imagePreview.src = `http://127.0.0.1:4000${data.url}`;
+      imagePreview.src = `https://tixtee-xyz-backend.onrender.com${data.url}`;
       imagePreview.style.display = 'block';
       uploadStatus.style.color = '#1e7a3d';
       uploadStatus.textContent = 'Image uploaded ✓';
@@ -704,7 +704,7 @@
       container.innerHTML = `<div class="events-grid">${events.map(ev => `
         <div class="event-card">
           <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
-          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'http://127.0.0.1:4000' + ev.image_url : ev.image_url) : 'images/tix.jpg'}" alt="">
+          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://tixtee-xyz-backend.onrender.com' + ev.image_url : ev.image_url) : 'images/tix.jpg'}" alt="">
           <div class="body">
             <div class="date">${new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
             <div class="title">${ev.title}</div>
