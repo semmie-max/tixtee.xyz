@@ -103,6 +103,65 @@
   </div>
 </section>
 
+<section class="ticket-build-section">
+    <div class="tbs-intro reveal">
+      <div class="intro-eyebrow">Watch it come together</div>
+      <h2>A ticket, built right in front of you</h2>
+      <p>Scroll to see what happens the moment someone hits "Reserve."</p>
+      <div class="tbs-hint">
+        Scroll
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+
+    <div class="tbs-track" id="tbsTrack">
+      <div class="tbs-panel" data-stage="1">
+        <div class="tbs-ticket">
+          <div class="tbs-gold-line"></div>
+          <div class="tbs-label">Stage 1 — Blank</div>
+        </div>
+      </div>
+
+      <div class="tbs-panel" data-stage="2">
+        <div class="tbs-ticket">
+          <div class="tbs-gold-line"></div>
+          <div class="tbs-label">Stage 2 — Event name</div>
+          <div class="tbs-name">The Low Light Sessions</div>
+        </div>
+      </div>
+
+      <div class="tbs-panel" data-stage="3">
+        <div class="tbs-ticket">
+          <div class="tbs-gold-line"></div>
+          <div class="tbs-label">Stage 3 — Details</div>
+          <div class="tbs-name">The Low Light Sessions</div>
+          <div class="tbs-meta">Sat, 25 July · 6:00 PM<br>Café One, Ado-Ekiti</div>
+        </div>
+      </div>
+
+      <div class="tbs-panel" data-stage="4">
+        <div class="tbs-ticket">
+          <div class="tbs-gold-line"></div>
+          <div class="tbs-label">Stage 4 — Priced</div>
+          <div class="tbs-name">The Low Light Sessions</div>
+          <div class="tbs-meta">Sat, 25 July · 6:00 PM<br>Café One, Ado-Ekiti</div>
+          <div class="tbs-price">₦5,000 — Early Bird</div>
+        </div>
+      </div>
+
+      <div class="tbs-panel deep" data-stage="5">
+        <div class="tbs-ticket">
+          <div class="tbs-gold-line"></div>
+          <div class="tbs-label">Stage 5 — Confirmed</div>
+          <div class="tbs-name">The Low Light Sessions</div>
+          <div class="tbs-meta">Sat, 25 July · 6:00 PM<br>Café One, Ado-Ekiti</div>
+          <div class="tbs-price">₦5,000 — Early Bird</div>
+          <div class="tbs-stamp">CONFIRMED</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
 <section class="features-section">
 
     <div class="features-head">
@@ -524,5 +583,28 @@
     e.target.classList.add('active');
     renderEvents(e.target.dataset.category);
   });
+
+
+
+  // ---------- ticket build horizontal scroll ----------
+  const tbsTrack = document.getElementById('tbsTrack');
+  if(tbsTrack){
+    // let mouse wheel scrolling move the track horizontally while hovered
+    tbsTrack.addEventListener('wheel', (e) => {
+      if(Math.abs(e.deltaY) > Math.abs(e.deltaX)){
+        e.preventDefault();
+        tbsTrack.scrollLeft += e.deltaY;
+      }
+    }, { passive:false });
+
+    // reveal each ticket's new detail as its panel scrolls into center view
+    const tbsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        entry.target.classList.toggle('in-view', entry.isIntersecting);
+      });
+    }, { root: tbsTrack, threshold: 0.7 });
+
+    document.querySelectorAll('.tbs-panel').forEach(panel => tbsObserver.observe(panel));
+  }
 </script>
 </html>
