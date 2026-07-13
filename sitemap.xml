@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://tixtee.xyz/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/events</loc>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/login</loc>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/signup</loc>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/about</loc>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/contact</loc>
+  </url>
+
+  <url>
+    <loc>https://tixtee.xyz/pricing</loc>
+  </url>
+
+</urlset>
