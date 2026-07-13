@@ -1502,22 +1502,18 @@ body {
   margin: 0;
   padding: 0;
 }
-
-/* On mobile screens, the Z-shape is completely hidden */
 .pr-z-blur-overlay {
   display: none;
 }
 
 @media (min-width: 768px) {
   .pr-z-blur-overlay {
-    display: block; /* Turns the overlay back on for larger screens */
+    display: block;
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    
-    /* The structural Z layout path */
     clip-path: polygon(
       20% 0%, 100% 0%, 
       100% 18%, 25% 82%, 
@@ -1526,8 +1522,6 @@ body {
       75% 18%, 0% 18%, 
       0% 0%
     );
-    
-    /* Purple tone values */
     background: linear-gradient(
       135deg, 
       rgba(147, 51, 234, 0.15) 0%, 
@@ -1535,16 +1529,12 @@ body {
       rgba(147, 51, 234, 0.18) 100%
     );
     
-    /* Soft digital blur diffusion */
     backdrop-filter: blur(50px);
     -webkit-backdrop-filter: blur(50px);
     z-index: 1;
     pointer-events: none;
   }
 }
-/* ==========================================================================
-   NAVIGATION MENU BAR STYLING LAYER
-   ========================================================================== */
 .pr-main-nav {
   width: 100%;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -1560,16 +1550,12 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-
-/* Logo icon styling structure mapping the template header design */
 .pr-main-logo-img {
   height: 48px; 
   width: auto;
   display: block;
   object-fit: contain;
 }
-
-/* Mobile Dropdown Settings (Mobile view by default) */
 .pr-links-tray {
   position: absolute;
   top: 100%;
@@ -1629,8 +1615,6 @@ body {
 .pr-nav-cta-btn:hover {
   background:rgba(147, 51, 234, 0.25);
 }
-
-/* Responsive Mobile Navigation Bar Toggle Button Setup */
 .pr-hamburger {
   display: flex;
   flex-direction: column;
@@ -1690,15 +1674,27 @@ body {
   margin-bottom: 1.75rem;
 }
 
-/* Sharp Lime Color Accent Box Outline matching the mockup image */
+
+/* Base container adjustments - merging rotation with base layout state */
 .pr-text-highlighter {
-  background:rgba(147, 51, 234, 0.25);
+  background: rgba(147, 51, 234, 0.25);
   color: #ffffff !important;
   display: inline-block;
   padding: 0.1rem 0.5rem;
   border-radius: 4px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+  opacity: 1;
+  transform: rotate(-20deg) translateX(0); 
 }
-
+.pr-slide-from-left {
+  opacity: 0;
+  transform: rotate(-2deg) translateX(-30px) !important;
+}
+.pr-slide-from-right {
+  opacity: 0;
+  transform: rotate(-2deg) translateX(30px) !important;
+}
 .pr-main-subtext {
   color: #8c8c8e;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
