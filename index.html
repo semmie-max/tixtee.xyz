@@ -23,44 +23,95 @@
 <body>
   <script src="common.js"></script>
 
-  <header class="prompt-hero">
-    <nav class="navbar">
-      <div class="logo">TIXTEE<span>.XYZ</span></div>
-      <ul class="nav-links">
-        <li><a href="pricing.html">Pricing</a></li>
-        <li><a href="about.html">About</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="signup.html">SignUp</a></li>
-        <li><a href="login.html">login</a></li>
-      </ul>
-    </nav>
+<section class="pr-hero-viewport">
+  <div class="pr-z-blur-overlay"></div>
 
-    <div class="prompt-hero-content">
-      <h1>Every event worth showing up for, in one place</h1>
-      <p class="prompt-subtitle">Effortless ticketing for every event.</p>
-      <a href="#intro-eyebrow" class="prompt-cta">Join The Journey</a>
-
-      <div class="carousel-track-wrap">
-        <div class="carousel-track" id="carouselTrack">
-        </div>
+  <header class="pr-main-nav">
+    <div class="pr-nav-inner">
+      <div class="pr-logo-box">
+        <img src="images/logo.jpg" alt="tixtee Logo" class="pr-main-logo-img">
       </div>
 
-      <div class="caption-row">
-        <div class="caption-item">
-          <h4>Fast Ticketing</h4>
-          <p>Create events and start selling tickets in just a few minutes.</p>
+      <button class="pr-hamburger" aria-label="Toggle Navigation">
+        <span class="pr-menu-stripe"></span>
+        <span class="pr-menu-stripe"></span>
+        <span class="pr-menu-stripe"></span>
+      </button>
+
+      <nav class="pr-links-tray">
+        <div class="pr-item-group">
+          <a href="about.html" class="pr-link-node">About</a>
+          <a href="pricing.html" class="pr-link-node">Pricing</a>
+          <a href="login.html" class="pr-link-node">Login</a>
         </div>
-        <div class="caption-item">
-          <h4>Secure Payment</h4>
-          <p>Safe, reliable checkout for attendees and seamless payouts for organizers.</p>
+        <div class="pr-action-group">
+          <a href="signup.html" class="pr-nav-cta-btn">Join the waitlist</a>
         </div>
-        <div class="caption-item">
-          <h4>Reliable</h4>
-          <p>Your audience gets a smooth ticket-buying experience every time.</p>
-        </div>
-      </div>
+      </nav>
     </div>
   </header>
+
+  <div class="pr-hero-body">
+    <h1 class="pr-main-headline">Great events start with <br>
+  <span class="pr-text-highlighter pr-sliding-text" data-words="tixtee.,seamless access.,the best seats.,effortless ticketing">a single ticket.</span> <br>
+  before the show begins.
+</h1>
+    
+    <p class="pr-main-subtext">Find, book, and enjoy unforgettable events with fast, secure, and seamless ticketing.</p>
+
+    <a href="signup.html" class="pr-body-cta-anchor">
+      Join the waitlist
+      <span class="pr-btn-arrow-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </span>
+    </a>
+  </div>
+</section>
+
+<script>
+  (() => {
+    const trigger = document.querySelector('.pr-hamburger');
+    const tray = document.querySelector('.pr-links-tray');
+
+    if (trigger && tray) {
+      trigger.addEventListener('click', () => {
+        trigger.classList.toggle('pr-hamburger-active');
+        tray.classList.toggle('pr-tray-expanded');
+      });
+    }
+  })();
+
+  (() => {
+  const textElement = document.querySelector('.pr-sliding-text');
+  if (!textElement) return;
+
+  // Pull the list of phrases dynamically from your HTML data attribute
+  const words = textElement.getAttribute('data-words').split(',');
+  let currentIndex = 0;
+  let slideFromLeft = false; // Alternates directions each iteration
+
+  setInterval(() => {
+    // Step 1: Apply the out-of-bounds class based on current direction choice
+    if (slideFromLeft) {
+      textElement.classList.add('pr-slide-from-left');
+    } else {
+      textElement.classList.add('pr-slide-from-right');
+    }
+
+    // Step 2: Wait for the exit animation to finish, swap words, then slide it in from the opposite direction
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % words.length;
+      textElement.textContent = words[currentIndex];
+
+      // Remove the old directional classes and toggle direction tracker
+      textElement.classList.remove('pr-slide-from-left', 'pr-slide-from-right');
+      slideFromLeft = !slideFromLeft; 
+    }, 400); // Matches the 0.4s CSS transition time
+    
+  }, 3500); // Changes the word every 3.5 seconds
+})();
+</script>
+
   <section class="intro-section reveal">
     <div class="intro-eyebrow">What is Tixtee?</div>
     <h2>Built for creators. Designed for attendees.</h2>
@@ -533,5 +584,14 @@
     renderEvents(e.target.dataset.category);
   });
 
+
+
+  const navToggle = document.querySelector('.pr-nav-toggle');
+  const navMenu = document.querySelector('.pr-nav-menu');
+
+  navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('pr-nav-active');
+    navMenu.classList.toggle('pr-nav-open');
+  });
 </script>
 </html>

@@ -1441,11 +1441,6 @@ body {
   pointer-events: none;
 }
 
-/* ==========================================================================
-   MEDIA QUERIES (Handling Tablets and Larger Screens)
-   ========================================================================== */
-
-/* Tablets & Small Desktops (From 576px up) */
 @media (min-width: 576px) {
   .ac-hero-container {
     gap: 2.5rem;
@@ -1480,4 +1475,331 @@ body {
     font-size: 15rem;
     bottom: -2%;
   }
+}
+
+/* Full Section Breakout Framework Configuration */
+.pr-hero-viewport {
+  background-color: #000000 !important; /* Absolute dark mode layout */
+  min-height: 100vh;
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Local Component Style Reset Safeguard */
+.pr-hero-viewport *, 
+.pr-hero-viewport *::before, 
+.pr-hero-viewport *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* On mobile screens, the Z-shape is completely hidden */
+.pr-z-blur-overlay {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .pr-z-blur-overlay {
+    display: block; /* Turns the overlay back on for larger screens */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* The structural Z layout path */
+    clip-path: polygon(
+      20% 0%, 100% 0%, 
+      100% 18%, 25% 82%, 
+      100% 82%, 100% 100%, 
+      0% 100%, 0% 82%, 
+      75% 18%, 0% 18%, 
+      0% 0%
+    );
+    
+    /* Purple tone values */
+    background: linear-gradient(
+      135deg, 
+      rgba(147, 51, 234, 0.15) 0%, 
+      rgba(147, 51, 234, 0.03) 50%, 
+      rgba(147, 51, 234, 0.18) 100%
+    );
+    
+    /* Soft digital blur diffusion */
+    backdrop-filter: blur(50px);
+    -webkit-backdrop-filter: blur(50px);
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+/* ==========================================================================
+   NAVIGATION MENU BAR STYLING LAYER
+   ========================================================================== */
+.pr-main-nav {
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 100;
+}
+
+.pr-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.15rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo icon styling structure mapping the template header design */
+.pr-main-logo-img {
+  height: 48px; 
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Mobile Dropdown Settings (Mobile view by default) */
+.pr-links-tray {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #000000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, padding 0.3s ease;
+}
+
+.pr-links-tray.pr-tray-expanded {
+  max-height: 320px;
+  padding: 1.5rem;
+}
+
+.pr-item-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.pr-link-node {
+  color: #8c8c8e;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.pr-link-node:hover {
+  color: #ffffff;
+}
+
+.pr-nav-cta-btn {
+  background-color: #2563eb;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.pr-nav-cta-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Responsive Mobile Navigation Bar Toggle Button Setup */
+.pr-hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 22px;
+  height: 15px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.pr-menu-stripe {
+  width: 100%;
+  height: 2px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.pr-hamburger-active .pr-menu-stripe:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.pr-hamburger-active .pr-menu-stripe:nth-child(2) {
+  opacity: 0;
+}
+
+.pr-hamburger-active .pr-menu-stripe:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   HERO TYPOGRAPHY AND LAYOUT CONTENT CONTAINER
+   ========================================================================== */
+.pr-hero-body {
+  max-width: 950px;
+  width: 100%;
+  padding: 4.5rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+  position: relative;
+  z-index: 10;
+}
+
+.pr-main-headline {
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(2.1rem, 5.5vw, 4.3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.75rem;
+}
+
+/* Sharp Lime Color Accent Box Outline matching the mockup image */
+.pr-text-highlighter {
+  background:rgba(147, 51, 234, 0.25);
+  color: #ffffff !important;
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+}
+
+.pr-main-subtext {
+  color: #8c8c8e;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 660px;
+  margin-bottom: 3.25rem;
+}
+
+/* Large Blue Button Call To Action Element Setup */
+.pr-body-cta-anchor {
+  display: inline-flex;
+  align-items: center;
+  background-color: #2563eb;
+  color: #ffffff;
+  text-decoration: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 500;
+  padding: 0.8rem 0.8rem 0.8rem 1.75rem;
+  border-radius: 12px;
+  gap: 1.5rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.pr-body-cta-anchor:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.pr-btn-arrow-icon {
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.pr-btn-arrow-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pr-body-cta-anchor:hover .pr-btn-arrow-icon {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (Transforms Layout To Handle Desktop Displays)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .pr-hamburger {
+    display: none;
+  }
+
+  .pr-links-tray {
+    position: static;
+    width: auto;
+    background: transparent;
+    border: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 3.5rem;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .pr-item-group {
+    flex-direction: row;
+    gap: 2.5rem;
+  }
+
+  .pr-nav-cta-btn {
+    width: auto;
+  }
+  
+  .pr-hero-body {
+    padding: 7rem 1.5rem 9rem 1.5rem;
+  }
+}
+/* Base container adjustments to prevent layout jumps during transitions */
+.pr-text-highlighter {
+  display: inline-block;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide in from the Left state */
+.pr-slide-from-left {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* Slide in from the Right state */
+.pr-slide-from-right {
+  opacity: 0;
+  transform: translateX(30px);
 }
