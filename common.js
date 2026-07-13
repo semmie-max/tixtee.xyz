@@ -36,7 +36,7 @@ document.addEventListener('contextmenu', (e) => {
   const tag = e.target.tagName;
   if(tag === 'INPUT' || tag === 'TEXTAREA') return;
   e.preventDefault();
-  showTixteeToast("This content belongs to Tixtee — thanks for respecting that 🙂");
+  showTixteeToast("??? lol...");
 });
 
 document.addEventListener('copy', (e) => {
