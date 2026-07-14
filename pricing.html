@@ -1,596 +1,839 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Platform Pricing - tixtee</title>
-    <!-- Importing Inter for modern UI text and Share Tech Mono for the digital-style card numbers -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    
-    <style>
-        /* --- CSS Reset & Variables --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg-color: #030303;
-            --card-bg: #0b0b0c;
-            --card-border: #18181b;
-            --text-main: #ffffff;
-            --text-muted: #808086;
-            --accent-purple: #3b2063;
-            --accent-purple-hover: #4c2b7e;
-            --accent-green: #10b981;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
-
-        /* --- Header Section --- */
-        .site-header {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            text-decoration: none;
-            color: var(--text-main);
-            text-transform: uppercase;
-        }
-
-        .logo span {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-link {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--text-main);
-        }
-
-        /* --- Layout Container --- */
-        .pricing-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 6rem; /* Spacing between the two main sections */
-        }
-
-        /* --- Section Layout --- */
-        .pricing-row {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        /* --- Text Contents --- */
-        .text-content {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .tagline {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--text-muted);
-            font-weight: 700;
-        }
-
-        .title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -0.02em;
-        }
-
-        .description {
-            font-size: 1rem;
-            color: var(--text-muted);
-            max-width: 480px;
-            line-height: 1.6;
-        }
-
-        /* --- Card Containers --- */
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 2.5rem;
-        }
-
-        /* --- Row 1: Fee Structure Card --- */
-        .fee-card {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .fee-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px dashed var(--card-border);
-        }
-
-        .fee-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .fee-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .fee-title {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .fee-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .fee-percentage {
-            font-size: 1.5rem;
-            font-weight: 800;
-        }
-
-        .fee-percentage.green {
-            color: var(--accent-green);
-        }
-
-        /* --- Row 2: Special Creator Card --- */
-        .creator-card {
-            display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-        }
-
-        /* Toggle Button Container */
-        .billing-toggle-container {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .toggle-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .toggle-switch {
-            display: flex;
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 4px;
-            position: relative;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-family: inherit;
-            font-size: 0.85rem;
-            font-weight: 600;
-            padding: 10px 0;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active {
-            background-color: var(--accent-purple);
-            color: var(--text-main);
-        }
-
-        /* Price Display */
-        .price-display {
-            text-align: center;
-            padding-top: 1rem;
-            border-top: 1px dashed var(--card-border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .price-amount {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            line-height: 1;
-        }
-
-        .price-period {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            font-weight: 500;
-        }
-
-        .footer-cards-section {
-            width: 100%;
-            background: linear-gradient(180deg, rgba(3,3,3,0) 0%, rgba(11,11,12,0.6) 100%);
-            padding: 8rem 1.5rem 12rem 1.5rem; /* Large bottom padding lets cards sit naturally on scroll */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cards-stack-container {
-            position: relative;
-            width: 320px;
-            height: 240px;
-            margin-top: 3rem;
-            cursor: pointer;
-        }
-
-        .credit-card {
-            position: absolute;
-            width: 320px;
-            height: 200px;
-            border-radius: 16px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            transform-origin: bottom center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .credit-card.card-1 {
-            background: linear-gradient(135deg, #444 0%, #222 100%);
-            color: rgba(255,255,255,0.4);
-            transform: rotate(-12deg) translateY(-40px) translateX(-15px);
-            z-index: 1;
-        }
-
-        .credit-card.card-2 {
-            background: linear-gradient(135deg, #333 0%, #151515 100%);
-            color: rgba(255,255,255,0.6);
-            transform: rotate(-5deg) translateY(-20px) translateX(-5px);
-            z-index: 2;
-        }
-
-        .credit-card.card-3 {
-            background: linear-gradient(135deg, #1e1e1f 0%, #111112 100%);
-            color: #ffffff;
-            transform: rotate(3deg) translateY(0px) translateX(10px);
-            z-index: 3;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .cards-stack-container:hover .credit-card.card-1 {
-            transform: rotate(-22deg) translateY(-90px) translateX(-45px);
-        }
-
-        .cards-stack-container:hover .credit-card.card-2 {
-            transform: rotate(-8deg) translateY(-45px) translateX(-15px);
-        }
-
-        .cards-stack-container:hover .credit-card.card-3 {
-            transform: rotate(6deg) translateY(10px) translateX(25px);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .card-balance {
-            font-size: 1.75rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-        }
-
-        .card-brand-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .card-bank-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-        }
-
-        .card-number {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.8rem;
-            letter-spacing: 0.1em;
-            opacity: 0.8;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .visa-text {
-            font-family: 'Inter', sans-serif;
-            font-style: italic;
-            font-weight: 800;
-            font-size: 0.9rem;
-            letter-spacing: 0.05em;
-        }
-
-        .mastercard-circles {
-            display: flex;
-            position: relative;
-            width: 24px;
-            height: 15px;
-        }
-
-        .circle-red, .circle-yellow {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            position: absolute;
-        }
-
-        .circle-red {
-            background-color: #eb001b;
-            left: 0;
-        }
-
-        .circle-yellow {
-            background-color: #ff5f00;
-            right: 0;
-            opacity: 0.85;
-        }
-
-
-        @media (max-width: 968px) {
-            .pricing-row {
-                grid-template-columns: 1fr;
-                gap: 2.5rem;
-            }
-            
-            .pricing-container {
-                gap: 5rem;
-                margin: 0 auto;
-                padding: 3rem 1.5rem;
-            }
-            
-            .text-content {
-                text-align: center;
-                align-items: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .site-header {
-                padding: 1.5rem 1rem 0 1rem;
-            }
-
-            .nav-links {
-                gap: 1.25rem;
-            }
-
-            body {
-                padding: 0;
-            }
-
-            .card {
-                padding: 1.75rem;
-            }
-
-            .pricing-container {
-                gap: 4rem;
-                padding: 2.5rem 1rem;
-            }
-
-            .footer-cards-section {
-                padding: 6rem 1rem 10rem 1rem;
-            }
-
-            .cards-stack-container {
-                width: 280px;
-                height: 220px;
-            }
-
-            .credit-card {
-                width: 280px;
-                height: 175px;
-            }
-
-            .card-balance {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — Tixtee</title>
+  <link rel="icon" type="image/png" href="images/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      /* Core palette — grounded in Tixtee's brand purples */
+      --bg: #0d000f;
+      --bg-soft: #150017;
+      --card-panel-bg: #180019;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-border-strong: rgba(255, 255, 255, 0.14);
+      --accent: #b24bf3;
+      --accent-2: #47034e;
+      --accent-soft: rgba(178, 75, 243, 0.14);
+      --gold: #d9b45e;
+      --text-main: #f5f2f7;
+      --text-muted: #9b8fa6;
+      --text-faint: #6d6277;
+      --success: #10b981;
+      --radius-lg: 22px;
+      --radius-md: 14px;
+      --radius-sm: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient atmosphere: soft glow + fine grain, purely decorative */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(60% 40% at 78% 8%, rgba(178, 75, 243, 0.16), transparent 60%),
+        radial-gradient(45% 35% at 10% 30%, rgba(71, 3, 78, 0.35), transparent 65%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    a, button { font-family: inherit; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Navigation */
+    nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: clamp(16px, 3vw, 24px) 5%;
+      border-bottom: 1px solid var(--panel-border);
+      backdrop-filter: blur(6px);
+    }
+
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    nav .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    nav .nav-links a:hover,
+    nav .nav-links a:focus-visible {
+      color: var(--text-main);
+    }
+
+    /* Main Container */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: clamp(40px, 8vw, 60px) clamp(18px, 5vw, 24px) clamp(64px, 10vw, 100px);
+    }
+
+    .hero-section {
+      text-align: center;
+      margin-bottom: clamp(40px, 7vw, 60px);
+    }
+
+    .hero-section h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #ffffff 40%, #d9c3ea 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-section p {
+      color: var(--text-muted);
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+    }
+
+    .pricing-split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(36px, 6vw, 48px);
+      align-items: flex-start;
+      margin-bottom: clamp(56px, 9vw, 80px);
+    }
+
+    @media (min-width: 992px) {
+      .pricing-split {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 72px;
+      }
+    }
+
+    /* Left Side: Commission Rates */
+    .rates-panel h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 1.8rem);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .rates-panel > p {
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      max-width: 46ch;
+    }
+
+    .rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--panel-border);
+      transition: border-color 0.2s ease;
+    }
+
+    .rate-row:hover {
+      border-color: var(--panel-border-strong);
+    }
+
+    .rate-info strong {
+      display: block;
+      font-size: clamp(1rem, 2vw, 1.1rem);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .rate-info span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .rate-percentage {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.7rem, 4vw, 2.2rem);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .rate-percentage.free {
+      color: var(--success);
+    }
+
+    /* Right Side: Card & Billing Options Box */
+    .billing-panel {
+      background: linear-gradient(180deg, var(--card-panel-bg), #140015);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-lg);
+      padding: clamp(22px, 4vw, 32px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    /* ---------------------------------------------- */
+    /* Realistic debit card                            */
+    /* ---------------------------------------------- */
+    .atm-card-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+      perspective: 1000px;
+    }
+
+    .debit-card {
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1.586 / 1;
+      border-radius: 18px;
+      padding: clamp(18px, 4.5vw, 26px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+
+      /* Brushed matte-black metal base */
+      background:
+        radial-gradient(120% 90% at 8% 0%, rgba(255, 255, 255, 0.09), transparent 45%),
+        radial-gradient(90% 70% at 100% 100%, rgba(178, 75, 243, 0.16), transparent 55%),
+        repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.025) 0px, rgba(255, 255, 255, 0.025) 1px, transparent 1px, transparent 3px),
+        linear-gradient(155deg, #1c1c20 0%, #101012 55%, #0a0a0b 100%);
+
+      box-shadow:
+        0 2px 0 rgba(255, 255, 255, 0.06) inset,
+        0 -30px 40px rgba(0, 0, 0, 0.45) inset,
+        0 25px 50px rgba(0, 0, 0, 0.55),
+        0 8px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    .debit-card::before {
+      /* edge highlight */
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(155deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, 0.08));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .debit-card::after {
+      /* light sweep */
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 45%;
+      height: 200%;
+      background: linear-gradient(75deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+      transform: rotate(8deg);
+      animation: sweep 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes sweep {
+      0%   { left: -60%; }
+      45%  { left: 130%; }
+      100% { left: 130%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .debit-card::after { animation: none; display: none; }
+      .debit-card { transition: none; }
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Embossed gold security chip */
+    .card-chip {
+      width: 42px;
+      height: 32px;
+      border-radius: 6px;
+      position: relative;
+      background: linear-gradient(155deg, #f2d99a 0%, var(--gold) 45%, #a8823a 100%);
+      box-shadow:
+        0 1px 1px rgba(255, 255, 255, 0.5) inset,
+        0 -2px 2px rgba(0, 0, 0, 0.35) inset,
+        0 2px 4px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+    }
+
+    .card-chip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 8px, rgba(0, 0, 0, 0.18) 8px 9px),
+        linear-gradient(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.12) 1px, transparent 1px, transparent 11px);
+    }
+
+    .card-chip::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 42%; width: 100%; height: 16%;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    /* Contactless wave, softly embossed */
+    .contactless-wave {
+      width: 20px;
+      height: 20px;
+      color: #cfcfd6;
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)) drop-shadow(0 -1px 0 rgba(255, 255, 255, 0.08));
+    }
+
+    .card-middle {
+      margin: 14px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1rem, 4vw, 1.2rem);
+      font-weight: 500;
+      letter-spacing: 3px;
+      color: #ededf0;
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6), 0 -1px 0 rgba(255, 255, 255, 0.06);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7a7a83;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #e4e4e8;
+    }
+
+    .card-system-logo {
+      display: flex;
+    }
+
+    .circle-brand {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .circle-left {
+      background: radial-gradient(circle at 35% 30%, #ff5f6d, #eb001b 70%);
+      margin-right: -9px;
+      mix-blend-mode: screen;
+    }
+
+    .circle-right {
+      background: radial-gradient(circle at 65% 30%, #ffd36e, #f79e1b 70%);
+      opacity: 0.92;
+      mix-blend-mode: screen;
+    }
+
+    /* Billing Selection Forms */
+    .selection-group {
+      margin-bottom: 22px;
+    }
+
+    .selection-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .button-toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: #0a000c;
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 11px 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      color: var(--text-main);
+    }
+
+    .toggle-btn.active {
+      background: linear-gradient(155deg, #35053b, var(--accent-2));
+      color: #ffffff;
+      box-shadow: 0 0 0 1px rgba(178, 75, 243, 0.35), 0 4px 12px rgba(178, 75, 243, 0.18);
+    }
+
+    /* Dynamic Output Area */
+    .price-output {
+      text-align: center;
+      padding: 22px 0;
+      border-top: 1px solid var(--panel-border);
+      border-bottom: 1px solid var(--panel-border);
+      margin-bottom: 18px;
+    }
+
+    .price-amount {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.2rem, 7vw, 3rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      word-break: break-word;
+    }
+
+    .price-interval {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .pricing-footer-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Features Grid Block */
+    .features-section {
+      border-top: 1px solid var(--panel-border);
+      padding-top: clamp(40px, 7vw, 60px);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      transition: opacity 0.15s ease;
+    }
+
+    @media (min-width: 640px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    }
+
+    .feature-card {
+      background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0) 60%), var(--card-panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: var(--radius-md);
+      padding: 22px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--panel-border-strong);
+      transform: translateY(-2px);
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .feature-icon {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .feature-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Small screens: keep card comfortably centered and legible */
+    @media (max-width: 420px) {
+      .card-number { letter-spacing: 2px; }
+      nav .nav-links a { margin-left: 14px; }
+    }
+  </style>
 </head>
 <body>
 
-    <header class="site-header">
-        <a href="#" class="logo">Tixtee<span>.xyz</span></a>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="#" class="nav-link">Home</a></li>
-                <li><a href="#" class="nav-link">About</a></li>
-            </ul>
-        </nav>
+  <nav>
+    <div class="logo">TIXTEE<span>.XYZ</span></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <header class="hero-section">
+      <h1>Pricing Plans</h1>
+      <p>Simple options for events of all sizes.</p>
     </header>
 
-    <main class="pricing-container">
+    <div class="pricing-split">
 
-        <section class="pricing-row">
-            <div class="text-content">
-                <span class="tagline">Platform Pricing</span>
-                <h1 class="title">Flexible Plans for Every Organizer</h1>
-                <p class="description">Simple pricing for every stage of your event journey, from your first event to your biggest one.</p>
-            </div>
-            
-            <div class="card fee-card">
-                <div class="fee-item">
-                    <div class="fee-info">
-                        <span class="fee-title">Free Events</span>
-                        <span class="fee-desc">For all non-paid attendance entries</span>
-                    </div>
-                    <span class="fee-percentage green">0%</span>
-                </div>
-                
-                <div class="fee-item">
-                    <div class="fee-info">
-                        <span class="fee-title">Paid Events</span>
-                        <span class="fee-desc">Standard rate for ticketing sales</span>
-                    </div>
-                    <span class="fee-percentage">5%</span>
-                </div>
-            </div>
-        </section>
+      <div class="rates-panel">
+        <h2>Ticket sales commission</h2>
+        <p>Keep the majority of your ticket revenue with straightforward commission rates.</p>
 
-        <section class="pricing-row">
-            <div class="text-content">
-                <span class="tagline">Special Creator Offer</span>
-                <h2 class="title">Do you organize events regularly?</h2>
-                <p class="description">Save more with a 6 or 12-month plan while unlocking priority support and reduced transaction fees.</p>
-            </div>
-            
-            <div class="card creator-card">
-                <div class="billing-toggle-container">
-                    <span class="toggle-label">Billing Cycle</span>
-                    <div class="toggle-switch">
-                        <button class="toggle-btn active" onclick="setPlan('six-month', this)">6 Months</button>
-                        <button class="toggle-btn" onclick="setPlan('yearly', this)">Yearly (Save 20%)</button>
-                    </div>
-                </div>
-                
-                <div class="price-display">
-                    <span class="price-amount" id="price">₦19,999</span>
-                    <span class="price-period">per month</span>
-                </div>
-            </div>
-        </section>
-
-    </main>
-    <footer class="footer-cards-section">
-        <div class="cards-stack-container">
-            <div class="credit-card card-1">
-                <div class="card-header">
-                    <span class="card-balance">$192.82</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-brand-info">
-                        <span class="card-bank-name">Wells Fargo</span>
-                        <span class="card-number">6011 •••• •••• 1205</span>
-                    </div>
-                    <div class="logo-container">
-                        <span class="visa-text" style="opacity: 0.4;">VISA</span>
-                    </div>
-                </div>
-            </div>
-            <div class="credit-card card-2">
-                <div class="card-header">
-                    <span class="card-balance">$1904.23</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-brand-info">
-                        <span class="card-bank-name">Capital One</span>
-                        <span class="card-number">3771 •••• •••• 8851</span>
-                    </div>
-                    <div class="logo-container">
-                        <span class="visa-text" style="opacity: 0.6;">VISA</span>
-                    </div>
-                </div>
-            </div>
-            <div class="credit-card card-3">
-                <div class="card-header">
-                    <span class="card-balance">$3009.94</span>
-                </div>
-                <div class="card-footer">
-                    <div class="card-brand-info">
-                        <span class="card-bank-name">Bank of .....</span>
-                        <span class="card-number">5292 •••• •••• 3123</span>
-                    </div>
-                    <div class="logo-container">
-                        <div class="mastercard-circles">
-                            <div class="circle-red"></div>
-                            <div class="circle-yellow"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="rate-row">
+          <div class="rate-info">
+            <strong>Free Events</strong>
+            <span>For non-paid entry attendance</span>
+          </div>
+          <div class="rate-percentage free">0%</div>
         </div>
-    </footer>
-    <script>
-        function setPlan(plan, element) {
-            const buttons = document.querySelectorAll('.toggle-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            element.classList.add('active');
-            
-            const priceEl = document.getElementById('price');
-            if (plan === 'six-month') {
-                priceEl.innerText = "₦19,999";
-            } else if (plan === 'yearly') {
-                priceEl.innerText = "₦20,000"; 
-            }
+
+        <div class="rate-row">
+          <div class="rate-info">
+            <strong>Paid Tickets</strong>
+            <span>Flat service fee per completed transaction</span>
+          </div>
+          <div class="rate-percentage">5%</div>
+        </div>
+      </div>
+
+      <div class="billing-panel">
+
+        <div class="atm-card-container">
+          <div class="debit-card" id="debit-card">
+            <div class="card-top">
+              <div class="card-chip"></div>
+              <svg class="contactless-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 17.5c2-3 4.5-4.5 7-4.5s5 1.5 7 4.5"/>
+                <path d="M8 14.5c1.3-2 2.7-2.5 4-2.5s2.7.5 4 2.5"/>
+              </svg>
+            </div>
+
+            <div class="card-middle">
+              <div class="card-number">5412 75** **** 2026</div>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-holder-info">
+                <div class="card-label">Cardholder</div>
+                <div class="card-value">A. Remy</div>
+              </div>
+              <div class="card-system-logo">
+                <div class="circle-brand circle-left"></div>
+                <div class="circle-brand circle-right"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="selection-group">
+          <div class="selection-title">Currency</div>
+          <div class="button-toggle-row" id="currency-toggle">
+            <button class="toggle-btn active" data-currency="NGN">NGN (₦)</button>
+            <button class="toggle-btn" data-currency="USD">USD ($)</button>
+          </div>
+        </div>
+
+        <div class="selection-group">
+          <div class="selection-title">Billing Period</div>
+          <div class="button-toggle-row" id="period-toggle">
+            <button class="toggle-btn active" data-period="monthly">6 Months</button>
+            <button class="toggle-btn" data-period="yearly">Yearly</button>
+          </div>
+        </div>
+
+        <div class="price-output">
+          <div class="price-amount">
+            <span id="price-symbol">₦</span><span id="price-value">19,999</span>
+          </div>
+          <div class="price-interval" id="price-interval-text">for 6 months</div>
+        </div>
+
+        <div class="pricing-footer-note" id="installment-note">
+          Can Pay in 2 installments (every 3 months).
+        </div>
+
+      </div>
+
+    </div>
+
+    <section class="features-section">
+      <div class="features-grid" id="features-container">
+        </div>
+    </section>
+
+  </div>
+
+  <script>
+    // 1. Plan Switch configuration
+    const pricingData = {
+      NGN: {
+        monthly: { value: "19,999", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "34,999", label: "for 1 year", note: "Includes multi-month upfront discount." }
+      },
+      USD: {
+        monthly: { value: "35", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "60", label: "for 1 year", note: "Includes multi-month upfront discount." }
+      }
+    };
+
+    // 2. The 6 Feature Cards (Changes depending on selection)
+    const featuresData = {
+      monthly: [
+        {
+          title: "Open to Everyone",
+          desc: "No purchase required.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>`
+        },
+        {
+          title: "Event Group Chats",
+          desc: "Connect and share updates before arrival.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`
+        },
+        {
+          title: "Friend Finder",
+          desc: "See who's attending.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 19c0-2.2 1.8-4 4-4s4 1.8 4 4"/></svg>`
+        },
+        {
+          title: "Ticket Add-Ons",
+          desc: "Upgrade experience.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a2.5 2.5 0 0 0 0 5H14.5a2.5 2.5 0 0 1 0 5H7"/></svg>`
+        },
+        {
+          title: "Branded Pages",
+          desc: "Showcase partners.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M18 14v4M14 18h8"/></svg>`
+        },
+        {
+          title: "Standard Payouts",
+          desc: "Get paid within 3 days.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5l7 7-7 7M20 12H4M7 7H4v10h3"/></svg>`
         }
-    </script>
+      ],
+      yearly: [
+        {
+          title: "Whitelabel Pages",
+          desc: "Remove all Tixtee watermarks.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="21" x2="9" y2="9"/><line x1="15" y1="21" x2="15" y2="9"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`
+        },
+        {
+          title: "Instant Cashout",
+          desc: "Withdraw revenue daily.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`
+        },
+        {
+          title: "Custom Domains",
+          desc: "Connect your custom web URLs.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
+        },
+        {
+          title: "Advanced Analytics",
+          desc: "Track traffic, pixels & conversions.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`
+        },
+        {
+          title: "SMS Campaigns",
+          desc: "Broadcast texts directly to users.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>`
+        },
+        {
+          title: "1-on-1 VIP Support",
+          desc: "Dedicated personal account manager.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`
+        }
+      ]
+    };
+
+    const currencySymbols = { NGN: "₦", USD: "$" };
+    let selectedCurrency = "NGN";
+    let selectedPeriod = "monthly";
+
+    const currencyButtons = document.querySelectorAll("#currency-toggle .toggle-btn");
+    const periodButtons = document.querySelectorAll("#period-toggle .toggle-btn");
+
+    const priceSymbolEl = document.getElementById("price-symbol");
+    const priceValueEl = document.getElementById("price-value");
+    const priceIntervalEl = document.getElementById("price-interval-text");
+    const installmentNoteEl = document.getElementById("installment-note");
+    const featuresContainer = document.getElementById("features-container");
+
+    // Dynamic Render Engine for bottom cards
+    function renderFeatureCards() {
+      const cards = featuresData[selectedPeriod];
+
+      featuresContainer.style.opacity = "0.2";
+
+      setTimeout(() => {
+        let htmlContent = "";
+        cards.forEach(card => {
+          htmlContent += `
+            <div class="feature-card">
+              <div class="feature-header">
+                ${card.icon}
+                <h3>${card.title}</h3>
+              </div>
+              <p>${card.desc}</p>
+            </div>
+          `;
+        });
+
+        featuresContainer.innerHTML = htmlContent;
+        featuresContainer.style.opacity = "1";
+      }, 120);
+    }
+
+    function updatePricingDisplay() {
+      const data = pricingData[selectedCurrency][selectedPeriod];
+      priceSymbolEl.textContent = currencySymbols[selectedCurrency];
+      priceValueEl.textContent = data.value;
+      priceIntervalEl.textContent = data.label;
+      installmentNoteEl.textContent = data.note;
+    }
+
+    // Assigning event listeners
+    currencyButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector("#currency-toggle .toggle-btn.active").classList.remove("active");
+        button.classList.add("active");
+        selectedCurrency = button.getAttribute("data-currency");
+        updatePricingDisplay();
+      });
+    });
+
+    periodButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector("#period-toggle .toggle-btn.active").classList.remove("active");
+        button.classList.add("active");
+        selectedPeriod = button.getAttribute("data-period");
+
+        updatePricingDisplay();
+        renderFeatureCards();
+      });
+    });
+
+    // Run once on load to show initial monthly features
+    renderFeatureCards();
+
+    // Subtle 3D tilt on the card for pointer (mouse/trackpad) devices only.
+    // Touch devices keep the static, ambient shine sweep instead.
+    const card = document.getElementById("debit-card");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isFinePointer = window.matchMedia("(pointer: fine)").matches;
+
+    if (card && isFinePointer && !prefersReducedMotion) {
+      const container = card.parentElement;
+      const maxTilt = 10;
+
+      container.addEventListener("mousemove", (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        const rotateY = (x - 0.5) * maxTilt * 2;
+        const rotateX = (0.5 - y) * maxTilt * 2;
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      });
+
+      container.addEventListener("mouseleave", () => {
+        card.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+      });
+    }
+  </script>
 </body>
 </html>

@@ -14,7 +14,7 @@ const app = express();
 app.set('trust proxy', 1);
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || 'https://semmie-max.github.io',
+  origin: process.env.CLIENT_ORIGIN || 'https://tixtee.xyz',
   credentials: true
 }));
 app.use(express.json());
