@@ -2,7 +2,7 @@
 (function(){
   const loader = document.createElement('div');
   loader.id = 'tixteeLoader';
-  loader.innerHTML = `<img src="images/rlogo.jpg" alt="tixtee" class="loader-logo">`;
+  loader.innerHTML = `<img src="/images/rlogo.jpg" alt="tixtee" class="loader-logo">`;
   document.body.insertBefore(loader, document.body.firstChild);
 
   const minTime = new Promise(resolve => setTimeout(resolve, 1100));
@@ -17,7 +17,6 @@
   });
 })();
 
-// ---------- toast helper ----------
 function showTixteeToast(text){
   let toast = document.getElementById('tixteeToast');
   if(!toast){
