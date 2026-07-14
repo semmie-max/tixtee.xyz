@@ -1797,3 +1797,175 @@ body {
   opacity: 0;
   transform: translateX(30px);
 }
+
+
+/* Isolated wrapper with breakout properties */
+.landing-hero-section {
+  --bg-color: #000000;
+  --primary-purple: #c084fc; 
+  --btn-bg: #ffffff;
+  --btn-text: #000000;
+  
+  background-color: var(--bg-color);
+  color: var(--primary-purple);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  box-sizing: border-box;
+  position: relative;
+  
+  /* CRITICAL: Full-width breakout regardless of your theme/wrapper constraints */
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden; /* Stops horizontal scrollbar */
+}
+
+.landing-hero-section * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Central container keeps text elements structured nicely */
+.landing-hero-section .hero-container {
+  width: 100%;
+  max-width: 1300px; 
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  grid-template-rows: auto 1fr auto;
+  position: relative;
+  gap: 2rem;
+  z-index: 2; /* Keeps text above background lines */
+}
+
+/* Typography Scales */
+.landing-hero-section h1 {
+  font-size: clamp(2.8rem, 6.5vw, 6rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--primary-purple);
+}
+
+/* Grid layout placements */
+.landing-hero-section .hero-heading-top {
+  grid-column: 1 / 2;
+  grid-row: 1;
+  align-self: start;
+}
+
+.landing-hero-section .hero-heading-bottom {
+  grid-column: 2 / 3;
+  grid-row: 3;
+  justify-self: end;
+  align-self: end;
+  text-align: right;
+}
+
+.landing-hero-section .hero-subtitle {
+  grid-column: 2 / 3;
+  grid-row: 2;
+  justify-self: end;
+  align-self: center;
+  text-align: right;
+  max-width: 260px;
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: #d8b4fe; 
+}
+
+.landing-hero-section .hero-cta-wrapper {
+  grid-column: 1 / 2;
+  grid-row: 3;
+  align-self: end;
+}
+
+/* Button UI */
+.landing-hero-section .hero-btn {
+  display: inline-block;
+  background-color: var(--btn-bg);
+  color: var(--btn-text);
+  padding: 1.1rem 2.8rem;
+  border-radius: 50px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 1.05rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+}
+
+.landing-hero-section .hero-btn:hover {
+  transform: scale(1.05);
+  opacity: 0.95;
+}
+
+/* Edge-to-Edge SVG background lines */
+.landing-hero-section .hero-vector-path {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.landing-hero-section .hero-vector-path svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .landing-hero-section {
+    padding: 4rem 1.5rem;
+  }
+  
+  .landing-hero-section .hero-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    gap: 3rem;
+    min-height: auto;
+  }
+
+  .landing-hero-section .hero-heading-top {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .landing-hero-section .hero-subtitle {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .landing-hero-section .hero-heading-bottom {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    text-align: left;
+  }
+
+  .landing-hero-section .hero-cta-wrapper {
+    grid-column: 1;
+    grid-row: 4;
+    align-self: start;
+    width: 100%;
+  }
+  
+  .landing-hero-section .hero-btn {
+    width: 100%;
+    text-align: center;
+    padding: 1.2rem;
+  }
+}

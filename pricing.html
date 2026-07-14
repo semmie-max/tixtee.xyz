@@ -1,882 +1,655 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pricing — tixtee</title>
-<link rel="icon" type="image/png" href="images/logo.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="common.css">
-<meta name="description" content="Simple, honest pricing for hosting events on Tixtee — no hidden fees.">
-<meta property="og:title" content="Pricing — Tixtee">
-<meta property="og:description" content="See what it costs to list your event on Tixtee.">
-<meta property="og:image" content="images/tix.jpg">
-<meta property="og:type" content="website">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-  body{background:#000; color:#fff;}
-  nav{display:flex; justify-content:space-between; align-items:center; padding:24px 40px;}
-  .logo{font-size:14px; font-weight:700; letter-spacing:1px;}
-  .logo span{color:#707070; font-weight:400;}
-  nav a{font-size:12px; color:#707070; text-decoration:none; margin-left:24px;}
-  .wrap{max-width:900px; margin:0 auto; padding:60px 24px;}
-  h1{font-size:38px; font-weight:700; letter-spacing:-1px; margin-bottom:12px;}
-  .sub{font-size:14px; color:#909090; margin-bottom:48px; max-width:50ch;}
-  .plans{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
-  .plan{border:1px solid #eee; border-radius:20px; padding:32px 24px;}
-  .plan.featured{border-color:#1a1a1a; box-shadow:0 10px 30px rgba(0,0,0,0.06);}
-  .plan h3{font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:#909090; margin-bottom:14px;}
-  .plan .price{font-size:32px; font-weight:700; margin-bottom:6px;}
-  .plan .price span{font-size:13px; color:#909090; font-weight:400;}
-  .plan ul{list-style:none; margin:24px 0; display:flex; flex-direction:column; gap:12px;}
-  .plan li{font-size:13px; color:#4a4a4a; display:flex; gap:8px;}
-  .plan li::before{content:"✓"; color:#1a1a1a; font-weight:700;}
-  .plan a{display:block; text-align:center; background:#1a1a1a; color:#fff; padding:12px; border-radius:10px; font-size:13px; font-weight:600; text-decoration:none;}
-  @media(max-width:768px){.plans{grid-template-columns:1fr;}}
-
-
-  .ag-grid-section {
-  background-color: #000000 !important;
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  padding: 4rem 0;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.ag-grid-section *, 
-.ag-grid-section *::before, 
-.ag-grid-section *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.ag-grid-viewport {
-  position: relative;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 160px; 
-  padding: 0 1rem;
-}
-
-/* Base group layer configuration */
-.ag-grid-group {
-  position: absolute;
-  top: 0;
-  left: 1rem;
-  right: 1rem;
-  display: grid;
-  grid-template-columns: repeat(1, 1fr); /* 2 columns on phone screens */
-  gap: 0.75rem; /* Tighter gap on phones */
-  opacity: 0;
-  transform: translateY(10px);
-  pointer-events: none;
-  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-}
-
-/* Active class applied via script triggers visual transition entry */
-.ag-grid-group.ag-active {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-  position: relative;
-}
-
-/* Scaled down cards optimized for mobile view grids */
-.ag-grid-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 1.340rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.ag-grid-card-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.ag-grid-icon-box {
-  width: 24px; /* Shrunk icon scale on phone */
-  height: 24px;
-  flex-shrink: 0;
-}
-
-.ag-grid-icon-box svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.ag-grid-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.ag-grid-brand {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.85rem; /* Smaller text scale on mobile views */
-  font-weight: 500;
-}
-
-.ag-grid-desc {
-  color: #666666;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.7rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 110px;
-}
-
-/* ==========================================================================
-   DESKTOP SCREEN LAYOUT ADVANCEMENTS (From 768px up)
-   ========================================================================== */
-@media (min-width: 768px) {
-  .ag-grid-viewport {
-    min-height: 90px;
-  }
-
-  .ag-grid-group {
-    grid-template-columns: repeat(4, 1fr); /* Expands cleanly to 4 items in a row */
-    gap: 1.5rem;
-  }
-
-  .ag-grid-card {
-    padding: 1.25rem;
-    border-radius: 14px;
-  }
-
-  .ag-grid-icon-box {
-    width: 32px;
-    height: 32px;
-  }
-
-  .ag-grid-brand {
-    font-size: 0.95rem;
-  }
-
-  .ag-grid-desc {
-    font-size: 0.8rem;
-    max-width: 180px;
-  }
-}
-
-
-/* Section Component Framework Isolation Guard */
-.pr-billing-section {
-  background-color: #000000 !important;
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  padding: 6rem 1.5rem 2rem 1.5rem;
-  box-sizing: border-box;
-}
-
-.pr-billing-section *,
-.pr-billing-section *::before,
-.pr-billing-section *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.pr-billing-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 3.5rem;
-  align-items: center;
-}
-
-/* Left Typography Column Box */
-.pr-billing-info-side {
-  width: 100%;
-  text-align: center;
-}
-
-.pr-billing-badge {
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  display: inline-block;
-  margin-bottom: 1rem;
-}
-
-.pr-billing-title {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(2rem, 4.5vw, 3.2rem);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin-bottom: 1.25rem;
-}
-
-.pr-billing-subtitle {
-  color: #8c8c8e;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(1rem, 1.8vw, 1.15rem);
-  line-height: 1.6;
-  max-width: 580px;
-  margin: 0 auto;
-}
-
-/* Right Interactive Pricing Control Box */
-.pr-billing-card-side {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
-  width: 100%;
-  max-width: 440px;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  position: relative;
-}
-
-.pr-controls-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.pr-switcher-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.pr-control-label {
-  color: #666666;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-/* Premium Capsule Switch Frame */
-.pr-toggle-switch {
-  background-color: #0d0d0e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.25rem;
-  border-radius: 12px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.25rem;
-}
-
-/* Individual Switch Segment Buttons */
-.pr-switch-btn {
-  background: transparent;
-  border: none;
-  color: #8c8c8e;
-  padding: 0.65rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.pr-switch-btn:hover {
-  color: #ffffff;
-}
-
-/* Active Selected Dynamic Button State */
-.pr-switch-btn.pr-active {
-  background-color: rgba(147, 51, 234, 0.25);
-  color: #ffffff;
-}
-
-/* Big Pricing Text Array Panel */
-.pr-price-display-wrapper {
-  text-align: center;
-  padding: 1rem 0;
-  border-top: 1px dashed rgba(255, 255, 255, 0.05);
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
-}
-
-.pr-price-big-bold {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(2.8rem, 6vw, 3.8rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  margin-bottom: 0.5rem;
-}
-
-.pr-price-cycle-text {
-  color: #666666;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.pr-discount-alert-tag {
-  background-color: rgba(147, 51, 234, 0.25);
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 0.6rem;
-  border-radius: 8px;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(-5px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Responsive Grid Snapping for Desktop Layouts */
-@media (min-width: 868px) {
-  .pr-billing-container {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 4rem;
-  }
-
-  .pr-billing-info-side {
-    text-align: left;
-    max-width: 500px;
-  }
-
-  .pr-billing-subtitle {
-    margin: 0;
-  }
-
-  .pr-billing-card-side {
-    max-width: 460px;
-    padding: 2.5rem;
-  }
-}
-
-
-/* Component Isolation Reset Wrapper */
-.pr-fees-section {
-  background-color: #000000 !important;
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  padding: 5rem 1.5rem;
-  box-sizing: border-box;
-}
-
-.pr-fees-section *,
-.pr-fees-section *::before,
-.pr-fees-section *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-/* Master Grid Alignments */
-.pr-fees-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-  align-items: center;
-}
-
-/* Text Strings Blocks Layout */
-.pr-fees-info-side {
-  width: 100%;
-  text-align: center;
-}
-
-.pr-fees-badge {
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  display: inline-block;
-  margin-bottom: 0.75rem;
-}
-
-.pr-fees-title {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(2rem, 4.5vw, 3rem);
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
-}
-
-.pr-fees-subtitle {
-  color: #8c8c8e;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: clamp(1rem, 1.8vw, 1.1rem);
-  line-height: 1.6;
-  max-width: 540px;
-  margin: 0 auto;
-}
-
-/* Structural Fee Tier Display Card Frame */
-.pr-fees-card-side {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  width: 100%;
-  max-width: 440px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Pricing Grid Breakdown Rows */
-.pr-fee-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.01);
-  padding: 1rem 1.25rem;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-}
-
-.pr-fee-details {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.pr-fee-details strong {
-  color: #e4e4e7;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.pr-fee-details span {
-  color: #666666;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 0.75rem;
-  margin-top: 0.2rem;
-}
-
-.pr-fee-value {
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-/* Explicit Accent Color handling for the 0% value string */
-.pr-free-green {
-  color: #22c55e;
-}
-
-/* Desktop System Screen Enhancements */
-@media (min-width: 868px) {
-  .pr-fees-container {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 4rem;
-  }
-
-  .pr-fees-info-side {
-    text-align: left;
-    max-width: 520px;
-  }
-
-  .pr-fees-subtitle {
-    margin: 0;
-  }
-
-  .pr-fees-card-side {
-    max-width: 460px;
-    padding: 2rem;
-  }
-}
-</style>
-</head>
-<body>
-  <script src="common.js"></script>
-  <nav>
-    <div class="logo">TIXTEE<span>.XYZ</span></div>
-    <div><a href="index.html">Home</a><a href="about.html">About</a></div>
-  </nav>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — Tixtee</title>
+  <link rel="icon" type="image/png" href="images/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   
-  <section class="pr-fees-section">
-  <div class="pr-fees-container">
-    
-    <div class="pr-fees-info-side">
-      <span class="pr-fees-badge">Platform Pricing</span>
-      <h2 class="pr-fees-title">Flexible Plans for Every Organizer</h2>
-      <p class="pr-fees-subtitle">
-        Simple pricing for every stage of your event journey, from your first event to your biggest one.
-      </p>
-    </div>
+  <style>
+    :root {
+      --bg: #0f0f11;
+      --card-bg: #18181c;
+      --border-color: #2c2c35;
+      --accent-color: #7c3aed;
+      --text-main: #ffffff;
+      --text-muted: #8e8e9f;
+    }
 
-    <div class="pr-fees-card-side">
-      
-      <div class="pr-fee-row">
-        <div class="pr-fee-details">
-          <strong>Free Events</strong>
-          <span>For all non-paid attendance entries</span>
-        </div>
-        <div class="pr-fee-value pr-free-green">0%</div>
-      </div>
-      
-      <div class="pr-fee-row">
-        <div class="pr-fee-details">
-          <strong>Paid Events</strong>
-          <span>Standard rate for ticketing sales</span>
-        </div>
-        <div class="pr-fee-value">5%</div>
-      </div>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-    </div>
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
 
-  </div>
-</section>
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 5%;
+      border-bottom: 1px solid var(--border-color);
+    }
 
-  <section class="pr-billing-section">
-  <div class="pr-billing-container">
-    
-    <div class="pr-billing-info-side">
-      <span class="pr-billing-badge">Special Creator Offer</span>
-      <h2 class="pr-billing-title">Do you organize events regularly?</h2>
-      <p class="pr-billing-subtitle">
-        Save more with a 6 or 12-month plan while unlocking priority support and reduced transaction fees.
-      </p>
-    </div>
+    .logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
 
-    <div class="pr-billing-card-side">
-      <div class="pr-controls-stack">
-        
+    .logo span {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
 
-        <div class="pr-switcher-group">
-          <span class="pr-control-label">Billing Cycle</span>
-          <div class="pr-toggle-switch" id="pr-period-switch">
-            <button class="pr-switch-btn pr-active" data-value="monthly">6 Months</button>
-            <button class="pr-switch-btn" data-value="yearly">Yearly (Save 20%)</button>
-          </div>
-        </div>
+    nav .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 24px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
 
-      </div>
+    nav .nav-links a:hover {
+      color: var(--text-main);
+    }
 
-      <div class="pr-price-display-wrapper">
-        <div class="pr-price-big-bold">
-          <span id="pr-currency-symbol">₦</span><span id="pr-price-number">25,000</span>
-        </div>
-        <div id="pr-period-text" class="pr-price-cycle-text">per month</div>
-      </div>
+    /* Main Container */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 60px 24px 100px 24px;
+    }
 
-      <div class="pr-discount-alert-tag" id="pr-discount-badge">
-        Includes multi-month upfront discount
-      </div>
-    </div>
+    .hero-section {
+      text-align: center;
+      margin-bottom: 60px;
+    }
 
-  </div>
-</section>
+    .hero-section h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
 
-<script>
-  (() => {
-    const pricingMatrix = {
-      NGN: { monthly: 25000, yearly: 20000 }, 
-      USD: { monthly: 35,    yearly: 28 }     
-    };
+    .hero-section p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
 
-    const currencySymbols = { NGN: "₦", USD: "$" };
+    .pricing-split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 48px;
+      align-items: flex-start;
+      margin-bottom: 80px;
+    }
 
-    let currentCurrency = "NGN";
-    let currentPeriod = "monthly";
-
-    const currencyButtons = document.querySelectorAll('#pr-currency-switch .pr-switch-btn');
-    const periodButtons = document.querySelectorAll('#pr-period-switch .pr-switch-btn');
-    
-    const symbolOutput = document.getElementById('pr-currency-symbol');
-    const priceOutput = document.getElementById('pr-price-number');
-    const periodOutput = document.getElementById('pr-period-text');
-    const discountBadge = document.getElementById('pr-discount-badge');
-
-    function updatePrice() {
-      const basePrice = pricingMatrix[currentCurrency][currentPeriod];
-      symbolOutput.textContent = currencySymbols[currentCurrency];
-      priceOutput.textContent = basePrice.toLocaleString();
-
-      if (currentPeriod === 'yearly') {
-        periodOutput.textContent = "per month, billed annually";
-        discountBadge.style.opacity = "1";
-        discountBadge.style.transform = "translateY(0)";
-      } else {
-        periodOutput.textContent = "per month";
-        discountBadge.style.opacity = "0";
-        discountBadge.style.transform = "translateY(-5px)";
+    @media (min-width: 992px) {
+      .pricing-split {
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 80px;
       }
     }
 
-    // Currency button clicks handler
-    currencyButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelector('#pr-currency-switch .pr-active').classList.remove('pr-active');
-        btn.classList.add('pr-active');
-        currentCurrency = btn.getAttribute('data-value');
-        updatePrice();
-      });
-    });
+    /* Left Side: Commission Rates */
+    .rates-panel h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
 
-    // Period button clicks handler
-    periodButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelector('#pr-period-switch .pr-active').classList.remove('pr-active');
-        btn.classList.add('pr-active');
-        currentPeriod = btn.getAttribute('data-value');
-        updatePrice();
-      });
-    });
-  })();
-</script>
+    .rates-panel p {
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
 
-  <section class="ag-grid-section">
-  <div class="ag-grid-viewport">
+    .rate-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .rate-info strong {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .rate-info span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .rate-percentage {
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+
+    .rate-percentage.free {
+      color: #10b981;
+    }
+
+    /* Right Side: Card & Billing Options Box */
+    .billing-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    /* Matte Black Debit Card Representation */
+    .atm-card-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .debit-card {
+      width: 100%;
+      max-width: 360px;
+      height: 220px;
+      background: #121214;
+      border: 1px solid #2d2d34;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Flat Gold Security Chip */
+    .card-chip {
+      width: 44px;
+      height: 32px;
+      background: #cca05a;
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .card-chip::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 14px; width: 16px; height: 32px;
+      border-left: 1px solid rgba(0,0,0,0.15);
+      border-right: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .card-chip::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 10px; width: 44px; height: 12px;
+      border-top: 1px solid rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+    }
+
+    /* Vector Contactless SVG */
+    .contactless-wave {
+      width: 20px;
+      height: 20px;
+      color: #4a4a52;
+    }
+
+    .card-middle {
+      margin: 16px 0;
+    }
+
+    .card-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      color: #e4e4e7;
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .card-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #52525b;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #d4d4d8;
+    }
+
+    .card-system-logo {
+      display: flex;
+      gap: -6px;
+    }
+
+    .circle-brand {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .circle-left {
+      background: #eb001b;
+      margin-right: -10px;
+    }
+
+    .circle-right {
+      background: #f79e1b;
+      opacity: 0.9;
+    }
+
+    /* Billing Selection Forms */
+    .selection-group {
+      margin-bottom: 24px;
+    }
+
+    .selection-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .button-toggle-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #0f0f11;
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-btn.active {
+      background: #27272a;
+      color: var(--text-main);
+    }
+
+    /* Dynamic Output Area */
+    .price-output {
+      text-align: center;
+      padding: 24px 0;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .price-amount {
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .price-interval {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .pricing-footer-note {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Features Grid Block */
+    .features-section {
+      border-top: 1px solid var(--border-color);
+      padding-top: 60px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      transition: opacity 0.15s ease;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      color: var(--accent-color);
+    }
+
+    .feature-header h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">TIXTEE<span>.XYZ</span></div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+    </div>
+  </nav>
+
+  <div class="container">
     
-    <!-- FIRST SET OF CARDS (Group 1) -->
-    <div class="ag-grid-group ag-active">
+    <header class="hero-section">
+      <h1>Pricing Plans</h1>
+      <p>Simple options for events of all sizes.</p>
+    </header>
+
+    <div class="pricing-split">
       
-      <!-- Card 1: Open to Everyone -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20"/>
-              <path d="M17 5H9.5a2.5 2.5 0 0 0 0 5H14.5a2.5 2.5 0 0 1 0 5H7"/>
-            </svg>
+      <div class="rates-panel">
+        <h2>Ticket sales commission</h2>
+        <p>Keep the majority of your ticket revenue with straightforward commission rates.</p>
+        
+        <div class="rate-row">
+          <div class="rate-info">
+            <strong>Free Events</strong>
+            <span>For non-paid entry attendance</span>
           </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Open to Everyone</span>
-            <span class="ag-grid-desc">No purchase required.</span>
+          <div class="rate-percentage free">0%</div>
+        </div>
+
+        <div class="rate-row">
+          <div class="rate-info">
+            <strong>Paid Tickets</strong>
+            <span>Flat service fee per completed transaction</span>
           </div>
+          <div class="rate-percentage">5%</div>
         </div>
       </div>
 
-      <!-- Card 2: Event Group Chats -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 10c1.66 0 3-1.34 3-3S18.66 4 17 4s-3 1.34-3 3 1.34 3 3 3z"/>
-              <path d="M7 10c1.66 0 3-1.34 3-3S8.66 4 7 4 4 5.34 4 7s1.34 3 3 3z"/>
-              <path d="M7 12c-2.76 0-5 2.24-5 5v1h10v-1c0-2.76-2.24-5-5-5z"/>
-              <path d="M17 12c-1.2 0-2.33.34-3.3.92A6.97 6.97 0 0 1 15 17v1h7v-1c0-2.76-2.24-5-5-5z"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Event Group Chats</span>
-            <span class="ag-grid-desc">Connect before arrival.</span>
+      <div class="billing-panel">
+        
+        <div class="atm-card-container">
+          <div class="debit-card">
+            <div class="card-top">
+              <div class="card-chip"></div>
+              <svg class="contactless-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 17.5c2-3 4.5-4.5 7-4.5s5 1.5 7 4.5"/>
+                <path d="M8 14.5c1.3-2 2.7-2.5 4-2.5s2.7.5 4 2.5"/>
+              </svg>
+            </div>
+
+            <div class="card-middle">
+              <div class="card-number">5412 75** **** 2026</div>
+            </div>
+
+            <div class="card-bottom">
+              <div class="card-holder-info">
+                <div class="card-label">Cardholder</div>
+                <div class="card-value">A. Remy</div>
+              </div>
+              <div class="card-system-logo">
+                <div class="circle-brand circle-left"></div>
+                <div class="circle-brand circle-right"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Card 3: Friend Finder -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="8" r="3"/>
-              <circle cx="17" cy="10" r="2.5"/>
-              <path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
-              <path d="M15 19c0-2.2 1.8-4 4-4s4 1.8 4 4"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Friend Finder</span>
-            <span class="ag-grid-desc">See who's attending.</span>
+        <div class="selection-group">
+          <div class="selection-title">Currency</div>
+          <div class="button-toggle-row" id="currency-toggle">
+            <button class="toggle-btn active" data-currency="NGN">NGN (₦)</button>
+            <button class="toggle-btn" data-currency="USD">USD ($)</button>
           </div>
         </div>
-      </div>
 
-      <!-- Card 4: Vendor Applications -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 10l8-6 8 6"/>
-              <path d="M5 10v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/>
-              <path d="M9 14h6"/>
-              <path d="M12 11v6"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Vendor Applications</span>
-            <span class="ag-grid-desc">Apply in minutes.</span>
+        <div class="selection-group">
+          <div class="selection-title">Billing Period</div>
+          <div class="button-toggle-row" id="period-toggle">
+            <button class="toggle-btn active" data-period="monthly">6 Months</button>
+            <button class="toggle-btn" data-period="yearly">Yearly</button>
           </div>
         </div>
-      </div>
 
-      <!-- Card 5: Ticket Add-Ons -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14"/>
-              <path d="M5 12h14"/>
-              <circle cx="12" cy="12" r="9"/>
-            </svg>
+        <div class="price-output">
+          <div class="price-amount">
+            <span id="price-symbol">₦</span><span id="price-value">19,999</span>
           </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Ticket Add-Ons</span>
-            <span class="ag-grid-desc">Upgrade your experience.</span>
-          </div>
+          <div class="price-interval" id="price-interval-text">for 6 months</div>
         </div>
-      </div>
 
-      <!-- Card 6: Branded Event Pages -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="16" rx="2"/>
-              <path d="M3 8h18"/>
-              <path d="M7 12h4"/>
-              <path d="M7 16h8"/>
-              <circle cx="18" cy="14" r="2"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Branded Event Pages</span>
-            <span class="ag-grid-desc">Showcase your partners.</span>
-          </div>
+        <div class="pricing-footer-note" id="installment-note">
+          Can Pay in 2 installments (every 3 months).
         </div>
+
       </div>
 
-    </div> <!-- End of First Set -->
+    </div>
 
-    <!-- SECOND SET OF CARDS (Group 2) -->
-    <div class="ag-grid-group">
-
-      <!-- Card 7: Custom Event Themes -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="13.5" cy="6.5" r="2.5"/>
-              <circle cx="6.5" cy="12" r="2"/>
-              <circle cx="17.5" cy="13" r="2"/>
-              <circle cx="9" cy="18" r="2"/>
-              <path d="M12 3C7 3 3 7 3 12s4 9 9 9h1a2 2 0 0 0 2-2c0-.8-.4-1.5-1-2 .6-.6 1.5-1 2.5-1H18a3 3 0 0 0 3-3c0-5.5-4.5-10-10-10z"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Custom Event Themes</span>
-            <span class="ag-grid-desc">Personalize your event</span>
-          </div>
+    <section class="features-section">
+      <div class="features-grid" id="features-container">
         </div>
-      </div>
-
-      <!-- Card 8: Creator Updates -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8a6 6 0 0 0-12 0v7a2 2 0 0 1-1 1.73L4 18h16l-1-1.27A2 2 0 0 1 18 15V8"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Creator Updates</span>
-            <span class="ag-grid-desc">Keep attendees informed.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 9: Fast Ticket Checkout -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V9z"/>
-              <path d="M12 7v10"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Fast Ticket Checkout</span>
-            <span class="ag-grid-desc">Secure. Simple. Instant.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 10: Code-Based Entry -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 12l2 2 4-4"/>
-              <rect x="3" y="4" width="18" height="16" rx="2"/>
-              <path d="M3 8h18"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Code-Based Entry</span>
-            <span class="ag-grid-desc">No QR required.</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 11: Fast Payouts -->
-      <div class="ag-grid-card">
-        <div class="ag-grid-card-left">
-          <div class="ag-grid-icon-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 5l7 7-7 7"/>
-              <path d="M20 12H4"/>
-              <path d="M7 7H4v10h3"/>
-            </svg>
-          </div>
-          <div class="ag-grid-info">
-            <span class="ag-grid-brand">Fast Payouts</span>
-            <span class="ag-grid-desc">Get paid sooner.</span>
-          </div>
-        </div>
-      </div>
-
-    </div> <!-- End of Second Set -->
+    </section>
 
   </div>
-</section>
-<script>
-  (() => {
-  const groups = document.querySelectorAll('.ag-grid-group');
-  let currentIndex = 0;
 
-  setInterval(() => {
-    groups[currentIndex].classList.remove('ag-active');
-    currentIndex = (currentIndex + 1) % groups.length;
-    groups[currentIndex].classList.add('ag-active');
-  }, 3000);
-})();
-</script>
+  <script>
+    // 1. Plan Switch configuration
+    const pricingData = {
+      NGN: {
+        monthly: { value: "19,999", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "34,999", label: "for 1 year", note: "Includes multi-month upfront discount." }
+      },
+      USD: {
+        monthly: { value: "35", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "60", label: "for 1 year", note: "Includes multi-month upfront discount." }
+      }
+    };
+
+    // 2. The 6 Feature Cards (Changes depending on selection)
+    const featuresData = {
+      monthly: [
+        {
+          title: "Open to Everyone",
+          desc: "No purchase required.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>`
+        },
+        {
+          title: "Event Group Chats",
+          desc: "Connect before arrival.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`
+        },
+        {
+          title: "Friend Finder",
+          desc: "See who's attending.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 19c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M15 19c0-2.2 1.8-4 4-4s4 1.8 4 4"/></svg>`
+        },
+        {
+          title: "Ticket Add-Ons",
+          desc: "Upgrade experience.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a2.5 2.5 0 0 0 0 5H14.5a2.5 2.5 0 0 1 0 5H7"/></svg>`
+        },
+        {
+          title: "Branded Pages",
+          desc: "Showcase partners.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 8h18M18 14v4M14 18h8"/></svg>`
+        },
+        {
+          title: "Standard Payouts",
+          desc: "Get paid within 3 days.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5l7 7-7 7M20 12H4M7 7H4v10h3"/></svg>`
+        }
+      ],
+      yearly: [
+        {
+          title: "Whitelabel Pages",
+          desc: "Remove all Tixtee watermarks.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="21" x2="9" y2="9"/><line x1="15" y1="21" x2="15" y2="9"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`
+        },
+        {
+          title: "Instant Cashout",
+          desc: "Withdraw revenue daily.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`
+        },
+        {
+          title: "Custom Domains",
+          desc: "Connect your custom web URLs.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`
+        },
+        {
+          title: "Advanced Analytics",
+          desc: "Track traffic, pixels & conversions.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>`
+        },
+        {
+          title: "SMS Campaigns",
+          desc: "Broadcast texts directly to users.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>`
+        },
+        {
+          title: "1-on-1 VIP Support",
+          desc: "Dedicated personal account manager.",
+          icon: `<svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>`
+        }
+      ]
+    };
+
+    const currencySymbols = { NGN: "₦", USD: "$" };
+    let selectedCurrency = "NGN";
+    let selectedPeriod = "monthly";
+
+    const currencyButtons = document.querySelectorAll("#currency-toggle .toggle-btn");
+    const periodButtons = document.querySelectorAll("#period-toggle .toggle-btn");
+
+    const priceSymbolEl = document.getElementById("price-symbol");
+    const priceValueEl = document.getElementById("price-value");
+    const priceIntervalEl = document.getElementById("price-interval-text");
+    const installmentNoteEl = document.getElementById("installment-note");
+    const featuresContainer = document.getElementById("features-container");
+
+    // Dynamic Render Engine for bottom cards
+    function renderFeatureCards() {
+      const cards = featuresData[selectedPeriod];
+      
+      // Clean, fast fading transition
+      featuresContainer.style.opacity = "0.2";
+      
+      setTimeout(() => {
+        let htmlContent = "";
+        cards.forEach(card => {
+          htmlContent += `
+            <div class="feature-card">
+              <div class="feature-header">
+                ${card.icon}
+                <h3>${card.title}</h3>
+              </div>
+              <p>${card.desc}</p>
+            </div>
+          `;
+        });
+        
+        featuresContainer.innerHTML = htmlContent;
+        featuresContainer.style.opacity = "1";
+      }, 120);
+    }
+
+    function updatePricingDisplay() {
+      const data = pricingData[selectedCurrency][selectedPeriod];
+      priceSymbolEl.textContent = currencySymbols[selectedCurrency];
+      priceValueEl.textContent = data.value;
+      priceIntervalEl.textContent = data.label;
+      installmentNoteEl.textContent = data.note;
+    }
+
+    // Assigning event listeners
+    currencyButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector("#currency-toggle .toggle-btn.active").classList.remove("active");
+        button.classList.add("active");
+        selectedCurrency = button.getAttribute("data-currency");
+        updatePricingDisplay();
+      });
+    });
+
+    periodButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector("#period-toggle .toggle-btn.active").classList.remove("active");
+        button.classList.add("active");
+        selectedPeriod = button.getAttribute("data-period");
+        
+        updatePricingDisplay();
+        renderFeatureCards(); // Switches the features out instantly on click
+      });
+    });
+
+    // Run once on load to show initial monthly features 
+    renderFeatureCards();
+  </script>
 </body>
 </html>
