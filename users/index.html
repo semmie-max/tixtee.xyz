@@ -47,7 +47,7 @@
 
 <div id="content" style="display:none;">
   <div class="topbar">
-    <a class="back" href="dashboard.html">← Back to dashboard</a>
+    <a class="back" href="/dashboard">← Back to dashboard</a>
   </div>
   <h1>Users</h1>
   <p class="sub">Everyone who's signed up so far.</p>
@@ -81,15 +81,15 @@
 </div>
 
 <script>
-  const API = 'https://tixtee-xyz-backend.onrender.com/api';
+  const API = 'https://api.tixtee.xyz/api';
   let users = [];
 
   async function checkSession(){
     try{
       const res = await fetch(`${API}/auth/me`, { credentials:'include' });
-      if(!res.ok) return window.location.href = 'login.html';
+      if(!res.ok) return window.location.href = '/login';
       const data = await res.json();
-      if(!data.isAdmin) return window.location.href = 'pending.html';
+      if(!data.isAdmin) return window.location.href = '/pending';
       document.getElementById('gate').style.display = 'none';
       document.getElementById('content').style.display = 'block';
       loadUsers();
