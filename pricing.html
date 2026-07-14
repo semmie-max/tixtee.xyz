@@ -551,6 +551,22 @@
       .card-number { letter-spacing: 2px; }
       nav .nav-links a { margin-left: 14px; }
     }
+
+    .billing-intro {
+  margin-bottom: 20px;
+}
+
+.billing-intro h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.billing-intro p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
   </style>
 </head>
 <body>
@@ -587,14 +603,20 @@
         <div class="rate-row">
           <div class="rate-info">
             <strong>Paid Tickets</strong>
-            <span>Flat service fee per completed transaction</span>
+            <span>Flat service fee for paid tickets</span>
           </div>
-          <div class="rate-percentage">5%</div>
+          <div class="rate-percentage">7%</div>
         </div>
       </div>
 
-      <div class="billing-panel">
+      <div class="billing-intro">
+  <h3>Do You Host Events Regularly?</h3>
+  <p>If you host events on a regular basis, our recurring organiser plans are built for you. Save more with long-term pricing, unlock premium features, and focus on creating unforgettable events while we handle the ticketing.</p>
+</div>
 
+<div class="atm-card-container">
+
+      <div class="billing-panel">
         <div class="atm-card-container">
           <div class="debit-card" id="debit-card">
             <div class="card-top">
@@ -612,7 +634,7 @@
             <div class="card-bottom">
               <div class="card-holder-info">
                 <div class="card-label">Cardholder</div>
-                <div class="card-value">A. Remy</div>
+                <div class="card-value">A. Tixtee</div>
               </div>
               <div class="card-system-logo">
                 <div class="circle-brand circle-left"></div>
@@ -640,7 +662,7 @@
 
         <div class="price-output">
           <div class="price-amount">
-            <span id="price-symbol">₦</span><span id="price-value">19,999</span>
+            <span id="price-symbol">₦</span><span id="price-value">29,999</span>
           </div>
           <div class="price-interval" id="price-interval-text">for 6 months</div>
         </div>
@@ -664,12 +686,12 @@
     // 1. Plan Switch configuration
     const pricingData = {
       NGN: {
-        monthly: { value: "19,999", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
-        yearly: { value: "34,999", label: "for 1 year", note: "Includes multi-month upfront discount." }
+        monthly: { value: "29,999", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "50,560", label: "for 1 year", note: "Includes multi-month upfront discount." }
       },
       USD: {
-        monthly: { value: "35", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
-        yearly: { value: "60", label: "for 1 year", note: "Includes multi-month upfront discount." }
+        monthly: { value: "21.71", label: "for 6 months", note: "Can Pay in 2 installments (every 3 months)." },
+        yearly: { value: "36.60", label: "for 1 year", note: "Includes multi-month upfront discount." }
       }
     };
 
