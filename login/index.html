@@ -108,7 +108,7 @@
       <div class="divider">OR</div>
       <div id="googleBtn"></div>
 
-      <p class="foot">Don't have an account? <a href="signup.html">Sign up</a></p>
+      <p class="foot">Don't have an account? <a href="/signup">Sign up</a></p>
     </div>
   </div>
 
@@ -127,7 +127,7 @@
     const password = document.getElementById('password').value;
 
     try{
-      const res = await fetch(`${API}/auth/login`, {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         credentials:'include',
@@ -152,7 +152,7 @@
 
   async function handleGoogleCredential(response){
     try{
-      const res = await fetch(`${API}/auth/google`, {
+      const res = await fetch(`${API_URL}/api/auth/google`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         credentials:'include',
@@ -160,7 +160,7 @@
       });
       const data = await res.json();
       if(!res.ok){ showMsg(data.error || 'Google sign-in failed'); return; }
-      window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
+      window.location.href = data.isAdmin ? '/dashboard' : '/pending';
     }catch(err){
       showMsg('Could not reach the server, is the backend running?');
     }
