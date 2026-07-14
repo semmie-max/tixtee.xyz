@@ -257,7 +257,6 @@
             font-weight: 500;
         }
 
-        /* --- Interactive Card Stack Footer Section --- */
         .footer-cards-section {
             width: 100%;
             background: linear-gradient(180deg, rgba(3,3,3,0) 0%, rgba(11,11,12,0.6) 100%);
@@ -278,7 +277,6 @@
             cursor: pointer;
         }
 
-        /* Core card stylings */
         .credit-card {
             position: absolute;
             width: 320px;
@@ -294,9 +292,6 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Individual Card Properties & Rotations */
-        
-        /* 1st Card: Back/Top (Wells Fargo Style) */
         .credit-card.card-1 {
             background: linear-gradient(135deg, #444 0%, #222 100%);
             color: rgba(255,255,255,0.4);
@@ -304,7 +299,6 @@
             z-index: 1;
         }
 
-        /* 2nd Card: Middle (Capital One Style) */
         .credit-card.card-2 {
             background: linear-gradient(135deg, #333 0%, #151515 100%);
             color: rgba(255,255,255,0.6);
@@ -312,7 +306,6 @@
             z-index: 2;
         }
 
-        /* 3rd Card: Front/Main (Bank of America Style) */
         .credit-card.card-3 {
             background: linear-gradient(135deg, #1e1e1f 0%, #111112 100%);
             color: #ffffff;
@@ -322,7 +315,6 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        /* --- Hover "Spreading/Fanning" effect --- */
         .cards-stack-container:hover .credit-card.card-1 {
             transform: rotate(-22deg) translateY(-90px) translateX(-45px);
         }
@@ -335,7 +327,6 @@
             transform: rotate(6deg) translateY(10px) translateX(25px);
         }
 
-        /* Inside Card Elements */
         .card-header {
             display: flex;
             justify-content: space-between;
@@ -373,7 +364,6 @@
             opacity: 0.8;
         }
 
-        /* Credit Logos (Mastercard circle styles) */
         .logo-container {
             display: flex;
             align-items: center;
@@ -413,7 +403,6 @@
         }
 
 
-        /* --- Responsive Breakpoints --- */
         @media (max-width: 968px) {
             .pricing-row {
                 grid-template-columns: 1fr;
@@ -476,7 +465,6 @@
 </head>
 <body>
 
-    <!-- SITE HEADER -->
     <header class="site-header">
         <a href="#" class="logo">Tixtee<span>.xyz</span></a>
         <nav>
@@ -489,7 +477,6 @@
 
     <main class="pricing-container">
 
-        <!-- SECTION 1: Platform Pricing -->
         <section class="pricing-row">
             <div class="text-content">
                 <span class="tagline">Platform Pricing</span>
@@ -516,7 +503,6 @@
             </div>
         </section>
 
-        <!-- SECTION 2: Special Creator Offer -->
         <section class="pricing-row">
             <div class="text-content">
                 <span class="tagline">Special Creator Offer</span>
@@ -541,12 +527,8 @@
         </section>
 
     </main>
-
-    <!-- FOOTER CARDS SECTION -->
     <footer class="footer-cards-section">
         <div class="cards-stack-container">
-            
-            <!-- Card 1: Back/Top (Wells Fargo) -->
             <div class="credit-card card-1">
                 <div class="card-header">
                     <span class="card-balance">$192.82</span>
@@ -561,8 +543,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Card 2: Middle (Capital One) -->
             <div class="credit-card card-2">
                 <div class="card-header">
                     <span class="card-balance">$1904.23</span>
@@ -577,8 +557,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Card 3: Front/Main (Bank of America) -->
             <div class="credit-card card-3">
                 <div class="card-header">
                     <span class="card-balance">$3009.94</span>
@@ -599,8 +577,6 @@
 
         </div>
     </footer>
-
-    <!-- Interactive plan selection script -->
     <script>
         function setPlan(plan, element) {
             const buttons = document.querySelectorAll('.toggle-btn');
