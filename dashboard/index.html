@@ -284,6 +284,63 @@
       grid-template-columns:1fr;
     }
   }
+
+
+  .template-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:14px;
+  }
+  .template-option{
+    cursor:pointer; border:2px solid transparent; border-radius:14px;
+    padding:6px; transition:border-color 0.2s ease;
+  }
+  .template-option:hover{ border-color:#e5d0e7; }
+  .template-option.active{ border-color:#47034E; }
+  .template-label{
+    text-align:center; font-size:12px; font-weight:600; color:#4a4a4a; margin-top:8px;
+  }
+
+  .template-preview{
+    width:100%; height:110px; border-radius:10px; overflow:hidden;
+    background:#eee; position:relative;
+  }
+
+  /* Classic: image top, text below */
+  .tpl-classic{ display:flex; flex-direction:column; background:#fff; border:1px solid #eee; }
+  .tpl-classic .tpl-img{ height:60%; background:linear-gradient(135deg,#c9a8cd,#47034E); }
+  .tpl-classic .tpl-body{ padding:8px; flex:1; }
+
+  /* Overlay: full image, text on gradient scrim at bottom */
+  .tpl-overlay{ background:linear-gradient(135deg,#8a4b90,#150017); }
+  .tpl-overlay .tpl-scrim{
+    position:absolute; left:0; right:0; bottom:0; height:55%;
+    background:linear-gradient(to top, rgba(0,0,0,0.75), transparent);
+  }
+  .tpl-overlay .tpl-overlay-text{
+    position:absolute; left:10px; right:10px; bottom:8px;
+  }
+
+  /* Poster: tall image, badge top corner */
+  .tpl-poster{ background:#fff; border:1px solid #eee; }
+  .tpl-poster .tpl-img.tall{ height:100%; background:linear-gradient(160deg,#47034E,#7a2f82,#c9a8cd); }
+  .tpl-poster .tpl-badge{
+    position:absolute; top:8px; left:8px; width:26px; height:26px; border-radius:6px;
+    background:#fff; z-index:2; box-shadow:0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  /* Minimal: no image, just colored dot + text lines */
+  .tpl-minimal{
+    background:#fbfafc; border:1px solid #eee;
+    display:flex; flex-direction:column; justify-content:center; padding:14px;
+  }
+  .tpl-minimal .tpl-dot{
+    width:10px; height:10px; border-radius:50%; background:#47034E; margin-bottom:10px;
+  }
+
+  .tpl-line{ height:8px; border-radius:4px; background:#d8d8d8; margin-bottom:6px; }
+  .tpl-line.light{ background:rgba(255,255,255,0.85); }
+  .tpl-line-sm{ width:35%; }
+  .tpl-line-md{ width:60%; }
+  .tpl-line-lg{ width:80%; }
 </style>
 </head>
 <body>
@@ -514,12 +571,66 @@
         <img class="image-preview" id="imagePreview" src="" alt="">
         <div class="upload-status" id="uploadStatus"></div>
         <div class="dropzone" id="dropzone">
-          <div class="icon">📷</div>
+          <div class="icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
           <p>Drag and drop your image here</p>
           <div class="hint">or click to choose from your device</div>
           <input type="file" id="imageInput" accept="image/*">
         </div>
         <input type="hidden" id="image_url">
+
+        <div class="field-group">
+          <div class="field-group-title">Choose event card style</div>
+          <div class="template-grid" id="templateGrid">
+
+            <div class="template-option active" data-template="classic">
+              <div class="template-preview tpl-classic">
+                <div class="tpl-img"></div>
+                <div class="tpl-body">
+                  <div class="tpl-line tpl-line-sm"></div>
+                  <div class="tpl-line tpl-line-lg"></div>
+                </div>
+              </div>
+              <div class="template-label">Classic</div>
+            </div>
+
+            <div class="template-option" data-template="overlay">
+              <div class="template-preview tpl-overlay">
+                <div class="tpl-scrim"></div>
+                <div class="tpl-overlay-text">
+                  <div class="tpl-line tpl-line-sm light"></div>
+                  <div class="tpl-line tpl-line-lg light"></div>
+                </div>
+              </div>
+              <div class="template-label">Overlay</div>
+            </div>
+
+            <div class="template-option" data-template="poster">
+              <div class="template-preview tpl-poster">
+                <div class="tpl-badge"></div>
+                <div class="tpl-img tall"></div>
+              </div>
+              <div class="template-label">Poster</div>
+            </div>
+
+            <div class="template-option" data-template="minimal">
+              <div class="template-preview tpl-minimal">
+                <div class="tpl-dot"></div>
+                <div class="tpl-line tpl-line-sm"></div>
+                <div class="tpl-line tpl-line-lg"></div>
+                <div class="tpl-line tpl-line-md"></div>
+              </div>
+              <div class="template-label">Minimal</div>
+            </div>
+
+          </div>
+        </div>
+        <input type="hidden" id="event_template" value="classic">
 
         <div class="field-group">
           <div class="field-group-title">Special features (optional)</div>
@@ -735,6 +846,14 @@
   document.getElementById('addTicketBtn').addEventListener('click', addTicketRow);
   addTicketRow();
 
+  document.querySelectorAll('.template-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.template-option').forEach(o => o.classList.remove('active'));
+      opt.classList.add('active');
+      document.getElementById('event_template').value = opt.dataset.template;
+    });
+  });
+
   const dropzone = document.getElementById('dropzone');
   const imageInput = document.getElementById('imageInput');
   const imagePreview = document.getElementById('imagePreview');
@@ -821,6 +940,7 @@
       capacity: document.getElementById('capacity').value || null,
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
+      event_template: document.getElementById('event_template').value,
       has_groupchat: document.getElementById('has_groupchat').checked,
       category: document.getElementById('category').value,
       event_format: document.getElementById('event_format').value,
