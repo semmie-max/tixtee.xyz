@@ -221,24 +221,7 @@
   <div id="overviewView">
     <div class="main-header">
       <div>
-        <h1>Overview</h1><div id="eventsContainer">
-        <div class="empty-state">
-          <div class="icon">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    width="24"
-    height="24"
-    fill="currentColor"
-  >
-    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V9h14v10zm0-12H5V6h14v1z"/>
-  </svg>
-</div>
-          <h3>Loading your events…</h3>
-        </div>
-      </div>
-    </div>
-  </div>
+        <h1>Overview</h1>
         <div class="sub">Welcome back — here's what's happening with your events.</div>
       </div>
       <button class="btn-primary" id="openModalBtn">
@@ -668,7 +651,7 @@
       }
 
       document.getElementById('image_url').value = data.url;
-      imagePreview.src = `https://tixtee-xyz-backend.onrender.com${data.url}`;
+      imagePreview.src = `https://api.tixtee.xyz${data.url}`;
       imagePreview.style.display = 'block';
       uploadStatus.style.color = '#1e7a3d';
       uploadStatus.textContent = 'Image uploaded ✓';
