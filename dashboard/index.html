@@ -955,6 +955,10 @@
       start_time: document.getElementById('start_time').value,
       end_time: document.getElementById('end_time').value,
       venue: document.getElementById('venue').value,
+      
+      latitude: selectedLatitude,
+      longitude: selectedLongitude,
+
       capacity: document.getElementById('capacity').value || null,
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
@@ -1097,6 +1101,23 @@ map.on("click", function(e){
 
   console.log("Latitude:", lat);
   console.log("Longitude:", lng);
+
+});
+let selectedLatitude = null;
+let selectedLongitude = null;
+
+map.on("click", function(e){
+
+    selectedLatitude = e.latlng.lat;
+    selectedLongitude = e.latlng.lng;
+
+    marker.setLatLng([
+        selectedLatitude,
+        selectedLongitude
+    ]);
+
+    console.log(selectedLatitude);
+    console.log(selectedLongitude);
 
 });
 </script>
