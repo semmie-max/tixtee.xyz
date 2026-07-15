@@ -165,6 +165,21 @@
   .image-preview{width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin-bottom:16px; display:none;}
   .upload-status{font-size:12px; color:#47034E; margin-bottom:12px; display:none;}
   #gate{display:flex; align-items:center; justify-content:center; min-height:100vh; font-size:13px; color:#9a9a9a; width:100%;}
+  .back-link{
+  display:inline-flex; align-items:center; gap:8px;
+  background:none; border:none; cursor:pointer;
+  font-size:13px; font-weight:600; color:#47034E;
+  margin-bottom:20px; padding:0;
+}
+.back-link:hover{ text-decoration:underline; }
+.back-link svg{ width:14px; height:14px; }
+
+.event-card.draft-card{
+  border-style:dashed; border-color:#d5b8d8; background:#fbf6fc; cursor:pointer;
+}
+.event-card.draft-card .tag.draft{
+  background:#fff3cd; color:#8a6d1f;
+}
 </style>
 </head>
 <body>
@@ -203,9 +218,27 @@
   </div>
 
   <div class="main">
+  <div id="overviewView">
     <div class="main-header">
       <div>
-        <h1>Overview</h1>
+        <h1>Overview</h1><div id="eventsContainer">
+        <div class="empty-state">
+          <div class="icon">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+    fill="currentColor"
+  >
+    <path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 15H5V9h14v10zm0-12H5V6h14v1z"/>
+  </svg>
+</div>
+          <h3>Loading your events…</h3>
+        </div>
+      </div>
+    </div>
+  </div>
         <div class="sub">Welcome back — here's what's happening with your events.</div>
       </div>
       <button class="btn-primary" id="openModalBtn">
@@ -261,11 +294,14 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <div class="step-indicator">
+  <div id="createEventView" style="display:none;">
+    <button type="button" class="back-link" id="backToOverviewBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to dashboard
+    </button>
+    <div class="section-card">
+      <div class="step-indicator">
       <div class="step active" id="stepDot1"><div class="dot">1</div>Details</div>
       <div class="step-line"></div>
       <div class="step" id="stepDot2"><div class="dot">2</div>Theme</div>
@@ -434,8 +470,9 @@
       </div>
 
     </form>
+    </div>
   </div>
-</div>
+  </div>
 
 <script>
   const API = 'https://tixtee-xyz-backend.onrender.com/api';
@@ -460,12 +497,46 @@
     window.location.href = '/login';
   });
 
-  const modalOverlay = document.getElementById('modalOverlay');
+  let eventDraft = null;
+
+  function showCreateEventView(){
+    document.getElementById('overviewView').style.display = 'none';
+    document.getElementById('createEventView').style.display = 'block';
+  }
+  function showOverviewView(){
+    document.getElementById('createEventView').style.display = 'none';
+    document.getElementById('overviewView').style.display = 'block';
+    loadEvents();
+  }
+
   document.getElementById('openModalBtn').addEventListener('click', ()=>{
-    modalOverlay.classList.add('show');
+    showCreateEventView();
     goToStep(1);
   });
 
+  document.getElementById('backToOverviewBtn').addEventListener('click', ()=>{
+    saveDraft();
+    showOverviewView();
+  });
+
+  function saveDraft(){
+    const title = document.getElementById('title').value.trim();
+    if(!title){ eventDraft = null; return; }
+    eventDraft = {
+      title,
+      event_date: document.getElementById('event_date').value,
+      venue: document.getElementById('venue').value,
+    };
+  }
+
+  function resumeDraft(){
+    if(!eventDraft) return;
+    document.getElementById('title').value = eventDraft.title || '';
+    document.getElementById('event_date').value = eventDraft.event_date || '';
+    document.getElementById('venue').value = eventDraft.venue || '';
+    showCreateEventView();
+    goToStep(1);
+  }
   function showMsg(text, type){
     const el = document.getElementById('msg');
     el.textContent = text;
@@ -666,8 +737,8 @@
       if(!res.ok){ showMsg(data.error || 'Could not create event', 'error'); return; }
       showMsg('Event published — check the homepage.', 'success');
       document.getElementById('eventForm').reset();
-      loadEvents();
-      setTimeout(()=> modalOverlay.classList.remove('show'), 900);
+      eventDraft = null;
+      setTimeout(()=> showOverviewView(), 900);
     }catch(err){
       showMsg('Could not reach the server — is the backend running?', 'error');
     }
@@ -681,7 +752,17 @@
       document.getElementById('statEvents').textContent = events.length;
       document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
 
-      if(!events.length){
+      const draftCardHTML = eventDraft ? `
+        <div class="event-card draft-card" id="draftCard">
+          <div class="body">
+            <div class="date">Draft</div>
+            <div class="title">${eventDraft.title || 'Untitled event'}</div>
+            <div class="venue">${eventDraft.venue || 'Details pending'}</div>
+            <div class="tag draft">Continue editing</div>
+          </div>
+        </div>` : '';
+
+      if(!events.length && !eventDraft){
         container.innerHTML = `
           <div class="empty-state">
             <div class="icon">
@@ -701,7 +782,7 @@
         return;
       }
 
-      container.innerHTML = `<div class="events-grid">${events.map(ev => `
+      container.innerHTML = `<div class="events-grid">${draftCardHTML}${events.map(ev => `
         <div class="event-card">
           <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
           <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://tixtee-xyz-backend.onrender.com' + ev.image_url : ev.image_url) : 'images/tix.jpg'}" alt="">
@@ -713,6 +794,11 @@
           </div>
         </div>
       `).join('')}</div>`;
+
+      const draftCardEl = document.getElementById('draftCard');
+      if(draftCardEl){
+        draftCardEl.addEventListener('click', resumeDraft);
+      }
 
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
