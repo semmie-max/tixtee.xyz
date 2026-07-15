@@ -8,6 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="common.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link 
+  rel="stylesheet" 
+  href="https://unpkg.com/leaflet/dist/leaflet.css"
+/>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
   body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; display:flex;}
@@ -341,6 +345,13 @@
   .tpl-line-sm{ width:35%; }
   .tpl-line-md{ width:60%; }
   .tpl-line-lg{ width:80%; }
+
+  #map {
+  width: 100%;
+  height: 350px;
+  border-radius: 16px;
+  margin-top: 15px;
+}
 </style>
 </head>
 <body>
@@ -392,7 +403,7 @@
     <div class="main-header">
       <div>
         <h1>Overview</h1>
-        <div class="sub">Welcome back — here's what's happening with your events.</div>
+        <div class="sub">Welcome back, here's an overview of your events.</div>
       </div>
       <button class="btn-primary" id="openModalBtn">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -469,44 +480,50 @@
       <div class="wizard-step active" data-step="1">
         <h2>Event details</h2>
         <label>Event name</label>
-        <input type="text" id="title" required placeholder="The Low Light Sessions">
+        <input type="text" id="title" required placeholder="e.g. The Grand Gala">
 
-        <label>Describe your event</label>
-        <textarea id="description" placeholder="What is your event all about?"></textarea>
+        <label>Tell attendees what your event is about.</label>
+        <textarea id="description" placeholder="Join us for an unforgettable evening of live music, great food, and amazing performances."></textarea>
 
         <div class="grid2">
           <div>
-            <label>Category</label>
+            <label>Select an event category</label>
             <select id="category">
-              <option value="Corporate event">Corporate event</option>
-              <option value="Club Gigs">Club Gigs</option>
-              <option value="Indoor Concerts">Indoor Concerts</option>
+              <option value="Corporate event">Music & Entertainment</option>
+              <option value="Club Gigs">Parties & Nightlife</option>
+              <option value="Indoor Concerts">Business & Networking</option>
+              <option value="Club Gigs">Conferences & Workshops</option>
+              <option value="Club Gigs">Campus & Community</option>
+              <option value="Club Gigs">Sports & Fitness</option>
+              <option value="Club Gigs">Arts & Culture</option>
+              <option value="Club Gigs">Other</option>
             </select>
           </div>
           <div>
-            <label>Event format</label>
-            <input type="text" id="event_format" placeholder="e.g. Open mic, Panel, Concert">
+            <label>Event Style</label>
+            <input type="text" id="event_format" placeholder="e.g. Live performance, Workshop, Meetup">
           </div>
         </div>
 
-        <label>Is this a single or recurring event?</label>
+        <label>Event Schedule</label>
         <div class="toggle-group" id="recurringToggle">
-          <div class="toggle-btn active" data-value="single">Single event</div>
-          <div class="toggle-btn" data-value="recurring">Recurring event</div>
+          <div class="toggle-btn active" data-value="single">One-time event</div>
+          <div class="toggle-btn" data-value="recurring">Recurring Schedule</div>
         </div>
         <div id="recurrenceFieldWrap" style="display:none;">
           <label>How often?</label>
-          <input type="text" id="recurrence_pattern" placeholder="e.g. Every Friday">
+          <input type="text" id="recurrence_pattern" placeholder="e.g. Every Friday at 7 PM">
         </div>
 
-        <label>Is this a virtual or in-person event?</label>
+        <label>Event Type</label>
         <div class="toggle-group" id="virtualToggle">
-          <div class="toggle-btn active" data-value="inperson">In-person</div>
-          <div class="toggle-btn" data-value="virtual">Virtual</div>
+          <div class="toggle-btn active" data-value="inperson">Physical Event</div>
+          <div class="toggle-btn" data-value="virtual">Online Event</div>
         </div>
         <div id="locationFieldWrap">
-          <label>Location</label>
-          <input type="text" id="venue" placeholder="Café One, Ado-Ekiti">
+          <label>Event Location</label>
+          <input type="text" id="venue" placeholder="e.g. Landmark Event Centre, Lagos">
+          <div id="map"></div>
         </div>
         <div id="virtualFieldWrap" style="display:none;">
           <label>Virtual event link</label>
@@ -678,6 +695,7 @@
     </div>
   </div>
   </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
   const API = 'https://tixtee-xyz-backend.onrender.com/api';
@@ -1054,6 +1072,33 @@
       container.innerHTML = `<div class="empty-state"><h3>Could not load events</h3><p>Check that the backend is running.</p></div>`;
     }
   }
+
+  const map = L.map("map").setView([6.5244, 3.3792], 13);
+
+L.tileLayer(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution: "&copy; OpenStreetMap contributors"
+  }
+).addTo(map);
+
+
+const marker = L.marker([6.5244, 3.3792])
+.addTo(map)
+.bindPopup("Event Location")
+.openPopup();
+map.on("click", function(e){
+
+  const lat = e.latlng.lat;
+  const lng = e.latlng.lng;
+
+  marker
+    .setLatLng([lat, lng]);
+
+  console.log("Latitude:", lat);
+  console.log("Longitude:", lng);
+
+});
 </script>
 </body>
 </html>
