@@ -99,7 +99,7 @@
       <div class="divider">OR</div>
       <div id="googleBtn"></div>
 
-      <p class="foot">Already have an account? <a href="login.html">Log in</a></p>
+      <p class="foot">Already have an account? <a href="/login">Log in</a></p>
     </div>
   </div>
 
@@ -164,7 +164,7 @@
       });
       const data = await res.json();
       if(!res.ok){ showMsg(data.error || 'Google sign-in failed', 'error'); return; }
-      window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
+      window.location.href = data.isAdmin ? '/dashboard' : '/pending';
     }catch(err){
       showMsg('Could not reach the server — is the backend running?', 'error');
     }

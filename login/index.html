@@ -135,7 +135,7 @@
       });
       const data = await res.json();
       if(!res.ok){ showMsg(data.error || 'Login failed'); return; }
-      window.location.href = data.isAdmin ? 'dashboard.html' : 'pending.html';
+      window.location.href = data.isAdmin ? '/dashboard' : '/pending';
     }catch(err){
       showMsg('Could not reach the server — is the backend running?');
     }

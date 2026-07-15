@@ -443,21 +443,21 @@
   async function checkSession(){
     try{
       const res = await fetch(`${API}/auth/me`, { credentials:'include' });
-      if(!res.ok) return window.location.href = 'login.html';
+      if(!res.ok) return window.location.href = '/login';
       const data = await res.json();
-      if(!data.isAdmin) return window.location.href = 'pending.html';
+      if(!data.isAdmin) return window.location.href = '/pending';
       document.getElementById('gate').style.display = 'none';
       document.getElementById('dashboardContent').style.display = 'flex';
       loadEvents();
     }catch(err){
-      window.location.href = 'login.html';
+      window.location.href = '/login';
     }
   }
   checkSession();
 
   document.getElementById('logoutBtn').addEventListener('click', async ()=>{
     await fetch(`${API}/auth/logout`, { method:'POST', credentials:'include' });
-    window.location.href = 'login.html';
+    window.location.href = '/login';
   });
 
   const modalOverlay = document.getElementById('modalOverlay');
