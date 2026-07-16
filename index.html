@@ -118,6 +118,7 @@
     <h2>Built for creators. Designed for attendees.</h2>
     <p>Tixtee is a modern ticketing platform designed around the people who make events happen. We’re building simple yet powerful tools that help creators sell, manage, and grow their events while giving attendees a seamless way to discover and join experiences they care about.</p>
   </section>
+  
 
   <section class="how-section reveal">
   <div class="how-grid">
@@ -316,9 +317,235 @@
 
 </section>
 
+<div class="wl-section">
+  <div class="wl-content">
+    <div class="wl-logo-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
+        <path d="M2 9a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"/>
+        <path d="M2 15a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v0a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"/>
+      </svg>
+    </div>
+
+    <h1 class="wl-title">Join our waitlist</h1>
+    <p class="wl-subtitle">
+      Stay in the loop. Enter your email below to receive updates, product announcements, and exclusive launch news from Tixtee.
+    </p>
+
+    <form class="wl-form" onsubmit="event.preventDefault(); alert('Joined!');">
+      <div class="wl-input-container">
+        <label class="wl-input-label">Email Address</label>
+        <input type="email" class="wl-input" placeholder="yourname@gmail.com" required>
+      </div>
+      <button type="submit" class="wl-button">GET EARLY ACCESS</button>
+    </form>
+  </div>
+
+</div>
+
+<style>
+  /* 1. SCALED DOWN, TRANSPARENT CONTAINER */
+  .wl-section {
+    --wl-purple-main: #a855f7;
+    --wl-purple-dark: #7e22ce;
+    --wl-purple-light: #e9d5ff;
+    --wl-card-bg: #18181b;
+    
+    /* Removed fixed black bg & full heights to let it blend into your existing body background */
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* 2. FLOATING WIDGET (TOP RIGHT) */
+  .wl-floating-widget {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--wl-card-bg);
+    border: 1px dashed rgba(168, 85, 247, 0.3);
+    padding: 16px;
+    border-radius: 8px;
+    text-align: left;
+    width: 160px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .wl-widget-icon {
+    color: var(--wl-purple-main);
+    margin-bottom: 8px;
+  }
+
+  .wl-widget-sub {
+    font-size: 10px;
+    color: #a1a1aa;
+    text-transform: uppercase;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.5px;
+  }
+
+  .wl-widget-title {
+    font-size: 16px;
+    color: #fff;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+  }
+
+  .wl-widget-stars {
+    color: var(--wl-purple-main);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* 3. MAIN TYPOGRAPHY & LAYOUT */
+  .wl-logo-icon {
+    margin-bottom: 24px;
+    display: inline-block;
+  }
+
+  .wl-title {
+    font-family: "Moirai One", system-ui;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: #ffffff;
+    margin: 0 0 20px 0;
+    font-weight: 400;
+  }
+
+  .wl-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    color: #a1a1aa;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    line-height: 1.6;
+  }
+
+  /* 4. WAITLIST INPUT FORM */
+  .wl-form {
+    display: flex;
+    align-items: stretch;
+    background-color: #121214;
+    border: 1px solid #27272a;
+    padding: 6px;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 550px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    box-sizing: border-box;
+    margin-bottom: 60px;
+  }
+
+  .wl-input-container {
+    position: relative;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .wl-input-label {
+    position: absolute;
+    top: -14px;
+    left: 12px;
+    background-color: #121214;
+    color: var(--wl-purple-main);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    letter-spacing: 0.5px;
+    border-radius: 2px;
+  }
+
+  .wl-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ffffff;
+    font-size: 16px;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    font-family: "Moirai One", system-ui;
+  }
+
+  .wl-button {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 0 24px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .wl-button:hover {
+    background-color: var(--wl-purple-main);
+    color: #ffffff;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+  }
+
+  /* 5. CROWD ILLUSTRATION (BOTTOM) */
+  .wl-illustration-container {
+    width: 100%;
+    max-width: 800px;
+    margin-top: auto;
+    opacity: 0.85;
+  }
+
+  .wl-crowd-svg {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+  }
+
+  /* 6. RESPONSIVE ADJUSTMENTS */
+  @media (max-width: 768px) {
+    .wl-section {
+      padding: 40px 16px;
+    }
+    
+    .wl-floating-widget {
+      position: relative;
+      top: 0;
+      right: 0;
+      margin: 0 auto 24px auto;
+      width: 80%;
+      max-width: 200px;
+    }
+
+    .wl-form {
+      flex-direction: column;
+      background: transparent;
+      border: none;
+      padding: 0;
+      gap: 16px;
+    }
+
+    .wl-input-container {
+      background-color: #121214;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+    }
+
+    .wl-button {
+      padding: 16px;
+      font-size: 13px;
+    }
+  }
+</style>
+
 <section class="ac-faq-section">
   <div class="ac-faq-container">
-    <h2 class="ac-faq-main-title">FAQ</h2>
+    <h2 class="ac-faq-main-title">Frequently Asked Questions.</h2>
 
     <div class="ac-faq-wrapper">
       
