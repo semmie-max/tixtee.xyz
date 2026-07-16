@@ -523,7 +523,7 @@
           </div>
           <div class="accordion-body">
             <label>Event name</label>
-            <input type="text" id="title" required placeholder="The Low Light Sessions">
+            <input type="text" id="title" placeholder="The Low Light Sessions">
 
             <label>Describe your event</label>
             <textarea id="description" placeholder="What is your event all about?"></textarea>
@@ -546,7 +546,7 @@
             <div class="grid2">
               <div>
                 <label>Date</label>
-                <input type="date" id="event_date" required>
+                <input type="date" id="event_date">
               </div>
               <div>
                 <label>Start time</label>
@@ -1137,6 +1137,17 @@
 
   document.getElementById('eventForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
+
+    const titleVal = document.getElementById('title').value.trim();
+    const dateVal = document.getElementById('event_date').value;
+    if(!titleVal || !dateVal){
+      showMsg('Please go back to Event Setup and fill in the event name and date.', 'error');
+      goToStep(1);
+      document.querySelectorAll('.accordion-section').forEach((s, i) => {
+        if(i < 2) s.classList.add('open');
+      });
+      return;
+    }
 
     const lineup = Array.from(document.querySelectorAll('.lineup-row')).map(row => ({
       name: row.querySelector('.lineup-name').value,
