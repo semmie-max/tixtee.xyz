@@ -610,17 +610,6 @@
           <button type="button" class="add-row-btn" id="addLineupBtn">+ Add lineup member</button>
         </div>
 
-        <div class="checkbox-row">
-          <input type="checkbox" id="has_groupchat">
-          <label for="has_groupchat">This event has a group chat</label>
-        </div>
-        <div id="groupchatFieldWrap" style="display:none;">
-          <label>Group chat name</label>
-          <input type="text" id="groupchat_name" placeholder="e.g. Low Light Sessions Crew">
-          <label>Group chat rules</label>
-          <textarea id="groupchat_rules" placeholder="Be kind. No spam. Stay on topic."></textarea>
-        </div>
-
         <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="goToStep(2)">Next: Ticketing →</button>
       </div>
 
@@ -1096,6 +1085,15 @@
       quantity: row.querySelector('.ticket-qty').value,
     })).filter(t => t.tier_name.trim() && t.price);
 
+    const faqs = Array.from(document.querySelectorAll('#faqRows .lineup-row')).map(row => ({
+      question: row.querySelector('.faq-question').value,
+      answer: row.querySelector('.faq-answer').value,
+    })).filter(f => f.question.trim());
+
+    const sponsors = Array.from(document.querySelectorAll('#sponsorRows .lineup-row')).map(row => ({
+      name: row.querySelector('.sponsor-name').value,
+    })).filter(s => s.name.trim());
+
     const isRecurring = document.querySelector('#recurringToggle .toggle-btn.active').dataset.value === 'recurring';
     const isVirtual = document.querySelector('#virtualToggle .toggle-btn.active').dataset.value === 'virtual';
 
@@ -1135,8 +1133,17 @@
       secret_guest_note: document.getElementById('has_secret_guest').checked ? document.getElementById('secret_guest_note').value : null,
       has_golden_seat: document.getElementById('has_golden_seat').checked,
       golden_seat_note: document.getElementById('has_golden_seat').checked ? document.getElementById('golden_seat_note').value : null,
+      groupchat_created: document.getElementById('groupchat_created') ? document.getElementById('groupchat_created').checked : false,
+      enable_networking: document.getElementById('enable_networking').checked,
+      event_rules: document.getElementById('event_rules').value,
+      dress_code: document.getElementById('dress_code').value,
+      event_theme: document.getElementById('event_theme').value,
+      tags: document.getElementById('tags').value,
+      highlights: document.getElementById('highlights').value,
       lineup,
       tickets,
+      faqs,
+      sponsors,
     };
 
     try{
@@ -1269,6 +1276,33 @@ map.on("click", function(e){
     header.closest('.accordion-section').classList.toggle('open');
   });
 });
+
+function addFaqRow(){
+    const row = document.createElement('div');
+    row.className = 'lineup-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Question" class="faq-question" style="flex:1;">
+      <input type="text" placeholder="Answer" class="faq-answer" style="flex:1;">
+      <div class="remove-row">✕</div>
+    `;
+    row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+    document.getElementById('faqRows').appendChild(row);
+  }
+  document.getElementById('addFaqBtn').addEventListener('click', addFaqRow);
+  addFaqRow();
+
+  function addSponsorRow(){
+    const row = document.createElement('div');
+    row.className = 'lineup-row';
+    row.innerHTML = `
+      <input type="text" placeholder="Sponsor name" class="sponsor-name" style="flex:1;">
+      <div class="remove-row">✕</div>
+    `;
+    row.querySelector('.remove-row').addEventListener('click', () => row.remove());
+    document.getElementById('sponsorRows').appendChild(row);
+  }
+  document.getElementById('addSponsorBtn').addEventListener('click', addSponsorRow);
+  addSponsorRow();
 </script>
 </body>
 </html>
