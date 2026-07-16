@@ -1169,6 +1169,17 @@ map.on("click", function(e){
     console.log(selectedLongitude);
 
 });
+
+document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.closest('.accordion-section').classList.toggle('open');
+    });
+  });
+  document.querySelectorAll('.accordion-header').forEach(header => {
+  header.addEventListener('click', () => {
+    header.closest('.accordion-section').classList.toggle('open');
+  });
+});
 </script>
 </body>
 </html>
