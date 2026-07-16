@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Events — Tixtee</title>
+<link rel="icon" type="image/png" href="/images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d000f; --bg-soft:#150017; --card-bg:#180019;
+    --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.14);
+    --accent:#b24bf3; --accent-2:#47034E; --text-main:#f5f2f7; --text-muted:#9b8fa6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  body{background:var(--bg); color:var(--text-main); min-height:100vh;}
+
+  nav{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 5%; border-bottom:1px solid var(--border);
+  }
+  .logo{font-size:15px; font-weight:700; letter-spacing:1px;}
+  .logo span{color:var(--text-muted); font-weight:400;}
+  nav a.back{color:var(--text-muted); text-decoration:none; font-size:13px; font-weight:500;}
+  nav a.back:hover{color:#fff;}
+
+  .container{max-width:900px; margin:0 auto; padding:56px 20px 100px;}
+  .page-head{text-align:center; margin-bottom:48px;}
+  .page-head h1{font-size:clamp(2rem,5vw,2.8rem); font-weight:800; letter-spacing:-0.03em; margin-bottom:10px;}
+  .page-head p{color:var(--text-muted); font-size:1rem;}
+
+  .events-list{display:flex; flex-direction:column; gap:22px;}
+
+  /* Shared bits */
+  .badge-row{display:flex; gap:14px; align-items:center; flex-wrap:wrap; margin-bottom:10px;}
+  .badge{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-muted); font-weight:600;}
+  .badge svg{width:14px; height:14px; flex-shrink:0;}
+  .cta-link{
+    display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700;
+    color:#fff; text-decoration:none; text-transform:uppercase; letter-spacing:0.5px;
+    border-bottom:1px solid var(--accent); padding-bottom:2px; margin-top:14px;
+  }
+  .cta-link:hover{ color:var(--accent); }
+
+  /* CLASSIC — image left, content right */
+  .card-classic{
+    display:flex; background:var(--card-bg); border:1px solid var(--border);
+    border-radius:18px; overflow:hidden; transition:border-color 0.2s ease;
+  }
+  .card-classic:hover{ border-color:var(--border-strong); }
+  .card-classic .img{ width:280px; flex-shrink:0; background:#222; object-fit:cover; }
+  .card-classic .body{ padding:26px 28px; flex:1; }
+  .card-classic .title{ font-size:1.2rem; font-weight:700; margin-bottom:8px; }
+  .card-classic .desc{ font-size:0.88rem; color:var(--text-muted); line-height:1.5; max-width:52ch; }
+
+  @media (max-width:640px){
+    .card-classic{ flex-direction:column; }
+    .card-classic .img{ width:100%; height:180px; }
+  }
+
+  /* OVERLAY — full image, text on scrim */
+  .card-overlay{
+    position:relative; border-radius:18px; overflow:hidden; height:260px;
+    background:#222; display:flex; align-items:flex-end;
+  }
+  .card-overlay .img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.8; }
+  .card-overlay .scrim{
+    position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.85), transparent 60%);
+  }
+  .card-overlay .body{ position:relative; z-index:2; padding:26px 28px; width:100%; }
+  .card-overlay .title{ font-size:1.3rem; font-weight:700; margin-bottom:8px; color:#fff; }
+  .card-overlay .badge{ color:rgba(255,255,255,0.75); }
+
+  /* POSTER — tall image, badge corner */
+  .card-poster{
+    background:var(--card-bg); border:1px solid var(--border); border-radius:18px; overflow:hidden;
+    display:grid; grid-template-columns:220px 1fr;
+  }
+  .card-poster .img-wrap{ position:relative; height:100%; min-height:220px; }
+  .card-poster .img{ width:100%; height:100%; object-fit:cover; }
+  .card-poster .corner-badge{
+    position:absolute; top:10px; left:10px; background:var(--accent-2); color:#fff;
+    font-size:10px; font-weight:700; text-transform:uppercase; padding:4px 9px; border-radius:100px;
+  }
+  .card-poster .body{ padding:26px 28px; }
+  .card-poster .title{ font-size:1.2rem; font-weight:700; margin-bottom:8px; }
+  .card-poster .desc{ font-size:0.88rem; color:var(--text-muted); line-height:1.5; }
+
+  @media (max-width:640px){
+    .card-poster{ grid-template-columns:1fr; }
+    .card-poster .img-wrap{ height:160px; min-height:0; }
+  }
+
+  /* MINIMAL — no image, accent bar */
+  .card-minimal{
+    background:var(--card-bg); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:14px; padding:24px 26px;
+  }
+  .card-minimal .title{ font-size:1.1rem; font-weight:700; margin-bottom:10px; }
+
+  .empty-state{ text-align:center; padding:80px 20px; color:var(--text-muted); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">TIXTEE<span>.XYZ</span></div>
+  <a href="/" class="back">← Back to home</a>
+</nav>
+
+<div class="container">
+  <div class="page-head">
+    <h1>Events</h1>
+    <p>Discover what's happening near you.</p>
+  </div>
+
+  <div class="events-list" id="eventsList">
+    <div class="empty-state">Loading events…</div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+
+  function formatDate(dateStr){
+    return new Date(dateStr).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  }
+
+  function calendarIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
+  }
+  function clockIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  }
+  function pinIcon(){
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  }
+
+  function imgSrc(ev){
+    if(!ev.image_url) return 'https://placehold.co/600x400/1a0620/9b8fa6?text=Tixtee';
+    return ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url;
+  }
+
+  function renderClassic(ev){
+    return `
+      <a href="/e/${ev.custom_url || ev.id}" class="card-classic" style="text-decoration:none; color:inherit;">
+        <img class="img" src="${imgSrc(ev)}" alt="">
+        <div class="body">
+          <div class="badge-row">
+            <div class="badge">${calendarIcon()} ${formatDate(ev.event_date)}</div>
+            ${ev.start_time ? `<div class="badge">${clockIcon()} ${ev.start_time}</div>` : ''}
+          </div>
+          <div class="title">${ev.title}</div>
+          <div class="desc">${ev.description || ev.venue || 'Details coming soon.'}</div>
+          <span class="cta-link">View event →</span>
+        </div>
+      </a>`;
+  }
+
+  function renderOverlay(ev){
+    return `
+      <a href="/e/${ev.custom_url || ev.id}" class="card-overlay" style="text-decoration:none; color:inherit;">
+        <img class="img" src="${imgSrc(ev)}" alt="">
+        <div class="scrim"></div>
+        <div class="body">
+          <div class="badge-row">
+            <div class="badge">${calendarIcon()} ${formatDate(ev.event_date)}</div>
+            ${ev.venue ? `<div class="badge">${pinIcon()} ${ev.venue}</div>` : ''}
+          </div>
+          <div class="title">${ev.title}</div>
+        </div>
+      </a>`;
+  }
+
+  function renderPoster(ev){
+    return `
+      <a href="/e/${ev.custom_url || ev.id}" class="card-poster" style="text-decoration:none; color:inherit;">
+        <div class="img-wrap">
+          <div class="corner-badge">${ev.category || 'Event'}</div>
+          <img class="img" src="${imgSrc(ev)}" alt="">
+        </div>
+        <div class="body">
+          <div class="badge-row">
+            <div class="badge">${calendarIcon()} ${formatDate(ev.event_date)}</div>
+          </div>
+          <div class="title">${ev.title}</div>
+          <div class="desc">${ev.description || ev.venue || 'Details coming soon.'}</div>
+          <span class="cta-link">View event →</span>
+        </div>
+      </a>`;
+  }
+
+  function renderMinimal(ev){
+    return `
+      <a href="/e/${ev.custom_url || ev.id}" class="card-minimal" style="text-decoration:none; color:inherit; display:block;">
+        <div class="badge-row">
+          <div class="badge">${calendarIcon()} ${formatDate(ev.event_date)}</div>
+          ${ev.venue ? `<div class="badge">${pinIcon()} ${ev.venue}</div>` : ''}
+        </div>
+        <div class="title">${ev.title}</div>
+        <span class="cta-link">View event →</span>
+      </a>`;
+  }
+
+  async function loadEvents(){
+    const list = document.getElementById('eventsList');
+    try{
+      const res = await fetch(`${API}/events`);
+      const events = await res.json();
+
+      if(!events.length){
+        list.innerHTML = `<div class="empty-state">No events yet — check back soon.</div>`;
+        return;
+      }
+
+      list.innerHTML = events.map(ev => {
+        switch(ev.event_template){
+          case 'overlay': return renderOverlay(ev);
+          case 'poster': return renderPoster(ev);
+          case 'minimal': return renderMinimal(ev);
+          default: return renderClassic(ev);
+        }
+      }).join('');
+    }catch(err){
+      list.innerHTML = `<div class="empty-state">Could not load events. Is the backend running?</div>`;
+    }
+  }
+  loadEvents();
+</script>
+</body>
+</html>
