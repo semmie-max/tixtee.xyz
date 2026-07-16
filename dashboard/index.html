@@ -600,13 +600,6 @@
             <p class="sub" style="margin-top:-6px;">Cover image is added on the next step (Theme).</p>
           </div>
         </div>
-        <div class="field-group">
-          <div class="field-group-title">Social media handles (optional)</div>
-          <input type="text" id="social_instagram" placeholder="Instagram handle">
-          <input type="text" id="social_twitter" placeholder="X / Twitter handle">
-          <input type="text" id="social_tiktok" placeholder="TikTok handle" style="margin-bottom:0;">
-        </div>
-
         <label>Custom event URL</label>
         <input type="text" id="custom_url" placeholder="low-light-sessions">
         <div class="url-preview">Your event will be shareable at <b>tixtee.xyz/e/<span id="urlPreview">your-url</span></b></div>
@@ -686,7 +679,6 @@
       </div>
       <div class="wizard-step" data-step="3">
         <h2>Engagement &amp; Promotion</h2>
-        <p class="sub">Add a banner image and any surprise features for this event.</p>
 
         <label>Event banner image</label>
         <img class="image-preview" id="imagePreview" src="" alt="">
@@ -708,7 +700,6 @@
         <div class="field-group">
           <div class="field-group-title">Choose event card style</div>
           <div class="template-grid" id="templateGrid">
-
             <div class="template-option active" data-template="classic">
               <div class="template-preview tpl-classic">
                 <div class="tpl-img"></div>
@@ -719,7 +710,6 @@
               </div>
               <div class="template-label">Classic</div>
             </div>
-
             <div class="template-option" data-template="overlay">
               <div class="template-preview tpl-overlay">
                 <div class="tpl-scrim"></div>
@@ -730,7 +720,6 @@
               </div>
               <div class="template-label">Overlay</div>
             </div>
-
             <div class="template-option" data-template="poster">
               <div class="template-preview tpl-poster">
                 <div class="tpl-badge"></div>
@@ -738,7 +727,6 @@
               </div>
               <div class="template-label">Poster</div>
             </div>
-
             <div class="template-option" data-template="minimal">
               <div class="template-preview tpl-minimal">
                 <div class="tpl-dot"></div>
@@ -748,32 +736,106 @@
               </div>
               <div class="template-label">Minimal</div>
             </div>
-
           </div>
         </div>
         <input type="hidden" id="event_template" value="classic">
 
-        <div class="field-group">
-          <div class="field-group-title">Special features (optional)</div>
+        <div class="accordion-section open">
+          <div class="accordion-header">
+            <h3>The Experience</h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="accordion-body">
 
-          <div class="checkbox-row">
-            <input type="checkbox" id="has_secret_guest">
-            <label for="has_secret_guest">This event has a secret/surprise guest</label>
-          </div>
-          <div id="secretGuestWrap" style="display:none;">
-            <textarea id="secret_guest_note" placeholder="A short teaser shown to guests (without giving it away)"></textarea>
-          </div>
+            <div class="checkbox-row">
+              <input type="checkbox" id="has_groupchat">
+              <label for="has_groupchat">This event has a group chat</label>
+            </div>
+            <div id="groupchatFieldWrap" style="display:none;">
+              <label>Group chat name</label>
+              <input type="text" id="groupchat_name" placeholder="e.g. Low Light Sessions Crew">
+              <label>Group chat rules</label>
+              <textarea id="groupchat_rules" placeholder="Be kind. No spam. Stay on topic."></textarea>
+              <div class="checkbox-row">
+                <input type="checkbox" id="groupchat_created">
+                <label for="groupchat_created">I've created this group chat</label>
+              </div>
+            </div>
 
-          <div class="checkbox-row">
-            <input type="checkbox" id="has_golden_seat">
-            <label for="has_golden_seat">This event has a "golden seat" surprise</label>
-          </div>
-          <div id="goldenSeatWrap" style="display:none;">
-            <textarea id="golden_seat_note" placeholder="Describe the surprise for the lucky ticket holder"></textarea>
+            <div class="checkbox-row">
+              <input type="checkbox" id="enable_networking">
+              <label for="enable_networking">Let attendees see who else is going (Friend Finder)</label>
+            </div>
+
+            <div class="field-group">
+              <div class="field-group-title">FAQs</div>
+              <div id="faqRows"></div>
+              <button type="button" class="add-row-btn" id="addFaqBtn">+ Add FAQ</button>
+            </div>
+
+            <label>Event rules</label>
+            <textarea id="event_rules" placeholder="Anything guests need to know before they arrive"></textarea>
+
+            <div class="grid2">
+              <div>
+                <label>Dress code</label>
+                <input type="text" id="dress_code" placeholder="e.g. Smart casual">
+              </div>
+              <div>
+                <label>Theme</label>
+                <input type="text" id="event_theme" placeholder="e.g. Neon night">
+              </div>
+            </div>
+
+            <div class="checkbox-row">
+              <input type="checkbox" id="has_secret_guest">
+              <label for="has_secret_guest">This event has a secret/surprise guest</label>
+            </div>
+            <div id="secretGuestWrap" style="display:none;">
+              <textarea id="secret_guest_note" placeholder="A short teaser shown to guests (without giving it away)"></textarea>
+            </div>
+
+            <div class="checkbox-row">
+              <input type="checkbox" id="has_golden_seat">
+              <label for="has_golden_seat">This event has a "golden seat" surprise</label>
+            </div>
+            <div id="goldenSeatWrap" style="display:none;">
+              <textarea id="golden_seat_note" placeholder="Describe the surprise for the lucky ticket holder"></textarea>
+            </div>
+
           </div>
         </div>
 
-        <div style="display:flex; gap:10px;">
+        <div class="accordion-section">
+          <div class="accordion-header">
+            <h3>Getting the Word Out</h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="accordion-body">
+
+            <div class="field-group">
+              <div class="field-group-title">Social links</div>
+              <input type="text" id="social_instagram" placeholder="Instagram handle">
+              <input type="text" id="social_twitter" placeholder="X / Twitter handle">
+              <input type="text" id="social_tiktok" placeholder="TikTok handle" style="margin-bottom:0;">
+            </div>
+
+            <div class="field-group">
+              <div class="field-group-title">Sponsors</div>
+              <div id="sponsorRows"></div>
+              <button type="button" class="add-row-btn" id="addSponsorBtn">+ Add sponsor</button>
+            </div>
+
+            <label>Tags</label>
+            <input type="text" id="tags" placeholder="e.g. music, nightlife, live-band (comma separated)">
+
+            <label>Highlights</label>
+            <textarea id="highlights" placeholder="A short teaser of what makes this event worth attending"></textarea>
+
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
           <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(2)">← Back</button>
           <button type="submit" class="btn-primary" style="flex:1; justify-content:center;">Publish event</button>
         </div>
@@ -1049,6 +1111,10 @@
       longitude: selectedLongitude,
 
       capacity: document.getElementById('capacity').value || null,
+      sales_start_date: document.getElementById('sales_start_date').value || null,
+      sales_end_date: document.getElementById('sales_end_date').value || null,
+      refund_policy: document.getElementById('refund_policy').value,
+      allow_transfers: document.querySelector('#transfersToggle .toggle-btn.active').dataset.value === 'yes',
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
       event_template: document.getElementById('event_template').value,
