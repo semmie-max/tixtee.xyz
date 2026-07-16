@@ -387,6 +387,24 @@
   }
   .btn-danger:hover{ background:#921f18; }
   .btn-danger:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .pill-hint{ font-size:12px; color:#8c8c8c; margin:-4px 0 12px; font-weight:400; }
+  .category-pills{
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:8px;
+  }
+  .category-pill{
+    padding:9px 16px; border:1px solid #d5d5d5; border-radius:100px;
+    font-size:12.5px; font-weight:600; color:#4a4a4a; cursor:pointer;
+    transition:all 0.15s ease; white-space:nowrap;
+  }
+  .category-pill:hover{ border-color:#47034E; color:#47034E; }
+  .category-pill.active{
+    border-color:#47034E; background:#f3e9f4; color:#47034E;
+  }
+  .see-more-btn{
+    background:none; border:none; color:#47034E; font-size:12px; font-weight:600;
+    cursor:pointer; padding:0; margin-bottom:16px; text-decoration:underline;
+  }
 </style>
 </head>
 <body>
@@ -528,12 +546,32 @@
             <label>Describe your event</label>
             <textarea id="description" placeholder="What is your event all about?"></textarea>
 
-            <label>Category</label>
-            <select id="category">
-              <option value="Corporate event">Corporate event</option>
-              <option value="Club Gigs">Club Gigs</option>
-              <option value="Indoor Concerts">Indoor Concerts</option>
-            </select>
+            <label>Event Category</label>
+            <p class="pill-hint">What's this event about? Pick the one category that best describes it.</p>
+            <div class="category-pills" id="categoryPillsVisible">
+              <div class="category-pill active" data-value="Corporate event">Corporate event</div>
+              <div class="category-pill" data-value="Club Gigs">Club Gigs</div>
+              <div class="category-pill" data-value="Indoor Concerts">Indoor Concerts</div>
+              <div class="category-pill" data-value="Music & Concerts">Music &amp; Concerts</div>
+              <div class="category-pill" data-value="Comedy">Comedy</div>
+              <div class="category-pill" data-value="Networking">Networking</div>
+              <div class="category-pill" data-value="Workshop">Workshop</div>
+              <div class="category-pill" data-value="Conference">Conference</div>
+            </div>
+            <div class="category-pills" id="categoryPillsHidden" style="display:none;">
+              <div class="category-pill" data-value="Festival">Festival</div>
+              <div class="category-pill" data-value="Sports">Sports</div>
+              <div class="category-pill" data-value="Wedding">Wedding</div>
+              <div class="category-pill" data-value="Religious">Religious</div>
+              <div class="category-pill" data-value="Food & Drink">Food &amp; Drink</div>
+              <div class="category-pill" data-value="Fashion">Fashion</div>
+              <div class="category-pill" data-value="Tech">Tech</div>
+              <div class="category-pill" data-value="Art & Exhibition">Art &amp; Exhibition</div>
+              <div class="category-pill" data-value="Nightlife">Nightlife</div>
+              <div class="category-pill" data-value="Family & Kids">Family &amp; Kids</div>
+            </div>
+            <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">see more</button>
+            <input type="hidden" id="category" value="Corporate event">
           </div>
         </div>
 
@@ -1371,6 +1409,22 @@ function addFaqRow(){
   }
   document.getElementById('addSponsorBtn').addEventListener('click', addSponsorRow);
   addSponsorRow();
+
+
+  document.querySelectorAll('.category-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      document.getElementById('category').value = pill.dataset.value;
+    });
+  });
+
+  document.getElementById('seeMoreCategoriesBtn').addEventListener('click', function(){
+    const hidden = document.getElementById('categoryPillsHidden');
+    const isOpen = hidden.style.display === 'flex';
+    hidden.style.display = isOpen ? 'none' : 'flex';
+    this.textContent = isOpen ? 'see more' : 'see less';
+  });
 </script>
 </body>
 </html>
