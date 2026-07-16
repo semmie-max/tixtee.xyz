@@ -563,6 +563,8 @@
             <div id="locationFieldWrap">
               <label>Location</label>
               <input type="text" id="venue" placeholder="Café One, Ado-Ekiti">
+              <label>Pin the exact location on the map</label>
+              <div id="map"></div>
             </div>
             <div id="virtualFieldWrap" style="display:none;">
               <label>Virtual event link</label>
@@ -1140,18 +1142,6 @@ const marker = L.marker([6.5244, 3.3792])
 .addTo(map)
 .bindPopup("Event Location")
 .openPopup();
-map.on("click", function(e){
-
-  const lat = e.latlng.lat;
-  const lng = e.latlng.lng;
-
-  marker
-    .setLatLng([lat, lng]);
-
-  console.log("Latitude:", lat);
-  console.log("Longitude:", lng);
-
-});
 let selectedLatitude = null;
 let selectedLongitude = null;
 
@@ -1170,11 +1160,6 @@ map.on("click", function(e){
 
 });
 
-document.querySelectorAll('.accordion-header').forEach(header => {
-    header.addEventListener('click', () => {
-      header.closest('.accordion-section').classList.toggle('open');
-    });
-  });
   document.querySelectorAll('.accordion-header').forEach(header => {
   header.addEventListener('click', () => {
     header.closest('.accordion-section').classList.toggle('open');
