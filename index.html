@@ -331,15 +331,16 @@
       Stay in the loop. Enter your email below to receive updates, product announcements, and exclusive launch news from Tixtee.
     </p>
 
-    <form class="wl-form" onsubmit="event.preventDefault(); alert('Joined!');">
+    <div id="wlMsg" style="font-size:13px; margin-bottom:14px; display:none;"></div>
+
+    <form class="wl-form" id="waitlistForm">
       <div class="wl-input-container">
         <label class="wl-input-label">Email Address</label>
-        <input type="email" class="wl-input" placeholder="yourname@gmail.com" required>
+        <input type="email" class="wl-input" id="wlEmail" placeholder="yourname@gmail.com" required>
       </div>
-      <button type="submit" class="wl-button">GET EARLY ACCESS</button>
+      <button type="submit" class="wl-button" id="wlSubmitBtn">GET EARLY ACCESS</button>
     </form>
   </div>
-
 </div>
 
 <style>
@@ -678,6 +679,49 @@
     </div>
   </div>
 </footer>
+
+<script>
+  const WAITLIST_API = 'https://api.tixtee.xyz/api/waitlist';
+
+  document.getElementById('waitlistForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('wlEmail').value;
+    const btn = document.getElementById('wlSubmitBtn');
+    const msg = document.getElementById('wlMsg');
+
+    btn.disabled = true;
+    btn.textContent = 'JOINING…';
+
+    try{
+      const res = await fetch(WAITLIST_API, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+
+      msg.style.display = 'block';
+      if(!res.ok){
+        msg.style.color = '#b3261e';
+        msg.textContent = data.error || 'Something went wrong';
+        btn.disabled = false;
+        btn.textContent = 'GET EARLY ACCESS';
+        return;
+      }
+
+      msg.style.color = '#1e7a3d';
+      msg.textContent = data.message;
+      btn.textContent = "YOU'RE ON THE LIST";
+      document.getElementById('wlEmail').value = '';
+    }catch(err){
+      msg.style.display = 'block';
+      msg.style.color = '#b3261e';
+      msg.textContent = 'Could not reach the server — try again.';
+      btn.disabled = false;
+      btn.textContent = 'GET EARLY ACCESS';
+    }
+  });
+</script>
 
 </body>
 <script>
