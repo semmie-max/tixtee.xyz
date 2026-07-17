@@ -424,7 +424,7 @@
   <div class="sidebar" id="sidebar">
     <button class="sidebar-close" id="sidebarCloseBtn" aria-label="Close menu">✕</button>
     <div class="logo">TIXTEE<span>.XYZ</span></div>
-    <div class="nav-item active">
+    <div class="nav-item active" id="overviewNavBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
       Overview
     </div>
@@ -440,7 +440,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
       Ratings
     </div>
-    <div class="nav-item">
+    <div class="nav-item" id="settingsNavBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Settings
     </div>
@@ -509,6 +509,64 @@
 </div>
           <h3>Loading your events…</h3>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsView" style="display:none;">
+    <div class="main-header">
+      <div>
+        <h1>Settings</h1>
+        <div class="sub">Manage your account and platform preferences.</div>
+      </div>
+    </div>
+
+    <div class="msg" id="settingsMsg"></div>
+
+    <div class="accordion-section open">
+      <div class="accordion-header">
+        <h3>Account</h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="accordion-body">
+        <label>Full name</label>
+        <input type="text" id="settingsName" placeholder="Your name">
+        <label>Email</label>
+        <input type="text" id="settingsEmail" disabled style="background:#f4f4f4; color:#8c8c8c;">
+        <button type="button" class="btn-primary" id="saveNameBtn">Save name</button>
+
+        <div style="height:1px; background:#eee; margin:26px 0;"></div>
+
+        <div class="field-group-title" style="margin-bottom:12px;">Change password</div>
+        <label>Current password</label>
+        <input type="password" id="currentPassword">
+        <label>New password</label>
+        <input type="password" id="newPassword">
+        <label>Confirm new password</label>
+        <input type="password" id="confirmNewPassword">
+        <button type="button" class="btn-primary" id="changePasswordBtn">Update password</button>
+      </div>
+    </div>
+
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h3>Platform</h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="accordion-body">
+        <label>Commission on paid tickets (%)</label>
+        <input type="number" id="settingsCommission" min="0" max="100" step="0.1">
+
+        <label>Currency</label>
+        <select id="settingsCurrency">
+          <option value="NGN">NGN (₦)</option>
+          <option value="USD">USD ($)</option>
+        </select>
+
+        <label>Support email</label>
+        <input type="text" id="settingsSupportEmail" placeholder="support@tixtee.xyz">
+
+        <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
       </div>
     </div>
   </div>
@@ -985,15 +1043,32 @@
     }
   });
 
-  function showCreateEventView(){
+  function hideAllViews(){
     document.getElementById('overviewView').style.display = 'none';
+    document.getElementById('createEventView').style.display = 'none';
+    document.getElementById('settingsView').style.display = 'none';
+    document.getElementById('overviewNavBtn').classList.remove('active');
+    document.getElementById('settingsNavBtn').classList.remove('active');
+  }
+  function showCreateEventView(){
+    hideAllViews();
     document.getElementById('createEventView').style.display = 'block';
   }
   function showOverviewView(){
-    document.getElementById('createEventView').style.display = 'none';
+    hideAllViews();
     document.getElementById('overviewView').style.display = 'block';
+    document.getElementById('overviewNavBtn').classList.add('active');
     loadEvents();
   }
+  function showSettingsView(){
+    hideAllViews();
+    document.getElementById('settingsView').style.display = 'block';
+    document.getElementById('settingsNavBtn').classList.add('active');
+    loadSettings();
+  }
+
+  document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
+  document.getElementById('settingsNavBtn').addEventListener('click', showSettingsView);
 
   document.getElementById('openModalBtn').addEventListener('click', ()=>{
     showCreateEventView();
@@ -1424,6 +1499,91 @@ function addFaqRow(){
     const isOpen = hidden.style.display === 'flex';
     hidden.style.display = isOpen ? 'none' : 'flex';
     this.textContent = isOpen ? 'see more' : 'see less';
+  });
+
+
+  function showSettingsMsg(text, type){
+    const el = document.getElementById('settingsMsg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  async function loadSettings(){
+    try{
+      const meRes = await fetch(`${API}/auth/me`, { credentials:'include' });
+      const me = await meRes.json();
+      document.getElementById('settingsName').value = me.name || '';
+      document.getElementById('settingsEmail').value = me.email || '';
+
+      const settingsRes = await fetch(`${API}/settings`, { credentials:'include' });
+      const settings = await settingsRes.json();
+      document.getElementById('settingsCommission').value = settings.commission_percent || '';
+      document.getElementById('settingsCurrency').value = settings.currency || 'NGN';
+      document.getElementById('settingsSupportEmail').value = settings.support_email || '';
+    }catch(err){
+      showSettingsMsg('Could not load settings.', 'error');
+    }
+  }
+
+  document.getElementById('saveNameBtn').addEventListener('click', async () => {
+    const name = document.getElementById('settingsName').value.trim();
+    try{
+      const res = await fetch(`${API}/auth/profile`, {
+        method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include',
+        body: JSON.stringify({ name })
+      });
+      const data = await res.json();
+      if(!res.ok){ showSettingsMsg(data.error || 'Could not update name', 'error'); return; }
+      document.getElementById('userName').textContent = name;
+      showSettingsMsg('Name updated.', 'success');
+    }catch(err){
+      showSettingsMsg('Could not reach the server.', 'error');
+    }
+  });
+
+  document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+    if(newPassword !== confirmNewPassword){
+      showSettingsMsg('New passwords do not match.', 'error');
+      return;
+    }
+
+    try{
+      const res = await fetch(`${API}/auth/change-password`, {
+        method:'POST', headers:{'Content-Type':'application/json'}, credentials:'include',
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      const data = await res.json();
+      if(!res.ok){ showSettingsMsg(data.error || 'Could not change password', 'error'); return; }
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmNewPassword').value = '';
+      showSettingsMsg('Password updated.', 'success');
+    }catch(err){
+      showSettingsMsg('Could not reach the server.', 'error');
+    }
+  });
+
+  document.getElementById('savePlatformBtn').addEventListener('click', async () => {
+    const body = {
+      commission_percent: document.getElementById('settingsCommission').value,
+      currency: document.getElementById('settingsCurrency').value,
+      support_email: document.getElementById('settingsSupportEmail').value,
+    };
+    try{
+      const res = await fetch(`${API}/settings`, {
+        method:'PUT', headers:{'Content-Type':'application/json'}, credentials:'include',
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(!res.ok){ showSettingsMsg(data.error || 'Could not update settings', 'error'); return; }
+      showSettingsMsg('Platform settings updated.', 'success');
+    }catch(err){
+      showSettingsMsg('Could not reach the server.', 'error');
+    }
   });
 </script>
 </body>
