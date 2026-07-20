@@ -965,8 +965,7 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-  const API = 'https://tixtee-xyz-backend.onrender.com/api';
-
+  const API = 'https://api.tixtee.xyz/api';
   async function checkSession(){
     try{
       const res = await fetch(`${API}/auth/me`, { credentials:'include' });
@@ -1393,7 +1392,7 @@
       container.innerHTML = `<div class="events-grid">${draftCardHTML}${events.map(ev => `
         <div class="event-card">
           <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
-          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://tixtee-xyz-backend.onrender.com' + ev.image_url : ev.image_url) : 'images/tix.jpg'}" alt="">
+          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url) : '/images/tix.jpg'}" alt="Event Image">
           <div class="body">
             <div class="date">${new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
             <div class="title">${ev.title}</div>
