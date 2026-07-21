@@ -746,6 +746,66 @@
       </div>
     </div>
   </div>
+  <div class="accordion-section">
+
+  <div class="accordion-header">
+    <h3>Payout</h3>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+
+  <div class="accordion-body">
+
+    <label>Account Name</label>
+    <input 
+      type="text" 
+      id="payoutAccountName" 
+      placeholder="e.g. John Doe"
+    >
+
+    <label>Bank Name</label>
+    <input 
+      type="text" 
+      id="payoutBankName" 
+      placeholder="e.g. Access Bank"
+    >
+
+    <label>Account Number</label>
+    <input 
+      type="text" 
+      id="payoutAccountNumber" 
+      maxlength="10"
+      placeholder="Enter 10-digit account number"
+    >
+
+    <label>Currency</label>
+    <select id="payoutCurrency">
+      <option value="NGN">NGN (₦)</option>
+      <option value="USD">USD ($)</option>
+    </select>
+
+    <label>Payout Email</label>
+    <input 
+      type="email" 
+      id="payoutEmail" 
+      placeholder="payments@tixtee.xyz"
+    >
+
+    <label>Payout Schedule</label>
+    <select id="payoutSchedule">
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="manual">Manual Withdrawal</option>
+    </select>
+
+    <button type="button" class="btn-primary" id="savePayoutBtn">
+      Save payout details
+    </button>
+
+  </div>
+
+</div>
 
   <div id="createEventView" style="display:none;">
     <button type="button" class="back-link" id="backToOverviewBtn">
@@ -952,7 +1012,7 @@
 
         <div class="accordion-section">
           <div class="accordion-header">
-            <h3>Rules &amp; Flexibility</h3>
+            <h3>Ticket Policies</h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
