@@ -424,6 +424,31 @@
   #dashboardContent{
   flex-direction: column;
 }
+.stat-card{
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px;
+}
+
+.card-watermark{
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-10deg);
+    width: 180px;
+    height: 180px;
+    color: #000;
+    opacity: 0.04; /* Adjust between 0.02 and 0.06 */
+    pointer-events: none;
+}
+
+.label,
+.value{
+    position: relative;
+    z-index: 1;
+}
 </style>
 </head>
 <body>
@@ -485,9 +510,23 @@
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="label">Total events</div>
-        <div class="value" id="statEvents">0</div>
-      </div>
+  <svg class="card-watermark" viewBox="0 0 24 24" fill="none">
+    <path d="M3 20L12 4L21 20H3Z"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linejoin="round"/>
+    <path d="M12 4V20"
+          stroke="currentColor"
+          stroke-width="1.2"/>
+    <path d="M8 20L12 14L16 20"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linejoin="round"/>
+  </svg>
+
+  <div class="label">Total events</div>
+  <div class="value" id="statEvents">0</div>
+</div>
       <div class="stat-card">
         <div class="label">Tickets Issued</div>
         <div class="value">0 </div>
