@@ -511,23 +511,43 @@
     <div class="stats-grid">
       <div class="stat-card">
   <svg class="card-watermark" viewBox="0 0 24 24" fill="none">
-    <path d="M3 20L12 4L21 20H3Z"
-          stroke="currentColor"
-          stroke-width="1.2"
-          stroke-linejoin="round"/>
-    <path d="M12 4V20"
-          stroke="currentColor"
-          stroke-width="1.2"/>
-    <path d="M8 20L12 14L16 20"
-          stroke="currentColor"
-          stroke-width="1.2"
-          stroke-linejoin="round"/>
-  </svg>
-
+  <rect x="3" y="5" width="18" height="16" rx="2"
+        stroke="currentColor" stroke-width="1.2"/>
+  <path d="M8 3V7M16 3V7M3 9H21"
+        stroke="currentColor" stroke-width="1.2"/>
+  <path d="M12 13L13.2 15.5L16 16L14 17.8L14.5 20.5L12 19L9.5 20.5L10 17.8L8 16L10.8 15.5L12 13Z"
+        stroke="currentColor" stroke-width="1.2"/>
+</svg>
   <div class="label">Total events</div>
   <div class="value" id="statEvents">0</div>
 </div>
       <div class="stat-card">
+        <svg class="card-watermark" viewBox="0 0 24 24" fill="none">
+  <!-- Ticket -->
+  <path
+    d="M4 8C5.1 8 6 7.1 6 6H18C18 7.1 18.9 8 20 8V16C18.9 16 18 16.9 18 18H6C6 16.9 5.1 16 4 16V8Z"
+    stroke="currentColor"
+    stroke-width="1.2"
+    stroke-linejoin="round"
+  />
+
+  <!-- Perforation -->
+  <path
+    d="M12 7V17"
+    stroke="currentColor"
+    stroke-width="1.2"
+    stroke-dasharray="1.5 1.5"
+  />
+
+  <!-- Checkmark -->
+  <path
+    d="M8.5 12L10.5 14L15.5 9"
+    stroke="currentColor"
+    stroke-width="1.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
         <div class="label">Tickets Issued</div>
         <div class="value">0 </div>
       </div>
