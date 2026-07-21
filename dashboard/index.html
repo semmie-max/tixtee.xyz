@@ -910,17 +910,17 @@
             <p class="sub" style="margin-top:-6px;">Next up: Upload your cover image and choose your event theme.</p>
           </div>
         </div>
-        <label>Custom event URL</label>
-        <input type="text" id="custom_url" placeholder="low-light-sessions">
-        <div class="url-preview">Your event will be shareable at <b>tixtee.xyz/e/<span id="urlPreview">your-url</span></b></div>
+        <label>Custom Event URL</label>
+        <input type="text" id="custom_url" placeholder="e.g. lagos-tech-summit">
+        <div class="url-preview">Your event will be available at<b>tixtee.xyz/e/<span id="urlPreview">your-url</span></b></div>
 
         <div class="field-group">
-          <div class="field-group-title">Event lineup</div>
+          <div class="field-group-title">Guests & Speakers</div>
           <div id="lineupRows"></div>
-          <button type="button" class="add-row-btn" id="addLineupBtn">+ Add lineup member</button>
+          <button type="button" class="add-row-btn" id="addLineupBtn">+ Add Guest or Speaker</button>
         </div>
 
-        <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="goToStep(2)">Next: Ticketing →</button>
+        <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="goToStep(2)">Next: Tickets & Pricing</button>
       </div>
 
       <div class="wizard-step" data-step="2">
@@ -928,23 +928,23 @@
 
         <div class="accordion-section open">
           <div class="accordion-header">
-            <h3>Ticket Info</h3>
+            <h3>Ticket Details</h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
-            <div class="field-group-title" style="margin-top:0;">Ticket types &amp; pricing</div>
+            <div class="field-group-title" style="margin-top:0;">Ticket &amp; pricing</div>
             <div id="ticketRows"></div>
-            <button type="button" class="add-row-btn" id="addTicketBtn">+ Add ticket tier</button>
+            <button type="button" class="add-row-btn" id="addTicketBtn">+ Add Ticket Type</button>
 
-            <label style="margin-top:16px;">Sales period</label>
+            <label style="margin-top:16px;">Sales Schedule</label>
             <div class="grid2">
               <div>
-                <label style="font-weight:400; color:#8c8c8c;">Sales start</label>
-                <input type="date" id="sales_start_date">
+                <label style="font-weight:400; color:#8c8c8c;">When should ticket sales begin?</label>
+                <input type="datetime-local" id="sales_start_date">
               </div>
               <div>
-                <label style="font-weight:400; color:#8c8c8c;">Sales end</label>
-                <input type="date" id="sales_end_date">
+                <label style="font-weight:400; color:#8c8c8c;">Ticket Sales End</label>
+                <input type="datetime-local" id="sales_end_date">
               </div>
             </div>
           </div>
