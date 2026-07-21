@@ -937,6 +937,56 @@
 
 </div>
 
+<div class="accordion-section">
+
+  <div class="accordion-header">
+    <h3>Preferences</h3>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="6 9 12 15 18 9"/>
+    </svg>
+  </div>
+
+
+  <div class="accordion-body">
+
+    <label>Theme</label>
+    <select id="settingsTheme">
+      <option value="system">System Default</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+
+
+    <label>Language</label>
+    <select id="settingsLanguage">
+      <option value="en">English</option>
+      <option value="fr">French</option>
+    </select>
+
+
+    <label>Date Format</label>
+    <select id="settingsDateFormat">
+      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+    </select>
+
+
+    <label>Time Format</label>
+    <select id="settingsTimeFormat">
+      <option value="12">12-hour (AM/PM)</option>
+      <option value="24">24-hour</option>
+    </select>
+
+
+    <button type="button" class="btn-primary" id="savePreferencesBtn">
+      Save preferences
+    </button>
+
+  </div>
+
+</div>
+
 <div class="danger-zone">
 
   <div class="danger-header">
@@ -2093,6 +2143,24 @@ confirmDelete.onclick = () => {
   alert("Account deleted");
 
 };
+
+document.getElementById("savePreferencesBtn").addEventListener("click", () => {
+
+  const preferences = {
+    theme: document.getElementById("settingsTheme").value,
+    language: document.getElementById("settingsLanguage").value,
+    dateFormat: document.getElementById("settingsDateFormat").value,
+    timeFormat: document.getElementById("settingsTimeFormat").value
+  };
+
+
+  // send preferences to backend here
+
+  console.log(preferences);
+
+  alert("Preferences saved successfully");
+
+});
 </script>
 </body>
 </html>
