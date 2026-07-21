@@ -775,34 +775,34 @@
           </div>
           <div class="accordion-body">
             <label>Event name</label>
-            <input type="text" id="title" placeholder="The Low Light Sessions">
+            <input type="text" id="title" placeholder="Enter your event name">
 
             <label>Describe your event</label>
-            <textarea id="description" placeholder="What is your event all about?"></textarea>
+            <textarea id="description" placeholder="Describe your event and what makes it special."></textarea>
 
             <label>Event Category</label>
             <p class="pill-hint">What's this event about? Pick the one category that best describes it.</p>
             <div class="category-pills" id="categoryPillsVisible">
-              <div class="category-pill active" data-value="Corporate event">Corporate event</div>
-              <div class="category-pill" data-value="Club Gigs">Club Gigs</div>
-              <div class="category-pill" data-value="Indoor Concerts">Indoor Concerts</div>
-              <div class="category-pill" data-value="Music & Concerts">Music &amp; Concerts</div>
-              <div class="category-pill" data-value="Comedy">Comedy</div>
+              <div class="category-pill active" data-value="Corporate event">Music & Concerts</div>
+              <div class="category-pill" data-value="Club Gigs">Business</div>
+              <div class="category-pill" data-value="Indoor Concerts">Technology</div>
+              <div class="category-pill" data-value="Music & Concerts">Education</div>
+              <div class="category-pill" data-value="Comedy">Conferences</div>
               <div class="category-pill" data-value="Networking">Networking</div>
-              <div class="category-pill" data-value="Workshop">Workshop</div>
-              <div class="category-pill" data-value="Conference">Conference</div>
+              <div class="category-pill" data-value="Workshop">Sports</div>
+              <div class="category-pill" data-value="Conference">Gaming</div>
             </div>
             <div class="category-pills" id="categoryPillsHidden" style="display:none;">
-              <div class="category-pill" data-value="Festival">Festival</div>
-              <div class="category-pill" data-value="Sports">Sports</div>
-              <div class="category-pill" data-value="Wedding">Wedding</div>
-              <div class="category-pill" data-value="Religious">Religious</div>
-              <div class="category-pill" data-value="Food & Drink">Food &amp; Drink</div>
-              <div class="category-pill" data-value="Fashion">Fashion</div>
-              <div class="category-pill" data-value="Tech">Tech</div>
-              <div class="category-pill" data-value="Art & Exhibition">Art &amp; Exhibition</div>
-              <div class="category-pill" data-value="Nightlife">Nightlife</div>
-              <div class="category-pill" data-value="Family & Kids">Family &amp; Kids</div>
+              <div class="category-pill" data-value="Festival">Art & Culture</div>
+              <div class="category-pill" data-value="Sports">Comedy</div>
+              <div class="category-pill" data-value="Wedding">Food And Drink</div>
+              <div class="category-pill" data-value="Religious">Health & Wellness</div>
+              <div class="category-pill" data-value="Food & Drink">Fashion &amp; Beauty</div>
+              <div class="category-pill" data-value="Fashion">Community</div>
+              <div class="category-pill" data-value="Tech">Religious</div>
+              <div class="category-pill" data-value="Art & Exhibition">Family &amp; Kids</div>
+              <div class="category-pill" data-value="Nightlife">Charity</div>
+              <div class="category-pill" data-value="Family & Kids">Private Events</div>
             </div>
             <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">see more</button>
             <input type="hidden" id="category" value="Corporate event">
@@ -830,34 +830,35 @@
               </div>
               <div>
                 <label>Event format</label>
-                <input type="text" id="event_format" placeholder="e.g. Open mic, Panel, Concert">
+                <input type="text" id="event_format" placeholder="Select how your event will be hosted">
               </div>
             </div>
 
-            <label>Is this a single or recurring event?</label>
+            <label>Is this a one-time or recurring event?</label>
             <div class="toggle-group" id="recurringToggle">
-              <div class="toggle-btn active" data-value="single">Single event</div>
-              <div class="toggle-btn" data-value="recurring">Recurring event</div>
+              <div class="toggle-btn active" data-value="single">One-Time Event</div>
+              <div class="toggle-btn" data-value="recurring">Recurring Event</div>
             </div>
             <div id="recurrenceFieldWrap" style="display:none;">
               <label>How often?</label>
-              <input type="text" id="recurrence_pattern" placeholder="e.g. Every Friday">
+              <input type="text" id="recurrence_pattern" placeholder="Daily?">
             </div>
 
-            <label>Is this a virtual or in-person event?</label>
+            <label>Select event format</label>
             <div class="toggle-group" id="virtualToggle">
-              <div class="toggle-btn active" data-value="inperson">In-person</div>
+              <div class="toggle-btn active" data-value="inperson">In-Person</div>
               <div class="toggle-btn" data-value="virtual">Virtual</div>
+              <div class="toggle-btn" data-value="virtual">Hybrid</div>
             </div>
             <div id="locationFieldWrap">
               <label>Location</label>
-              <input type="text" id="venue" placeholder="Café One, Ado-Ekiti">
-              <label>Pin the exact location on the map</label>
+              <input type="text" id="venue" placeholder="e.g. Landmark Event Centre, Lagos">
+              <label>Pin your event location on the map.</label>
               <div id="map"></div>
             </div>
             <div id="virtualFieldWrap" style="display:none;">
               <label>Virtual event link</label>
-              <input type="text" id="virtual_link" placeholder="https://meet.google.com/...">
+              <input type="text" id="virtual_link" placeholder="Paste your meeting or livestream link">
             </div>
           </div>
         </div>
@@ -871,22 +872,42 @@
             <div class="grid2">
               <div>
                 <label>Organizer name</label>
-                <input type="text" id="organizer_name" placeholder="Your name or brand">
+                <input type="text" id="organizer_name" placeholder="e.g. Tixtee Events">
               </div>
               <div>
                 <label>Organizer contact</label>
                 <input type="text" id="organizer_contact" placeholder="Email or phone">
               </div>
               <div>
-                <label>Capacity</label>
-                <input type="number" id="capacity">
+                <label>Event Capacity</label>
+
+<div class="capacity-option">
+    <input type="checkbox" id="unlimitedCapacity">
+    <label for="unlimitedCapacity">Unlimited</label>
+</div>
+
+<input
+    type="number"
+    id="capacity"
+    min="1"
+    step="1"
+    placeholder="e.g. 250"
+>
               </div>
               <div>
-                <label>Age limit</label>
-                <input type="text" id="age_limit" placeholder="e.g. 18+, All ages">
+                <label>Age Restriction</label>
+
+<select id="age_limit">
+    <option value="">Select an age restriction</option>
+    <option value="all-ages">All Ages</option>
+    <option value="13+">13+</option>
+    <option value="16+">16+</option>
+    <option value="18+">18+</option>
+    <option value="21+">21+</option>
+</select>
               </div>
             </div>
-            <p class="sub" style="margin-top:-6px;">Cover image is added on the next step (Theme).</p>
+            <p class="sub" style="margin-top:-6px;">Next up: Upload your cover image and choose your event theme.</p>
           </div>
         </div>
         <label>Custom event URL</label>
@@ -1760,6 +1781,20 @@ function addFaqRow(){
       showSettingsMsg('Could not reach the server.', 'error');
     }
   });
+
+  const unlimitedCapacity = document.getElementById("unlimitedCapacity");
+const capacityInput = document.getElementById("capacity");
+
+unlimitedCapacity.addEventListener("change", function () {
+    capacityInput.disabled = this.checked;
+
+    if (this.checked) {
+        capacityInput.value = "";
+        capacityInput.placeholder = "Unlimited";
+    } else {
+        capacityInput.placeholder = "e.g. 250";
+    }
+});
 </script>
 </body>
 </html>
