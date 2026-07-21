@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
-  body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; padding:40px 44px;}
+  body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; padding:24px;}
   .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;}
   a.back{font-size:12px; color:#47034E; text-decoration:none;}
   h1{font-size:24px; font-weight:700; margin:10px 0 6px;}
@@ -33,7 +33,7 @@
   }
   textarea{min-height:160px; resize:vertical;}
   button{
-    width:100%; background:#47034E; color:#fff; border:none; padding:13px;
+    width:100%; background:#47034E; color:#fff; border:none; padding:15px;
     border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;
   }
   button:hover{background:#5c0665;}
@@ -41,6 +41,43 @@
   .msg.error{background:#fdecea; color:#b3261e; display:block;}
   .msg.success{background:#eafaf0; color:#1e7a3d; display:block;}
   #gate{padding:60px; text-align:center; color:#9a9a9a; font-size:13px;}
+
+  @media (max-width: 1024px){
+
+  body{
+    padding:18px;
+  }
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:18px;
+  }
+
+  h1{
+    font-size:22px;
+  }
+
+  .topbar{
+    margin-bottom:12px;
+  }
+
+  .table-wrapper{
+      overflow-x:auto;
+  }
+
+  table{
+      min-width:600px;
+  }
+
+  th,
+  td{
+      font-size:12px;
+  }
+
+}
 </style>
 </head>
 <body>
@@ -57,7 +94,8 @@
   <div class="layout">
     <div class="card">
       <div class="count" id="userCount">Loading…</div>
-      <table>
+      <div class="table-wrapper">
+<table>
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll"></th>
@@ -68,6 +106,7 @@
         </thead>
         <tbody id="userRows"></tbody>
       </table>
+</div>
     </div>
 
     <div class="card">
