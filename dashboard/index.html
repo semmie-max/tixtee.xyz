@@ -449,6 +449,20 @@
     position: relative;
     z-index: 1;
 }
+
+.sandpaper-pattern {
+  width: 100%;
+  height: 100%;
+  background: #755139;
+  overflow: hidden;
+}
+.sandpaper-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.85;
+}
+
 </style>
 </head>
 <body>
@@ -509,15 +523,26 @@
     </div>
 
     <div class="stats-grid">
-      <div class="stat-card">
-  <svg class="card-watermark" viewBox="0 0 24 24" fill="none">
-  <rect x="3" y="5" width="18" height="16" rx="2"
-        stroke="currentColor" stroke-width="1.2"/>
-  <path d="M8 3V7M16 3V7M3 9H21"
-        stroke="currentColor" stroke-width="1.2"/>
-  <path d="M12 13L13.2 15.5L16 16L14 17.8L14.5 20.5L12 19L9.5 20.5L10 17.8L8 16L10.8 15.5L12 13Z"
-        stroke="currentColor" stroke-width="1.2"/>
-</svg>
+      <div class="sandpaper-pattern">
+  <svg class="sandpaper-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="sandTexture">
+        <feTurbulence
+          result="sand"
+          seed="20"
+          numOctaves="4"
+          baseFrequency="0.6"
+          type="fractalNoise"
+        ></feTurbulence>
+        <feColorMatrix
+          values="0.8 0 0 0 0.1  0 0.7 0 0 0.05  0 0 0.6 0 0.02  0 0 0 1 0"
+          type="matrix"
+        ></feColorMatrix>
+      </filter>
+    </defs>
+    <rect filter="url(#sandTexture)" height="100%" width="100%"></rect>
+  </svg>
+</div>
   <div class="label">Total events</div>
   <div class="value" id="statEvents">0</div>
 </div>
