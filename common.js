@@ -36,7 +36,17 @@
       </div>`
   };
 
-  const shape = document.body.getAttribute('data-loader') || 'profile';
+  function detectShape(){
+    const path = window.location.pathname;
+
+    if(/^\/(login|signup|forgot-password|reset-password)/.test(path)) return 'auth';
+    if(/^\/(events|search|explore)/.test(path)) return 'list';
+    if(/^\/event\//.test(path)) return 'card';
+
+    return 'profile'; // dashboard, pending, account, everything else
+  }
+
+  const shape = detectShape();
   const loader = document.createElement('div');
   loader.id = 'tixteeLoader';
   loader.innerHTML = shapes[shape] || shapes.profile;
