@@ -15,6 +15,9 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
   body{background:#f7f5f8; color:#1a1a1a; min-height:100vh; display:flex;}
+  html, body{
+  overflow-x: hidden;
+}
   .sidebar{
     width:240px; background:#150017; color:#fff;
     min-height:100vh; padding:28px 20px; display:flex; flex-direction:column;
@@ -198,6 +201,7 @@
 }
 
 .mobile-topbar{
+  width: 100%;
     display:none;
     align-items:center; gap:14px;
     background:#150017; color:#fff;
@@ -281,7 +285,13 @@
     .step-indicator{
       overflow-x:auto;
     }
+    input, select, textarea{
+  font-size: 16px;
+}
   }
+  @media (max-width:600px){
+  #map{ height: 220px; }
+}
 
   @media (max-width:420px){
     .stats-grid{
@@ -405,6 +415,9 @@
     background:none; border:none; color:#47034E; font-size:12px; font-weight:600;
     cursor:pointer; padding:0; margin-bottom:16px; text-decoration:underline;
   }
+  #dashboardContent{
+  flex-direction: column;
+}
 </style>
 </head>
 <body>
