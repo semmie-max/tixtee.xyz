@@ -450,19 +450,32 @@
     z-index: 1;
 }
 
-.sandpaper-pattern {
-  width: 100%;
-  height: 100%;
-  background: #755139;
-  overflow: hidden;
-}
-.sandpaper-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  opacity: 0.85;
+.stat-card{
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 18px;
 }
 
+.sandpaper-pattern{
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .05;
+}
+
+.sandpaper-svg{
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.label,
+.value{
+    position: relative;
+    z-index: 1;
+}
 </style>
 </head>
 <body>
@@ -523,28 +536,36 @@
     </div>
 
     <div class="stats-grid">
-      <div class="sandpaper-pattern">
-  <svg class="sandpaper-svg" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <filter id="sandTexture">
-        <feTurbulence
-          result="sand"
-          seed="20"
-          numOctaves="4"
-          baseFrequency="0.6"
-          type="fractalNoise"
-        ></feTurbulence>
-        <feColorMatrix
-          values="0.8 0 0 0 0.1  0 0.7 0 0 0.05  0 0 0.6 0 0.02  0 0 0 1 0"
-          type="matrix"
-        ></feColorMatrix>
-      </filter>
-    </defs>
-    <rect filter="url(#sandTexture)" height="100%" width="100%"></rect>
-  </svg>
-</div>
-  <div class="label">Total events</div>
-  <div class="value" id="statEvents">0</div>
+      <div class="stat-card">
+    <div class="sandpaper-pattern">
+        <svg class="sandpaper-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="sandTexture">
+                    <feTurbulence
+                        result="sand"
+                        seed="20"
+                        numOctaves="4"
+                        baseFrequency="0.6"
+                        type="fractalNoise">
+                    </feTurbulence>
+
+                    <feColorMatrix
+                        type="matrix"
+                        values="
+                        0.8 0 0 0 0.1
+                        0 0.7 0 0 0.05
+                        0 0 0.6 0 0.02
+                        0 0 0 1 0">
+                    </feColorMatrix>
+                </filter>
+            </defs>
+
+            <rect width="100%" height="100%" filter="url(#sandTexture)"/>
+        </svg>
+    </div>
+
+    <div class="label">Total Events</div>
+    <div class="value" id="statEvents">0</div>
 </div>
       <div class="stat-card">
         <svg class="card-watermark" viewBox="0 0 24 24" fill="none">
