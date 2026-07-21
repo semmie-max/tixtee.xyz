@@ -1,8 +1,45 @@
 // ---------- page loader ----------
 (function(){
+  const shapes = {
+    profile: `
+      <div class="tx-shape-profile">
+        <div class="tx-sk tx-sk-circle"></div>
+        <div class="tx-col">
+          <div class="tx-sk tx-title"></div>
+          <div class="tx-sk tx-sub"></div>
+        </div>
+        <div class="tx-sk tx-sk-circle tx-dot"></div>
+      </div>`,
+    auth: `
+      <div class="tx-shape-auth">
+        <div class="tx-sk tx-logo"></div>
+        <div class="tx-sk tx-input"></div>
+        <div class="tx-sk tx-input"></div>
+        <div class="tx-sk tx-button"></div>
+      </div>`,
+    list: `
+      <div class="tx-shape-list">
+        ${Array(3).fill(`
+          <div class="tx-row">
+            <div class="tx-sk tx-thumb"></div>
+            <div class="tx-col">
+              <div class="tx-sk tx-title"></div>
+              <div class="tx-sk tx-sub"></div>
+            </div>
+          </div>`).join('')}
+      </div>`,
+    card: `
+      <div class="tx-shape-card">
+        <div class="tx-sk tx-banner"></div>
+        <div class="tx-sk tx-title"></div>
+        <div class="tx-sk tx-sub"></div>
+      </div>`
+  };
+
+  const shape = document.body.getAttribute('data-loader') || 'profile';
   const loader = document.createElement('div');
   loader.id = 'tixteeLoader';
-  loader.innerHTML = `<img src="/images/rlogo.jpg" alt="tixtee" class="loader-logo">`;
+  loader.innerHTML = shapes[shape] || shapes.profile;
   document.body.insertBefore(loader, document.body.firstChild);
 
   const minTime = new Promise(resolve => setTimeout(resolve, 1100));
