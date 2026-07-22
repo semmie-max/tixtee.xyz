@@ -18,6 +18,28 @@
   html, body{
   overflow-x: hidden;
 }
+:root {
+  --bg-color: #ffffff;
+  --card-color: #ffffff;
+  --text-color: #111111;
+  --muted-color: #666666;
+  --border-color: #e5e5e5;
+  --input-bg: #ffffff;
+  --primary-color: #7c3aed;
+}
+
+
+.dark-theme {
+
+  --bg-color: #0b0b0f;
+  --card-color: #14141b;
+  --text-color: #ffffff;
+  --muted-color: #a1a1aa;
+  --border-color: #27272a;
+  --input-bg: #18181b;
+  --primary-color: #8b5cf6;
+
+}
   .sidebar{
     width:240px; background:#150017; color:#fff;
     min-height:100vh; padding:28px 20px; display:flex; flex-direction:column;
@@ -857,210 +879,124 @@
     <div class="accordion-section">
       <div class="accordion-header">
         <h3>Platform</h3>
+        <svg ...></svg>
+      </div>
+      <div class="accordion-body">
+        ...
+        <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
+      </div>
+    </div>
+
+  <div class="accordion-section">
+      <div class="accordion-header">
+        <h3>Payout</h3>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="accordion-body">
-        <label>Commission on paid tickets (%)</label>
-        <input type="number" id="settingsCommission" min="0" max="100" step="0.1">
+        <label>Account Name</label>
+        <input type="text" id="payoutAccountName" placeholder="e.g. John Doe">
+
+        <label>Bank Name</label>
+        <input type="text" id="payoutBankName" placeholder="e.g. Access Bank">
+
+        <label>Account Number</label>
+        <input type="text" id="payoutAccountNumber" maxlength="10" placeholder="Enter 10-digit account number">
 
         <label>Currency</label>
-        <select id="settingsCurrency">
+        <select id="payoutCurrency">
           <option value="NGN">NGN (₦)</option>
           <option value="USD">USD ($)</option>
         </select>
 
-        <label>Support email</label>
-        <input type="text" id="settingsSupportEmail" placeholder="support@tixtee.xyz">
+        <label>Payout Email</label>
+        <input type="email" id="payoutEmail" placeholder="payments@tixtee.xyz">
 
-        <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
+        <label>Payout Schedule</label>
+        <select id="payoutSchedule">
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="manual">Manual Withdrawal</option>
+        </select>
+
+        <button type="button" class="btn-primary" id="savePayoutBtn">Save payout details</button>
+      </div>
+    </div>
+
+    <div class="accordion-section">
+      <div class="accordion-header">
+        <h3>Preferences</h3>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="accordion-body">
+        <label>Theme</label>
+        <select id="settingsTheme">
+          <option value="system">System Default</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+
+        <label>Language</label>
+        <select id="settingsLanguage">
+          <option value="en">English</option>
+          <option value="fr">French</option>
+        </select>
+
+        <label>Date Format</label>
+        <select id="settingsDateFormat">
+          <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+          <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+          <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+        </select>
+
+        <label>Time Format</label>
+        <select id="settingsTimeFormat">
+          <option value="12">12-hour (AM/PM)</option>
+          <option value="24">24-hour</option>
+        </select>
+
+        <button type="button" class="btn-primary" id="savePreferencesBtn">Save preferences</button>
+      </div>
+    </div>
+
+    <div class="danger-zone">
+      <div class="danger-header">
+        <h3>Danger Zone</h3>
+        <p>These actions are permanent and cannot be undone.</p>
+      </div>
+
+      <div class="danger-item">
+        <div>
+          <h4>Sign Out Everywhere</h4>
+          <p>Sign out of your Tixtee account on all devices and active sessions.</p>
+        </div>
+        <button type="button" class="btn-danger-outline" id="signOutAllBtn">Sign Out Everywhere</button>
+      </div>
+
+      <div class="danger-item">
+        <div>
+          <h4>Delete Account</h4>
+          <p>Permanently delete your account, events, tickets, and account data.</p>
+        </div>
+        <button type="button" class="btn-danger" id="deleteAccountBtn">Delete Account</button>
+      </div>
+    </div>
+  </div><!-- closes #settingsView -->
+
+  <!-- Delete Account Confirmation Modal -->
+  <div class="delete-modal" id="deleteAccountModal">
+    <div class="delete-modal-content">
+      <h3>Delete your account?</h3>
+      <p>
+        This action is permanent and cannot be reversed. Deleting your account will permanently remove all associated events, tickets, account information, and data. <br> Please ensure that you have exported any important information and withdrawn all available funds before proceeding.
+      </p>
+      <label>Type <strong>DELETE</strong> to confirm</label>
+      <input type="text" id="deleteConfirmInput" placeholder="Type DELETE">
+      <div class="delete-actions">
+        <button type="button" id="cancelDeleteAccountBtn">Cancel</button>
+        <button type="button" class="btn-danger" id="confirmDeleteAccountBtn" disabled>Delete Account</button>
       </div>
     </div>
   </div>
-  <div class="accordion-section">
-
-  <div class="accordion-header">
-    <h3>Payout</h3>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
-  </div>
-
-  <div class="accordion-body">
-
-    <label>Account Name</label>
-    <input 
-      type="text" 
-      id="payoutAccountName" 
-      placeholder="e.g. John Doe"
-    >
-
-    <label>Bank Name</label>
-    <input 
-      type="text" 
-      id="payoutBankName" 
-      placeholder="e.g. Access Bank"
-    >
-
-    <label>Account Number</label>
-    <input 
-      type="text" 
-      id="payoutAccountNumber" 
-      maxlength="10"
-      placeholder="Enter 10-digit account number"
-    >
-
-    <label>Currency</label>
-    <select id="payoutCurrency">
-      <option value="NGN">NGN (₦)</option>
-      <option value="USD">USD ($)</option>
-    </select>
-
-    <label>Payout Email</label>
-    <input 
-      type="email" 
-      id="payoutEmail" 
-      placeholder="payments@tixtee.xyz"
-    >
-
-    <label>Payout Schedule</label>
-    <select id="payoutSchedule">
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
-      <option value="manual">Manual Withdrawal</option>
-    </select>
-
-    <button type="button" class="btn-primary" id="savePayoutBtn">
-      Save payout details
-    </button>
-
-  </div>
-
-</div>
-
-<div class="accordion-section">
-
-  <div class="accordion-header">
-    <h3>Preferences</h3>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="6 9 12 15 18 9"/>
-    </svg>
-  </div>
-
-
-  <div class="accordion-body">
-
-    <label>Theme</label>
-    <select id="settingsTheme">
-      <option value="system">System Default</option>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-
-
-    <label>Language</label>
-    <select id="settingsLanguage">
-      <option value="en">English</option>
-      <option value="fr">French</option>
-    </select>
-
-
-    <label>Date Format</label>
-    <select id="settingsDateFormat">
-      <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-      <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-      <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-    </select>
-
-
-    <label>Time Format</label>
-    <select id="settingsTimeFormat">
-      <option value="12">12-hour (AM/PM)</option>
-      <option value="24">24-hour</option>
-    </select>
-
-
-    <button type="button" class="btn-primary" id="savePreferencesBtn">
-      Save preferences
-    </button>
-
-  </div>
-
-</div>
-
-<div class="danger-zone">
-
-  <div class="danger-header">
-    <h3>Danger Zone</h3>
-    <p>These actions are permanent and cannot be undone.</p>
-  </div>
-
-  <div class="danger-item">
-    <div>
-      <h4>Sign Out Everywhere</h4>
-      <p>
-        Sign out of your Tixtee account on all devices and active sessions.
-      </p>
-    </div>
-
-    <button type="button" class="btn-danger-outline" id="signOutAllBtn">
-      Sign Out Everywhere
-    </button>
-  </div>
-
-
-  <div class="danger-item">
-    <div>
-      <h4>Delete Account</h4>
-      <p>
-        Permanently delete your account, events, tickets, and account data.
-      </p>
-    </div>
-
-    <button type="button" class="btn-danger" id="deleteAccountBtn">
-      Delete Account
-    </button>
-  </div>
-
-</div>
-
-
-<!-- Delete Confirmation Modal -->
-
-<div class="delete-modal" id="deleteModal">
-
-  <div class="delete-modal-content">
-
-    <h3>Delete your account?</h3>
-
-    <p>
-      This action is permanent and cannot be reversed. Deleting your account will permanently remove all associated events, tickets, account information, and data. <br> Please ensure that you have exported any important information and withdrawn all available funds before proceeding.
-    </p>
-
-    <label>
-      Type <strong>DELETE</strong> to confirm
-    </label>
-
-    <input 
-      type="text" 
-      id="deleteConfirmInput"
-      placeholder="Type DELETE"
-    >
-
-    <div class="delete-actions">
-
-      <button type="button" id="cancelDeleteBtn">
-        Cancel
-      </button>
-
-      <button type="button" class="btn-danger" id="confirmDeleteBtn" disabled>
-        Delete Account
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
 
   <div id="createEventView" style="display:none;">
     <button type="button" class="back-link" id="backToOverviewBtn">
@@ -2113,10 +2049,10 @@ unlimitedCapacity.addEventListener("change", function () {
 
 
 const deleteBtn = document.getElementById("deleteAccountBtn");
-const deleteModal = document.getElementById("deleteModal");
-const cancelDelete = document.getElementById("cancelDeleteBtn");
+const deleteModal = document.getElementById("deleteAccountModal");
+const cancelDelete = document.getElementById("cancelDeleteAccountBtn");
 const confirmInput = document.getElementById("deleteConfirmInput");
-const confirmDelete = document.getElementById("confirmDeleteBtn");
+const confirmDelete = document.getElementById("confirmDeleteAccountBtn");
 
 
 deleteBtn.onclick = () => {
