@@ -35,33 +35,84 @@
     </nav>
 
     <!-- Main Featured Content Area -->
-    <main class="main-content">
-      <article class="featured-story">
-        
-        <div class="image-container">
-          <!-- "Read the Latest" Badge -->
-          <div class="badge-circle">
-            <span>READ THE<br>LATEST</span>
-          </div>
-          <!-- Placeholder Image mirroring the aesthetic -->
-          <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop" alt="Featured Story Visual">
-        </div>
-
-        <div class="text-card">
-          <h2 class="story-title">WHY TIXTEE? THESE TOOLS WILL HELP YOU SORT TICKETING QUICKLY.</h2>
-          <p class="story-excerpt">
-            Ticketing can be a stressful time for creators, especially if you're not prepared. Making tickets available can feel like a daunting task, and if you don't plan ahead  or prepare well enough, you may end up scrambling to gather all of the necessary details at the last minute. However, with a bit of preparation, ticke...
-          </p>
-          <div class="coming-soon-tag">
-            FULL DETAILS COMING SOON
-          </div>
-        </div>
-
-      </article>
+    <main class="main-content" id="mainContent">
+      <div style="text-align:center; width:100%; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">Loading the latest story…</div>
     </main>
+
+    <!-- Additional posts, shown only when there's more than one -->
+    <section class="more-posts" id="morePosts"></section>
 
   </div>
 
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+
+  function resolveImage(post){
+    if(!post.image_url) return 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop';
+    return post.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + post.image_url : post.image_url;
+  }
+
+  function renderFeatured(post){
+    const main = document.getElementById('mainContent');
+    main.innerHTML = `
+      <article class="featured-story">
+        <div class="image-container">
+          <div class="badge-circle">
+            <span>READ THE<br>LATEST</span>
+          </div>
+          <img src="${resolveImage(post)}" alt="${post.title}">
+        </div>
+        <div class="text-card">
+          <h2 class="story-title">${post.title}</h2>
+          <p class="story-excerpt">${post.excerpt || (post.content ? post.content.slice(0, 260) + '…' : '')}</p>
+          <a class="coming-soon-tag" href="/blog/${post.slug || post.id}" style="text-decoration:none;">READ FULL STORY</a>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderMorePosts(posts){
+    const wrap = document.getElementById('morePosts');
+    if(!posts.length){ wrap.innerHTML = ''; return; }
+    wrap.innerHTML = `
+      <div style="padding:0 10% 100px; display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:40px;">
+        ${posts.map(post => `
+          <a href="/blog/${post.slug || post.id}" style="text-decoration:none; color:inherit;">
+            <div style="height:200px; overflow:hidden; margin-bottom:16px;">
+              <img src="${resolveImage(post)}" alt="${post.title}" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <h3 style="font-family:'Cinzel', serif; font-size:1.05rem; font-weight:400; letter-spacing:0.5px; margin-bottom:10px; color:#111;">${post.title}</h3>
+            <p style="font-family:'Playfair Display', serif; font-size:0.85rem; color:#777; line-height:1.6;">${post.excerpt || ''}</p>
+          </a>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  async function loadPosts(){
+    try{
+      const res = await fetch(`${API}/blogs?published=true`);
+      const posts = await res.json();
+
+      if(!posts.length){
+        document.getElementById('mainContent').innerHTML = `
+          <div style="text-align:center; width:100%; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">
+            No stories yet — check back soon.
+          </div>`;
+        return;
+      }
+
+      renderFeatured(posts[0]);
+      renderMorePosts(posts.slice(1));
+    }catch(err){
+      document.getElementById('mainContent').innerHTML = `
+        <div style="text-align:center; width:100%; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">
+          Could not load posts. Is the backend running?
+        </div>`;
+    }
+  }
+  loadPosts();
+</script>
 </body>
 <style>
     /* --- Reset & Global Styles --- */

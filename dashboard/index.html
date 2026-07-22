@@ -662,6 +662,10 @@ input, textarea{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 004.6 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       Settings
     </div>
+    <div class="nav-item" id="blogNavBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Blog
+    </div>
     <div class="nav-spacer"></div>
     <div class="nav-item logout" id="logoutBtn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -990,6 +994,75 @@ input, textarea{
         <button type="button" id="cancelDeleteAccountBtn">Cancel</button>
         <button type="button" class="btn-danger" id="confirmDeleteAccountBtn" disabled>Delete Account</button>
       </div>
+    </div>
+  </div>
+
+  <div id="blogView" style="display:none;">
+    <div class="main-header">
+      <div>
+        <h1>Blog</h1>
+        <div class="sub">Write and manage posts for the Tixtee blog.</div>
+      </div>
+      <button class="btn-primary" id="openBlogModalBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Write new post
+      </button>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <h2>Your posts</h2>
+      </div>
+      <div id="blogsContainer">
+        <div class="empty-state">
+          <h3>Loading your posts…</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="writeBlogView" style="display:none;">
+    <button type="button" class="back-link" id="backToBlogBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to blog
+    </button>
+    <div class="section-card">
+      <h2>New blog post</h2>
+
+      <div class="msg" id="blogMsg"></div>
+
+      <form id="blogForm">
+        <label>Post title</label>
+        <input type="text" id="blogTitle" placeholder="Give your post a title">
+
+        <label>Cover image</label>
+        <img class="image-preview" id="blogImagePreview" src="" alt="">
+        <div class="upload-status" id="blogUploadStatus"></div>
+        <div class="dropzone" id="blogDropzone">
+          <div class="icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p>Drag and drop your cover image here</p>
+          <div class="hint">or click to choose from your device</div>
+          <input type="file" id="blogImageInput" accept="image/*">
+        </div>
+        <input type="hidden" id="blogImageUrl">
+
+        <label>Excerpt</label>
+        <input type="text" id="blogExcerpt" placeholder="A short one-line summary shown on the blog list">
+
+        <label>Post content</label>
+        <textarea id="blogContent" placeholder="Write your post…" style="min-height:280px;"></textarea>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-secondary" style="flex:1;" id="saveBlogDraftBtn">Save as draft</button>
+          <button type="submit" class="btn-primary" style="flex:1; justify-content:center;">Publish post</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1504,8 +1577,11 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
     document.getElementById('overviewView').style.display = 'none';
     document.getElementById('createEventView').style.display = 'none';
     document.getElementById('settingsView').style.display = 'none';
+    document.getElementById('blogView').style.display = 'none';
+    document.getElementById('writeBlogView').style.display = 'none';
     document.getElementById('overviewNavBtn').classList.remove('active');
     document.getElementById('settingsNavBtn').classList.remove('active');
+    document.getElementById('blogNavBtn').classList.remove('active');
   }
   function showCreateEventView(){
     hideAllViews();
@@ -1523,9 +1599,23 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
     document.getElementById('settingsNavBtn').classList.add('active');
     loadSettings();
   }
+  function showBlogView(){
+    hideAllViews();
+    document.getElementById('blogView').style.display = 'block';
+    document.getElementById('blogNavBtn').classList.add('active');
+    loadBlogs();
+  }
+  function showWriteBlogView(){
+    hideAllViews();
+    document.getElementById('writeBlogView').style.display = 'block';
+    document.getElementById('blogNavBtn').classList.add('active');
+  }
 
   document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
   document.getElementById('settingsNavBtn').addEventListener('click', showSettingsView);
+  document.getElementById('blogNavBtn').addEventListener('click', showBlogView);
+  document.getElementById('openBlogModalBtn').addEventListener('click', showWriteBlogView);
+  document.getElementById('backToBlogBtn').addEventListener('click', showBlogView);
 
   document.getElementById('openModalBtn').addEventListener('click', ()=>{
     showCreateEventView();
@@ -1702,6 +1792,145 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
     }catch(err){
       uploadStatus.style.color = '#b3261e';
       uploadStatus.textContent = 'Could not reach the server.';
+    }
+  }
+
+  const blogDropzone = document.getElementById('blogDropzone');
+  const blogImageInput = document.getElementById('blogImageInput');
+  const blogImagePreview = document.getElementById('blogImagePreview');
+  const blogUploadStatus = document.getElementById('blogUploadStatus');
+
+  blogDropzone.addEventListener('click', () => blogImageInput.click());
+  blogDropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    blogDropzone.classList.add('dragover');
+  });
+  blogDropzone.addEventListener('dragleave', () => blogDropzone.classList.remove('dragover'));
+  blogDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    blogDropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleBlogImageFile(e.dataTransfer.files[0]);
+  });
+  blogImageInput.addEventListener('change', (e) => {
+    if(e.target.files.length) handleBlogImageFile(e.target.files[0]);
+  });
+
+  async function handleBlogImageFile(file){
+    if(!file.type.startsWith('image/')){
+      blogUploadStatus.style.display = 'block';
+      blogUploadStatus.style.color = '#b3261e';
+      blogUploadStatus.textContent = 'Please choose an image file.';
+      return;
+    }
+
+    blogUploadStatus.style.display = 'block';
+    blogUploadStatus.style.color = '#47034E';
+    blogUploadStatus.textContent = 'Uploading…';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try{
+      const res = await fetch(`${API}/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData
+      });
+      const data = await res.json();
+      if(!res.ok){
+        blogUploadStatus.style.color = '#b3261e';
+        blogUploadStatus.textContent = data.error || 'Upload failed';
+        return;
+      }
+
+      document.getElementById('blogImageUrl').value = data.url;
+      blogImagePreview.src = `https://api.tixtee.xyz${data.url}`;
+      blogImagePreview.style.display = 'block';
+      blogUploadStatus.style.color = '#1e7a3d';
+      blogUploadStatus.textContent = 'Image uploaded ✓';
+    }catch(err){
+      blogUploadStatus.style.color = '#b3261e';
+      blogUploadStatus.textContent = 'Could not reach the server.';
+    }
+  }
+
+  function showBlogMsg(text, type){
+    const el = document.getElementById('blogMsg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  async function submitBlog(isDraft){
+    const title = document.getElementById('blogTitle').value.trim();
+    const content = document.getElementById('blogContent').value.trim();
+    if(!title || !content){
+      showBlogMsg('Please add a title and some content before publishing.', 'error');
+      return;
+    }
+
+    const body = {
+      title,
+      excerpt: document.getElementById('blogExcerpt').value.trim(),
+      content,
+      image_url: document.getElementById('blogImageUrl').value,
+      is_draft: isDraft,
+    };
+
+    try{
+      const res = await fetch(`${API}/blogs`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(!res.ok){ showBlogMsg(data.error || 'Could not save this post', 'error'); return; }
+      showBlogMsg(isDraft ? 'Draft saved.' : 'Post published — check the blog page.', 'success');
+      document.getElementById('blogForm').reset();
+      document.getElementById('blogImagePreview').style.display = 'none';
+      document.getElementById('blogImageUrl').value = '';
+      setTimeout(()=> showBlogView(), 900);
+    }catch(err){
+      showBlogMsg('Could not reach the server — is the backend running?', 'error');
+    }
+  }
+
+  document.getElementById('blogForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    submitBlog(false);
+  });
+  document.getElementById('saveBlogDraftBtn').addEventListener('click', () => {
+    submitBlog(true);
+  });
+
+  async function loadBlogs(){
+    const container = document.getElementById('blogsContainer');
+    try{
+      const res = await fetch(`${API}/blogs`, { credentials:'include' });
+      const posts = await res.json();
+
+      if(!posts.length){
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No posts yet.</h3>
+            <p>Select "Write new post" above to get started.</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `<div class="events-grid">${posts.map(post => `
+        <div class="event-card">
+          <img class="thumb" src="${post.image_url ? (post.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + post.image_url : post.image_url) : '/images/tix.jpg'}" alt="Post cover">
+          <div class="body">
+            <div class="date">${new Date(post.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
+            <div class="title">${post.title}</div>
+            <div class="venue">${post.excerpt || ''}</div>
+            ${post.is_draft ? '<div class="tag draft">Draft</div>' : '<div class="tag">Published</div>'}
+          </div>
+        </div>
+      `).join('')}</div>`;
+    }catch(err){
+      container.innerHTML = `<div class="empty-state"><h3>Could not load posts</h3><p>Check that the backend is running.</p></div>`;
     }
   }
 
