@@ -1605,6 +1605,31 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
     document.getElementById('blogNavBtn').classList.add('active');
     loadBlogs();
   }
+  async function deleteBlog(id) {
+  if (!confirm("Are you sure you want to delete this blog?")) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API}/blogs/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Failed to delete blog.");
+      return;
+    }
+
+    alert("Blog deleted successfully.");
+    loadBlogs(); // Refresh the list
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong.");
+  }
+}
   function showWriteBlogView(){
     hideAllViews();
     document.getElementById('writeBlogView').style.display = 'block';
@@ -1925,7 +1950,25 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
             <div class="date">${new Date(post.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
             <div class="title">${post.title}</div>
             <div class="venue">${post.excerpt || ''}</div>
-            ${post.is_draft ? '<div class="tag draft">Draft</div>' : '<div class="tag">Published</div>'}
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+  ${post.is_draft
+    ? '<div class="tag draft">Draft</div>'
+    : '<div class="tag">Published</div>'}
+
+  <button
+    onclick="deleteBlog(${post.id})"
+    style="
+      background:#e53935;
+      color:#fff;
+      border:none;
+      padding:8px 14px;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:12px;
+      font-weight:600;">
+    Delete
+  </button>
+</div>
           </div>
         </div>
       `).join('')}</div>`;

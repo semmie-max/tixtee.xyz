@@ -11,6 +11,7 @@ const chatRoutes = require('./routes/chat');
 const broadcastRoutes = require('./routes/broadcast');
 const settingsRoutes = require('./routes/settings');
 const waitlistRoutes = require('./routes/waitlist');
+const blogRoutes = require('./routes/blogs');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -31,6 +32,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/broadcast', broadcastRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/waitlist', waitlistRoutes);
+app.use('/api/blogs', blogRoutes);
 
 app.get('/', (req, res) => res.send('Tixtee/OpenMic backend is running'));
 
