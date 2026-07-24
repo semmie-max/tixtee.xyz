@@ -654,6 +654,10 @@ input, textarea{
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M1 21v-2a4 4 0 013-3.87"/></svg>
       Users
     </a>
+    <a href="#" class="nav-item" id="mailingListNavBtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
+  Mailing List
+</a>
     <div class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
       Ratings
@@ -980,6 +984,30 @@ input, textarea{
       </div>
     </div>
   </div><!-- closes #settingsView -->
+
+  <div id="mailingListView" style="display:none;">
+  <div class="main-header">
+    <div>
+      <h1>Mailing List</h1>
+      <div class="sub" id="mailingListCount">Loading…</div>
+    </div>
+    <button class="btn-primary" id="exportMailingListBtn">Export CSV</button>
+  </div>
+
+  <div class="section-card">
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="text-align:left; border-bottom:1px solid var(--border-color); color:var(--muted-color);">
+          <th style="padding:10px 8px;">Email</th>
+          <th style="padding:10px 8px;">Name</th>
+          <th style="padding:10px 8px;">Source</th>
+          <th style="padding:10px 8px;">Joined</th>
+        </tr>
+      </thead>
+      <tbody id="mailingListBody"></tbody>
+    </table>
+  </div>
+</div>
 
   <!-- Delete Account Confirmation Modal -->
   <div class="delete-modal" id="deleteAccountModal">
@@ -1574,15 +1602,85 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
   });
 
   function hideAllViews(){
-    document.getElementById('overviewView').style.display = 'none';
-    document.getElementById('createEventView').style.display = 'none';
-    document.getElementById('settingsView').style.display = 'none';
-    document.getElementById('blogView').style.display = 'none';
-    document.getElementById('writeBlogView').style.display = 'none';
-    document.getElementById('overviewNavBtn').classList.remove('active');
-    document.getElementById('settingsNavBtn').classList.remove('active');
-    document.getElementById('blogNavBtn').classList.remove('active');
+  document.getElementById('overviewView').style.display = 'none';
+  document.getElementById('createEventView').style.display = 'none';
+  document.getElementById('settingsView').style.display = 'none';
+  document.getElementById('blogView').style.display = 'none';
+  document.getElementById('writeBlogView').style.display = 'none';
+  document.getElementById('mailingListView').style.display = 'none';
+  document.getElementById('overviewNavBtn').classList.remove('active');
+  document.getElementById('settingsNavBtn').classList.remove('active');
+  document.getElementById('blogNavBtn').classList.remove('active');
+  document.getElementById('mailingListNavBtn').classList.remove('active');
+}
+
+function showMailingListView(){
+  hideAllViews();
+  document.getElementById('mailingListView').style.display = 'block';
+  document.getElementById('mailingListNavBtn').classList.add('active');
+  loadMailingList();
+}
+
+async function loadMailingList(){
+  const tbody = document.getElementById('mailingListBody');
+  const countEl = document.getElementById('mailingListCount');
+  try{
+    const res = await fetch(`${API}/waitlist/mailing-list`, { credentials:'include' });
+    const rows = await res.json();
+
+    countEl.textContent = `${rows.length} total contact${rows.length === 1 ? '' : 's'}`;
+
+    if(!rows.length){
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:20px 8px; color:var(--muted-color);">No contacts yet.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(row => `
+      <tr style="border-bottom:1px solid var(--border-color);">
+        <td style="padding:10px 8px;">${row.email}</td>
+        <td style="padding:10px 8px;">${row.name || '—'}</td>
+        <td style="padding:10px 8px;">${row.source === 'user' ? 'Registered user' : 'Waitlist'}</td>
+        <td style="padding:10px 8px;">${new Date(row.created_at).toLocaleDateString('en-GB',{ day:'2-digit', month:'short', year:'numeric' })}</td>
+      </tr>
+    `).join('');
+  }catch(err){
+    countEl.textContent = 'Could not load mailing list.';
   }
+}
+
+function showMailingListView(){
+  hideAllViews();
+  document.getElementById('mailingListView').style.display = 'block';
+  document.getElementById('mailingListNavBtn').classList.add('active');
+  loadMailingList();
+}
+
+async function loadMailingList(){
+  const tbody = document.getElementById('mailingListBody');
+  const countEl = document.getElementById('mailingListCount');
+  try{
+    const res = await fetch(`${API}/waitlist/mailing-list`, { credentials:'include' });
+    const rows = await res.json();
+
+    countEl.textContent = `${rows.length} total contact${rows.length === 1 ? '' : 's'}`;
+
+    if(!rows.length){
+      tbody.innerHTML = `<tr><td colspan="4" style="padding:20px 8px; color:var(--muted-color);">No contacts yet.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = rows.map(row => `
+      <tr style="border-bottom:1px solid var(--border-color);">
+        <td style="padding:10px 8px;">${row.email}</td>
+        <td style="padding:10px 8px;">${row.name || '—'}</td>
+        <td style="padding:10px 8px;">${row.source === 'user' ? 'Registered user' : 'Waitlist'}</td>
+        <td style="padding:10px 8px;">${new Date(row.created_at).toLocaleDateString('en-GB',{ day:'2-digit', month:'short', year:'numeric' })}</td>
+      </tr>
+    `).join('');
+  }catch(err){
+    countEl.textContent = 'Could not load mailing list.';
+  }
+}
   function showCreateEventView(){
     hideAllViews();
     document.getElementById('createEventView').style.display = 'block';
@@ -2378,6 +2476,18 @@ document.getElementById("savePreferencesBtn").addEventListener("click", () => {
 
   alert("Preferences saved successfully");
 
+});
+document.getElementById('exportMailingListBtn').addEventListener('click', async () => {
+  const res = await fetch(`${API}/waitlist/mailing-list`, { credentials:'include' });
+  const rows = await res.json();
+  const csv = ['Email,Name,Source,Joined', ...rows.map(r =>
+    `${r.email},${r.name || ''},${r.source},${r.created_at}`
+  )].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'tixtee-mailing-list.csv';
+  a.click();
 });
 </script>
 </body>

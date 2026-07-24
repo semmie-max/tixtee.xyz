@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading… — The Blog</title>
+  <link rel="icon" type="image/png" href="/images/logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="/common.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background-color:#ffffff;
+      font-family:'Plus Jakarta Sans', sans-serif;
+      color:#2b2b2b;
+      min-height:100vh;
+    }
+    .page-wrapper{ width:100%; min-height:100vh; display:flex; flex-direction:column; }
+
+    .blog-header{
+      position:relative; height:280px; background-color:#111111;
+      background-image:radial-gradient(circle at 50% 50%, #2a2a2a 0%, #111111 70%);
+      display:flex; align-items:center; justify-content:center; text-align:center; padding:0 40px;
+    }
+    .blog-header h1{
+      font-family:'Cinzel', serif; font-size:2rem; font-weight:400; color:#fff;
+      letter-spacing:4px; max-width:900px; line-height:1.5;
+    }
+
+    .blog-nav{
+      display:flex; justify-content:space-between; align-items:center;
+      padding:35px 10%; border-bottom:1px solid #f0ede9;
+    }
+    .nav-title{ font-family:'Playfair Display', serif; font-style:italic; font-size:1.2rem; color:#444; }
+    .nav-links{ display:flex; list-style:none; gap:40px; }
+    .nav-links a{
+      text-decoration:none; font-size:0.7rem; color:#2b2b2b; letter-spacing:2px;
+      font-weight:500; transition:opacity 0.2s ease;
+    }
+    .nav-links a:hover{ opacity:0.6; }
+
+    .post-content{
+      max-width:760px; margin:0 auto; padding:70px 24px 120px;
+    }
+    .post-date{
+      font-size:0.75rem; letter-spacing:2px; text-transform:uppercase; color:#999; margin-bottom:20px;
+    }
+    .post-cover{
+      width:100%; max-height:480px; object-fit:cover; margin-bottom:40px;
+    }
+    .post-body{
+      font-family:'Playfair Display', serif; font-size:1.05rem; line-height:1.9; color:#333;
+      white-space:pre-wrap;
+    }
+    .post-body p{ margin-bottom:1.5em; }
+
+    @media (max-width:600px){
+      .blog-header{ height:220px; padding:0 20px; }
+      .blog-header h1{ font-size:1.4rem; letter-spacing:2px; }
+      .blog-nav{ flex-direction:column; gap:15px; text-align:center; padding:20px; }
+      .post-content{ padding:40px 20px 80px; }
+      .post-cover{ max-height:260px; }
+    }
+  </style>
+</head>
+<body>
+  <script src="/common.js"></script>
+
+  <div class="page-wrapper">
+    <header class="blog-header">
+      <h1 id="postTitleHeader">Loading…</h1>
+    </header>
+
+    <nav class="blog-nav">
+      <span class="nav-title">Browse the blog:</span>
+      <ul class="nav-links">
+        <li><a href="/blog">All Posts</a></li>
+        <li><a href="/">Back To Home</a></li>
+      </ul>
+    </nav>
+
+    <main class="post-content" id="postContent">
+      <div style="text-align:center; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">
+        Loading the story…
+      </div>
+    </main>
+  </div>
+
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+
+  function resolveImage(post){
+    if(!post.image_url) return 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop';
+    return post.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + post.image_url : post.image_url;
+  }
+
+  function getSlugFromUrl(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get('slug');
+  }
+
+  async function loadPost(){
+    const slug = getSlugFromUrl();
+    try{
+      const res = await fetch(`${API}/blogs/${slug}`);
+      if(!res.ok){
+        document.getElementById('postContent').innerHTML = `
+          <div style="text-align:center; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">
+            This story couldn't be found.
+          </div>`;
+        return;
+      }
+      const post = await res.json();
+
+      document.title = post.title + ' — The Blog';
+      document.getElementById('postTitleHeader').textContent = post.title;
+
+      document.getElementById('postContent').innerHTML = `
+        <div class="post-date">
+          ${new Date(post.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' })}
+        </div>
+        <img class="post-cover" src="${resolveImage(post)}" alt="${post.title}">
+        <div class="post-body">${post.content.replace(/\n/g, '<br><br>')}</div>
+      `;
+    }catch(err){
+      document.getElementById('postContent').innerHTML = `
+        <div style="text-align:center; padding:60px 0; font-family:'Playfair Display', serif; color:#888;">
+          Could not load this story. Is the backend running?
+        </div>`;
+    }
+  }
+  loadPost();
+</script>
+</body>
+</html>
