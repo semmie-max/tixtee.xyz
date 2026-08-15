@@ -1608,10 +1608,12 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
   document.getElementById('blogView').style.display = 'none';
   document.getElementById('writeBlogView').style.display = 'none';
   document.getElementById('mailingListView').style.display = 'none';
-  document.getElementById('overviewNavBtn').classList.remove('active');
-  document.getElementById('settingsNavBtn').classList.remove('active');
-  document.getElementById('blogNavBtn').classList.remove('active');
-  document.getElementById('mailingListNavBtn').classList.remove('active');
+  document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
+document.getElementById('settingsNavBtn').addEventListener('click', showSettingsView);
+document.getElementById('blogNavBtn').addEventListener('click', showBlogView);
+document.getElementById('mailingListNavBtn').addEventListener('click', showMailingListView); // ADD THIS LINE
+document.getElementById('openBlogModalBtn').addEventListener('click', showWriteBlogView);
+document.getElementById('backToBlogBtn').addEventListener('click', showBlogView);
 }
 
 function showMailingListView(){
@@ -1648,39 +1650,6 @@ async function loadMailingList(){
   }
 }
 
-function showMailingListView(){
-  hideAllViews();
-  document.getElementById('mailingListView').style.display = 'block';
-  document.getElementById('mailingListNavBtn').classList.add('active');
-  loadMailingList();
-}
-
-async function loadMailingList(){
-  const tbody = document.getElementById('mailingListBody');
-  const countEl = document.getElementById('mailingListCount');
-  try{
-    const res = await fetch(`${API}/waitlist/mailing-list`, { credentials:'include' });
-    const rows = await res.json();
-
-    countEl.textContent = `${rows.length} total contact${rows.length === 1 ? '' : 's'}`;
-
-    if(!rows.length){
-      tbody.innerHTML = `<tr><td colspan="4" style="padding:20px 8px; color:var(--muted-color);">No contacts yet.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = rows.map(row => `
-      <tr style="border-bottom:1px solid var(--border-color);">
-        <td style="padding:10px 8px;">${row.email}</td>
-        <td style="padding:10px 8px;">${row.name || '—'}</td>
-        <td style="padding:10px 8px;">${row.source === 'user' ? 'Registered user' : 'Waitlist'}</td>
-        <td style="padding:10px 8px;">${new Date(row.created_at).toLocaleDateString('en-GB',{ day:'2-digit', month:'short', year:'numeric' })}</td>
-      </tr>
-    `).join('');
-  }catch(err){
-    countEl.textContent = 'Could not load mailing list.';
-  }
-}
   function showCreateEventView(){
     hideAllViews();
     document.getElementById('createEventView').style.display = 'block';
@@ -2179,7 +2148,28 @@ async function loadMailingList(){
     }
   });
 
+
+  function renderDashboardSkeleton(){
+  // stat values
+  document.querySelectorAll('.stat-card .value').forEach(v => {
+    v.innerHTML = '<div class="tx-sk tx-stat-sk"></div>';
+  });
+
+  // events grid
+  const container = document.getElementById('eventsContainer');
+  container.innerHTML = `<div class="events-grid">${Array(6).fill(`
+    <div class="tx-event-card-sk">
+      <div class="tx-sk tx-thumb-sk"></div>
+      <div class="tx-body-sk">
+        <div class="tx-sk tx-date-sk"></div>
+        <div class="tx-sk tx-title-sk"></div>
+        <div class="tx-sk tx-venue-sk"></div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
   async function loadEvents(){
+    renderDashboardSkeleton();
     const container = document.getElementById('eventsContainer');
     try{
       const res = await fetch(`${API}/events`);

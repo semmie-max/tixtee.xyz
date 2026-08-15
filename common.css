@@ -115,3 +115,16 @@ html{ scrollbar-width:thin; scrollbar-color:rgba(71,3,78,0.55) transparent; }
   box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 #tixteeToast.show{ opacity:1; visibility:visible; transform:translateX(-50%) translateY(0); }
+
+
+
+/* dashboard content skeleton */
+.tx-stat-sk{ height:28px; width:70px; margin-top:6px; }
+.tx-event-card-sk{
+  border:1px solid #efefef; border-radius:16px; overflow:hidden;
+}
+.tx-event-card-sk .tx-thumb-sk{ width:100%; height:130px; border-radius:0; }
+.tx-event-card-sk .tx-body-sk{ padding:16px; }
+.tx-event-card-sk .tx-date-sk{ height:11px; width:35%; margin-bottom:10px; }
+.tx-event-card-sk .tx-title-sk{ height:14px; width:85%; margin-bottom:8px; }
+.tx-event-card-sk .tx-venue-sk{ height:12px; width:55%; }
