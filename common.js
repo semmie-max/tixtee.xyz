@@ -1,5 +1,8 @@
 // ---------- page loader ----------
 (function(){
+  // Skip the full-page loader on the dashboard — it has its own skeleton loader
+  if(/^\/dashboard/.test(window.location.pathname)) return;
+
   const shapes = {
     profile: `
       <div class="tx-shape-profile">
@@ -43,7 +46,7 @@
     if(/^\/(events|search|explore)/.test(path)) return 'list';
     if(/^\/event\//.test(path)) return 'card';
 
-    return 'profile'; // dashboard, pending, account, everything else
+    return 'profile'; // pending, account, everything else
   }
 
   const shape = detectShape();
