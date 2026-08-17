@@ -733,100 +733,73 @@ input, textarea{
    VOICE ASSISTANT
    ───────────────────────────────────── */
 
-/* Main voice bar */
-.voice-fab {
+.voice-fab{
   position: fixed;
   left: 50%;
   bottom: 24px;
   transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  z-index: 200;
+}
+.voice-fab.show{ display: flex; }
 
-  width: 180px;
+.voice-fab-main{
+  width: 150px;
   height: 46px;
-
   padding: 0 16px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-
+  gap: 10px;
   border: 1px solid rgba(71, 3, 78, 0.12);
   border-radius: 999px;
-
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   color: #47034E;
-
   cursor: pointer;
-
   box-shadow: 0 8px 28px rgba(21, 0, 23, 0.12);
-
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-
-  z-index: 200;
-
-  transition:
-    width .25s ease,
-    height .25s ease,
-    opacity .25s ease,
-    transform .25s ease,
-    background .25s ease,
-    box-shadow .25s ease;
+  transition: width .2s ease, background .2s ease, box-shadow .2s ease;
 }
+.voice-fab-main:hover{ box-shadow: 0 10px 34px rgba(21, 0, 23, 0.18); }
 
-
-/* Hide the microphone icon from the old button */
-.voice-fab svg {
-  display: none;
-}
-
-
-
-
-/* Hover */
-.voice-fab:hover {
-  box-shadow: 0 10px 34px rgba(21, 0, 23, 0.18);
-}
-
-
-/* ─────────────────────────────────────
-   LISTENING STATE
-   ───────────────────────────────────── */
-
-.voice-fab.listening {
+.voice-fab.listening .voice-fab-main{
   width: 145px;
-
   background: #47034E;
   color: #fff;
-
   box-shadow: 0 10px 32px rgba(71, 3, 78, 0.30);
 }
 
-
-
-
-
-@keyframes voiceWave {
-  0% {
-    transform: scaleY(.35);
-  }
-
-  25% {
-    transform: scaleY(1.25);
-  }
-
-  50% {
-    transform: scaleY(.55);
-  }
-
-  75% {
-    transform: scaleY(1);
-  }
-
-  100% {
-    transform: scaleY(.35);
-  }
+.voice-wave{ display:flex; align-items:center; gap:3px; }
+.voice-wave span{
+  width: 3px;
+  height: 14px;
+  border-radius: 999px;
+  background: #47034E;
+  transform: scaleY(.5);
+  transition: background .2s ease;
 }
+.voice-fab.listening .voice-wave span{
+  background: #fff;
+  animation: voiceWave .65s ease-in-out infinite;
+}
+.voice-fab.listening .voice-wave span:nth-child(2){ animation-delay:.08s; }
+.voice-fab.listening .voice-wave span:nth-child(3){ animation-delay:.16s; }
+.voice-fab.listening .voice-wave span:nth-child(4){ animation-delay:.24s; }
+.voice-fab.listening .voice-wave span:nth-child(5){ animation-delay:.32s; }
+.voice-fab.listening .voice-wave span:nth-child(6){ animation-delay:.4s; }
+.voice-fab.listening .voice-wave span:nth-child(7){ animation-delay:.48s; }
+.voice-fab.listening .voice-wave span:nth-child(8){ animation-delay:.56s; }
+.voice-fab.listening .voice-wave span:nth-child(9){ animation-delay:.64s; }
+
+@keyframes voiceWave{
+  0%{ transform: scaleY(.35); }
+  25%{ transform: scaleY(1.25); }
+  50%{ transform: scaleY(.55); }
+  75%{ transform: scaleY(1); }
+  100%{ transform: scaleY(.35); }
+}
+
 .voice-status{
   font-size: 12px;
   font-weight: 600;
@@ -834,290 +807,70 @@ input, textarea{
   white-space: nowrap;
 }
 
-.voice-wave{
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.voice-wave span{
-  width: 3px;
-  height: 14px;
-  border-radius: 999px;
-  background: #47034E;
-  transform: scaleY(.5);
-  transition: transform .2s ease, background .2s ease;
-}
-
-.voice-fab.listening .voice-wave span{
-  background: #fff;
-  animation: voiceWave .65s ease-in-out infinite;
-}
-.voice-fab.listening .voice-wave span:nth-child(2){ animation-delay: .08s; }
-.voice-fab.listening .voice-wave span:nth-child(3){ animation-delay: .16s; }
-.voice-fab.listening .voice-wave span:nth-child(4){ animation-delay: .24s; }
-.voice-fab.listening .voice-wave span:nth-child(5){ animation-delay: .32s; }
-.voice-fab.listening .voice-wave span:nth-child(6){ animation-delay: .4s; }
-.voice-fab.listening .voice-wave span:nth-child(7){ animation-delay: .48s; }
-.voice-fab.listening .voice-wave span:nth-child(8){ animation-delay: .56s; }
-.voice-fab.listening .voice-wave span:nth-child(9){ animation-delay: .64s; }
-
-
-/* ─────────────────────────────────────
-   VOICE POPUP
-   ───────────────────────────────────── */
-
-.voice-popup {
-  position: fixed;
-
-  left: 50%;
-  bottom: 82px;
-
-  transform: translateX(-50%);
-
-  width: 300px;
-  max-width: calc(100vw - 32px);
-
-  background: var(--card-color, #fff);
-
-  border: 1px solid var(--border-color, #e5e5e5);
-
-  border-radius: 18px;
-
-  box-shadow: 0 14px 45px rgba(21, 0, 23, 0.16);
-
-  z-index: 201;
-
-  display: none;
-  flex-direction: column;
-
-  overflow: hidden;
-
-  animation: voicePopupIn .25s ease;
-}
-
-
-.voice-popup.show {
-  display: flex;
-}
-
-
-@keyframes voicePopupIn {
-  from {
-    opacity: 0;
-
-    transform:
-      translateX(-50%)
-      translateY(10px)
-      scale(.96);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateX(-50%)
-      translateY(0)
-      scale(1);
-  }
-}
-
-
-/* ─────────────────────────────────────
-   POPUP HEADER
-   ───────────────────────────────────── */
-
-.voice-popup-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 14px 16px;
-
-  background: #47034E;
-  color: #fff;
-}
-
-
-.voice-popup-header h4 {
-  margin: 0;
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-
-.voice-popup-header .close-popup {
-  background: none;
-  border: none;
-
-  color: #fff;
-
-  cursor: pointer;
-
-  padding: 3px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-
-.voice-popup-header .close-popup svg {
-  width: 17px;
-  height: 17px;
-}
-
-
-/* ─────────────────────────────────────
-   POPUP BODY
-   ───────────────────────────────────── */
-
-.voice-popup-body {
-  padding: 18px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 14px;
-}
-
-
-.voice-popup-body p {
-  margin: 0;
-
-  font-size: 12px;
-  line-height: 1.5;
-
-  color: var(--muted-color, #888);
-
-  text-align: center;
-}
-
-
-/* ─────────────────────────────────────
-   MICROPHONE BUTTON
-   ───────────────────────────────────── */
-
-.voice-mic-btn {
-  width: 52px;
-  height: 52px;
-
+.voice-fab-close{
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-
-  background: #f3e9f4;
-
-  border: 2px solid #47034E;
-
+  border: 1px solid rgba(71, 3, 78, 0.12);
+  background: rgba(255, 255, 255, 0.96);
   color: #47034E;
-
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  transition:
-    background .2s ease,
-    color .2s ease,
-    transform .2s ease,
-    box-shadow .2s ease;
+  box-shadow: 0 8px 28px rgba(21, 0, 23, 0.12);
 }
+.voice-fab-close svg{ width: 13px; height: 13px; }
+.voice-fab-close:hover{ background:#fdecea; color:#b3261e; }
 
-
-.voice-mic-btn:hover {
-  background: #47034E;
-  color: #fff;
-
-  transform: scale(1.05);
-}
-
-
-.voice-mic-btn.listening {
-  background: #47034E;
-  color: #fff;
-
-  animation: micPulse 1.2s infinite;
-}
-
-
-@keyframes micPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(71, 3, 78, .35);
-  }
-
-  70% {
-    box-shadow: 0 0 0 12px rgba(71, 3, 78, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0);
-  }
-}
-
-
-.voice-mic-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
-
-/* ─────────────────────────────────────
-   TRANSCRIPT
-   ───────────────────────────────────── */
-
-.voice-transcript {
-  width: 100%;
-  min-height: 48px;
-
-  box-sizing: border-box;
-
-  padding: 10px;
-
-  border-radius: 10px;
-
-  background: var(--field-group-bg, #fbfafc);
-
+/* ── Consent prompt ── */
+.voice-consent{
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(10px);
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  background: var(--card-color, #fff);
   border: 1px solid var(--border-color, #e5e5e5);
-
-  font-size: 12px;
-
+  border-radius: 16px;
+  box-shadow: 0 14px 45px rgba(21, 0, 23, 0.16);
+  padding: 16px;
+  z-index: 200;
+  display: none;
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.voice-consent.show{
+  display: block;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.voice-consent p{
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--text-color, #1a1a1a);
-
   text-align: center;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-
-
-.voice-transcript.empty {
-  color: var(--muted-color, #9a9a9a);
+.voice-consent-actions{ display: flex; gap: 8px; }
+.voice-consent-actions button{
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
 }
+#voiceConsentYes{ background: #47034E; color: #fff; }
+#voiceConsentYes:hover{ background: #5c0665; }
+#voiceConsentNo{ background: #eee; color: #1a1a1a; }
 
-
-/* ─────────────────────────────────────
-   MOBILE
-   ───────────────────────────────────── */
-
-@media (max-width: 600px) {
-
-  .voice-fab {
-    bottom: 18px;
-
-    width: 160px;
-    height: 44px;
-  }
-
-  .voice-popup {
-    width: calc(100vw - 32px);
-
-    bottom: 72px;
-  }
-
+@media (max-width: 600px){
+  .voice-fab{ bottom: 18px; }
+  .voice-fab-main{ width: 130px; height: 44px; }
+  .voice-consent{ bottom: 18px; }
 }
 </style>
 </head>
@@ -2024,48 +1777,25 @@ input, textarea{
     </div>
   </div>
   <!-- Voice Assistant -->
-<button class="voice-fab" id="voiceFab" aria-label="Talk to Tixtee">
-
-  <div class="voice-wave" aria-hidden="true">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
-
-  <span class="voice-status" id="voiceStatus">
-    Talk to Tixtee
-  </span>
-
-</button>
-  </div>
-
-  <div class="voice-popup" id="voicePopup">
-    <div class="voice-popup-header">
-      <h4>Form Assistant</h4>
-      <button class="close-popup" id="closeVoicePopup" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
+<div class="voice-fab" id="voiceFab">
+  <button type="button" class="voice-fab-main" id="voiceFabMain" aria-label="Talk to Tixtee">
+    <div class="voice-wave" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span>
     </div>
-    <div class="voice-popup-body">
-      <p>Need help filling this form?<br>Tap the mic and tell me about your event.</p>
-      <button class="voice-mic-btn" id="voiceMicBtn" aria-label="Start voice input">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
-        </svg>
-      </button>
-      <div class="voice-transcript empty" id="voiceTranscript">Your speech will appear here…</div>
+    <span class="voice-status" id="voiceStatus">Talk to Tixtee</span>
+  </button>
+  <button type="button" class="voice-fab-close" id="voiceFabClose" aria-label="Turn off voice assistant">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+  </div>
+
+  <div class="voice-consent" id="voiceConsent">
+    <p>Want voice help filling this form?</p>
+    <div class="voice-consent-actions">
+      <button type="button" id="voiceConsentYes">Yes, turn it on</button>
+      <button type="button" id="voiceConsentNo">No thanks</button>
     </div>
   </div>
 
@@ -3271,17 +3001,16 @@ document.getElementById('exportMailingListBtn').addEventListener('click', async 
 
 
 const voiceFab = document.getElementById('voiceFab');
+const voiceFabMain = document.getElementById('voiceFabMain');
+const voiceFabClose = document.getElementById('voiceFabClose');
 const voiceStatus = document.getElementById('voiceStatus');
-const voiceWave = voiceFab?.querySelector('.voice-wave');
-const voicePopup = document.getElementById('voicePopup');
-const closeVoicePopup = document.getElementById('closeVoicePopup');
-const voiceMicBtn = document.getElementById('voiceMicBtn');
-const voiceTranscript = document.getElementById('voiceTranscript');
+const voiceConsent = document.getElementById('voiceConsent');
+const voiceConsentYes = document.getElementById('voiceConsentYes');
+const voiceConsentNo = document.getElementById('voiceConsentNo');
 
 let recognition = null;
 let isListening = false;
 let voiceActive = false;
-let voicePromptTimer = null;
 
 /* ── State & Memory ── */
 const VA = {
@@ -3339,31 +3068,20 @@ rec.lang = 'en-US';
 
   rec.onstart = () => {
   isListening = true;
-
-  voicePopup.classList.add('show');
   voiceFab.classList.add('listening');
-  voiceMicBtn.classList.add('listening');
-
-  voiceTranscript.textContent = 'Listening…';
-  voiceTranscript.classList.remove('empty');
+  voiceStatus.textContent = 'Listening';
 };
   rec.onend = () => {
   isListening = false;
-
   voiceFab.classList.remove('listening');
-
-  if (voiceActive) {
-    voiceStatus.textContent = 'Talk to Tixtee';
-  }
+  if (voiceActive) voiceStatus.textContent = 'Talk to Tixtee';
 };
   rec.onerror = (e) => {
   isListening = false;
-
   voiceFab.classList.remove('listening');
-
-  if (e.error !== 'no-speech') {
+  if (e.error !== 'no-speech' && voiceActive) {
     voiceStatus.textContent = 'Try again';
-    say("Mic hiccup. Try again when you're ready.");
+    say("Mic hiccup, try again.");
   }
 };
   rec.onresult = (e) => {
@@ -3393,39 +3111,40 @@ rec.lang = 'en-US';
 
 /* ── Voice UI ── */
 
-voiceFab.addEventListener('click', () => {
-  voicePopup.classList.add('show');
-});
+function activateVoiceAssistant(){
+  voiceActive = true;
+  voiceConsent.classList.remove('show');
+  voiceFab.classList.add('show');
+  voiceStatus.textContent = 'Talk to Tixtee';
 
-voiceMicBtn.addEventListener('click', () => {
-  if (!recognition) {
-    recognition = initSpeechRecognition();
+  if (!recognition) recognition = initSpeechRecognition();
+  if (recognition){
+    try { recognition.start(); } catch(err) {}
   }
+}
 
+function deactivateVoiceAssistant(){
+  voiceActive = false;
+  voiceFab.classList.remove('show', 'listening');
+  if (recognition && isListening) recognition.stop();
+  window.speechSynthesis.cancel();
+}
+
+voiceFabMain.addEventListener('click', () => {
+  if (!recognition) recognition = initSpeechRecognition();
   if (!recognition) return;
 
   if (isListening) {
     recognition.stop();
     return;
   }
-
-  try {
-    recognition.start();
-  } catch (err) {
-    console.log('Recognition already starting...');
-  }
+  try { recognition.start(); } catch (err) {}
 });
 
-closeVoicePopup.addEventListener('click', () => {
-  voicePopup.classList.remove('show');
-  voiceFab.classList.remove('listening');
-  voiceMicBtn.classList.remove('listening');
-
-  if (recognition && isListening) {
-    recognition.stop();
-  }
-
-  window.speechSynthesis.cancel();
+voiceFabClose.addEventListener('click', deactivateVoiceAssistant);
+voiceConsentYes.addEventListener('click', activateVoiceAssistant);
+voiceConsentNo.addEventListener('click', () => {
+  voiceConsent.classList.remove('show');
 });
 
 /* ── TTS ── */
@@ -3436,22 +3155,17 @@ function say(text) {
 
   const utterance = new SpeechSynthesisUtterance(text);
 
-  utterance.rate = 1.2;
+  utterance.rate = 1.35;
   utterance.pitch = 1.02;
   utterance.volume = 1;
 
   utterance.onstart = () => {
-    voicePopup.classList.add('show');
     voiceFab.classList.remove('listening');
-    voiceMicBtn.classList.remove('listening');
-
     voiceStatus.textContent = 'Speaking…';
   };
 
   utterance.onend = () => {
-    if (!isListening) {
-      voiceStatus.textContent = 'Talk to Tixtee';
-    }
+    if (!isListening) voiceStatus.textContent = 'Talk to Tixtee';
   };
 
   window.speechSynthesis.speak(utterance);
@@ -4031,7 +3745,7 @@ function handleUtterance(raw){
 
     case 'stop':
       window.speechSynthesis.cancel();
-      if(recognition) recognition.stop();
+      deactivateVoiceAssistant();
       VA.mode = 'chat';
       break;
 
@@ -4174,21 +3888,26 @@ function shuffle(arr){
 }
 /* ── Random Voice Prompt ── */
 
-function showVoicePrompt() {
-  if (voicePopup.classList.contains('show')) return;
-  voiceFab.classList.add('nudge');
-  setTimeout(() => voiceFab.classList.remove('nudge'), 1200);
+function showVoiceConsentPrompt() {
+  if (voiceActive) return;
+  if (voiceConsent.classList.contains('show')) return;
+
+  voiceConsent.classList.add('show');
+
+  setTimeout(() => {
+    voiceConsent.classList.remove('show');
+  }, 9000);
 }
 
-/* Don't show immediately */
+function scheduleVoicePrompt(){
+  const delay = 15000 + Math.random() * 30000; // pops randomly every 15–45s
+  setTimeout(() => {
+    if (!voiceActive) showVoiceConsentPrompt();
+    scheduleVoicePrompt();
+  }, delay);
+}
 
-setTimeout(() => {
-
-  if (Math.random() < 0.6) {
-    showVoicePrompt();
-  }
-
-}, 12000);
+scheduleVoicePrompt();
 </script>
 </body>
 </html> 
