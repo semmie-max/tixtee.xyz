@@ -3005,9 +3005,9 @@ function initSpeechRecognition(){
     return null;
   }
   const rec = new SR();
-  rec.continuous = true;
-  rec.interimResults = true;
-  rec.lang = 'en-US';
+  rec.continuous = false;
+rec.interimResults = true;
+rec.lang = 'en-US';
 
   rec.onstart = () => {
     isListening = true;
@@ -3025,15 +3025,29 @@ function initSpeechRecognition(){
     if(e.error !== 'no-speech') say('Mic hiccup. Tap the button again when you\'re ready.');
   };
   rec.onresult = (e) => {
-    let final = '';
-    for(let i = e.resultIndex; i < e.results.length; i++){
-      if(e.results[i].isFinal) final += e.results[i][0].transcript;
-    }
-    if(final){
-      voiceTranscript.textContent = '“' + final.trim() + '”';
-      handleUtterance(final.trim());
-    }
-  };
+  let transcript = '';
+
+  for (let i = e.resultIndex; i < e.results.length; i++) {
+    transcript += e.results[i][0].transcript;
+  }
+
+  transcript = transcript.trim();
+
+  if (!transcript) return;
+
+  // Show what you're saying immediately
+  voiceTranscript.textContent = `“${transcript}”`;
+
+  // Respond immediately when speech is finalized
+  const lastResult = e.results[e.results.length - 1];
+
+  if (lastResult.isFinal) {
+    recognition.stop();
+
+    // Process immediately
+    handleUtterance(transcript);
+  }
+};
   return rec;
 }
 
@@ -3041,19 +3055,37 @@ voiceFab.addEventListener('click', () => voicePopup.classList.toggle('show'));
 closeVoicePopup.addEventListener('click', () => voicePopup.classList.remove('show'));
 
 voiceMicBtn.addEventListener('click', () => {
-  if(!recognition) recognition = initSpeechRecognition();
-  if(!recognition) return;
-  isListening ? recognition.stop() : recognition.start();
+  if (!recognition) {
+    recognition = initSpeechRecognition();
+  }
+
+  if (!recognition) return;
+
+  if (isListening) {
+    recognition.stop();
+    return;
+  }
+
+  try {
+    recognition.start();
+  } catch (err) {
+    console.log('Recognition already starting...');
+  }
 });
 
 /* ── TTS ── */
-function say(text){
-  if('speechSynthesis' in window){
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1.05; u.pitch = 1.02;
-    window.speechSynthesis.speak(u);
-  }
+function say(text) {
+  if (!('speechSynthesis' in window)) return;
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  utterance.rate = 1.2;
+  utterance.pitch = 1.02;
+  utterance.volume = 1;
+
+  window.speechSynthesis.speak(utterance);
 }
 
 /* ── Form Helpers ── */
@@ -3105,119 +3137,352 @@ function cleanValue(raw, prefixes){
 }
 
 /* ── Intent Detection ── */
-function detectIntent(t){
-  const low = t.toLowerCase();
+function detectIntent(t) {
+  const low = t.toLowerCase().trim();
 
-  // 1. Greeting
-  if(/^(hi|hello|hey|yo|what's up|good morning|good afternoon|good evening)/.test(low))
-    return {intent:'greet'};
-
-  // 2. Stop / quiet
-  if(/(stop|shut up|be quiet|cancel|nevermind)/.test(low))
-    return {intent:'stop'};
-
-  // 3. Navigation
-  if(/(go to |switch to |open |take me to )?step (one|1|two|2|three|3)/.test(low)){
-    const n = low.includes('2')||low.includes('two')?2:(low.includes('3')||low.includes('three')?3:1);
-    return {intent:'navigate', value:n};
-  }
-  if(/(next step|next page|move forward|proceed|continue)/.test(low))
-    return {intent:'navigate', value:getStep()+1};
-  if(/(previous|go back|last step|back up)/.test(low))
-    return {intent:'navigate', value:getStep()-1};
-  if(/(publish|submit|save event|finish|i'm done)/.test(low))
-    return {intent:'submit'};
-
-  // 4. Selection from list ("the first one", "number 2", "that second option")
-  if(VA.mode === 'choosing'){
-    if(/(first|number one|the one|that first)/.test(low)) return {intent:'choose', value:0};
-    if(/(second|number two|the second|option two)/.test(low)) return {intent:'choose', value:1};
-    if(/(third|number three|the third)/.test(low)) return {intent:'choose', value:2};
-    if(/(fourth|number four|the fourth)/.test(low)) return {intent:'choose', value:3};
-    if(/(fifth|number five)/.test(low)) return {intent:'choose', value:4};
-    if(/(none of these|none|nah|no thanks|something else|different)/.test(low))
-      return {intent:'reject_choices'};
+  // ── Basic conversation ──
+  if (/^(hi|hello|hey|yo|hiya|good morning|good afternoon|good evening)\b/.test(low)) {
+    return { intent: 'greet' };
   }
 
-  // 5. Skip / Don't know
-  if(/(skip this|skip it|pass|not sure|i don't know|i dunno|no idea|maybe later|i'll come back|leave it blank)/.test(low))
-    return {intent:'skip'};
-
-  // 6. Status check
-  if(/(what have i filled|what's left|what did i do|status|progress|how am i doing)/.test(low))
-    return {intent:'status'};
-
-  // 7. Help / Ideas
-  if(/(help|i'm stuck|confused|what should i do|what do i do now|guide me)/.test(low))
-    return {intent:'help'};
-  if(/(give me ideas?|suggest|recommend|what do you think|inspire me|examples?|options|i need ideas|i need help|i want options)/.test(low))
-    return {intent:'ideas'};
-
-  // 8. Yes / No (confirmation)
-  if(/^(yes|yeah|yep|sure|okay|ok|definitely|absolutely|correct|right|go ahead|do it|that's right|perfect)$/i.test(low))
-    return {intent:'yes'};
-  if(/^(no|nope|nah|not really|wrong|incorrect|change it|different|actually)/i.test(low))
-    return {intent:'no'};
-
-  // 9. "Use that" / "Go with that" / "Sounds good"
-  if(/(use that|go with that|sounds good|that works|i like that|let's do that|that's fine)/.test(low))
-    return {intent:'accept'};
-
-  // 10. Correction ("actually make it..." / "change it to...")
-  if(/(actually|change it to|make it|update it to|correct that to|no wait)/.test(low) && VA.lastField){
-    return {intent:'correct', value: t};
+  if (/\b(bye|goodbye|see you|that's all|i'm done)\b/.test(low)) {
+    return { intent: 'stop' };
   }
 
-  // 11. Direct field input (flexible matching)
-  const fieldMap = [
-    {keys:['event name is','name is','call it','name it','title is','the title is','event name','the name is'], id:'title', step:1, next:'description'},
-    {keys:['description is','describe it as','about the event','details are','it is about','the description is'], id:'description', step:1, next:'date'},
-    {keys:['category is','type is','this is a','the category is'], id:'category', step:1, isPill:true, next:'date'},
-    {keys:['date is','on the','happening on','scheduled for','event date','the date is'], id:'event_date', step:1, isDate:true, next:'start_time'},
-    {keys:['start time is','starts at','from','beginning at','time is'], id:'start_time', step:1, isTime:true, next:'end_time'},
-    {keys:['end time is','finishes at','ends at','until','ending at'], id:'end_time', step:1, isTime:true, next:'venue'},
-    {keys:['venue is','location is','address is','at','place is','the venue is'], id:'venue', step:1, next:'organizer_name', toggle:'inperson'},
-    {keys:['virtual link is','online link is','zoom is','stream is','link is'], id:'virtual_link', step:1, next:'organizer_name', toggle:'virtual'},
-    {keys:['organizer is','host is','organized by','organizer name is'], id:'organizer_name', step:1, next:'organizer_contact'},
-    {keys:['contact is','phone is','email is','organizer contact is','reach them at'], id:'organizer_contact', step:1, next:'capacity'},
-    {keys:['capacity is','limit is','max is','seats are','capacity'], id:'capacity', step:1, next:'custom_url'},
-    {keys:['url is','custom url is','slug is','event url is'], id:'custom_url', step:1, next:null},
-    {keys:['format is','event format is'], id:'event_format', step:1, next:null},
-    {keys:['recurring','repeating','every week','every month','pattern is'], id:'recurrence_pattern', step:1, toggle:'recurring', next:null},
-    {keys:['ticket is','add ticket','ticket type is','price is'], id:'ticket', step:2, isTicket:true, next:'ticket'},
-    {keys:['sales start is','sales begin','start sales'], id:'sales_start_date', step:2, next:'sales_end_date'},
-    {keys:['sales end is','end sales','sales stop'], id:'sales_end_date', step:2, next:null},
-    {keys:['refund is','refund policy is'], id:'refund_policy', step:2, next:null},
-    {keys:['group chat is','chat name is','whatsapp group is'], id:'groupchat_name', step:3, check:'has_groupchat', next:null},
-    {keys:['dress code is','dress is','wear','attire is'], id:'dress_code', step:3, next:null},
-    {keys:['theme is','event theme is'], id:'event_theme', step:3, next:null},
-    {keys:['tags are','tag is','hashtag is'], id:'tags', step:3, next:null},
-    {keys:['highlights are','highlight is'], id:'highlights', step:3, next:null},
-    {keys:['rules are','rule is','event rules are'], id:'event_rules', step:3, next:null},
-    {keys:['sponsor is','sponsored by','brought by'], id:'sponsor', step:3, isSponsor:true, next:null},
-    {keys:['instagram is','ig is','ig handle is'], id:'social_instagram', step:3, next:null},
-    {keys:['twitter is','x is','x handle is'], id:'social_twitter', step:3, next:null},
-    {keys:['tiktok is','tiktok handle is'], id:'social_tiktok', step:3, next:null},
-    {keys:['guest is','speaker is','performer is','artist is','host is','dj is','add guest','add speaker'], id:'lineup', step:1, isLineup:true, next:null}
+  // ── Navigation ──
+  if (/\b(step|page)\s*(one|1|two|2|three|3)\b/.test(low)) {
+    const match = low.match(/\b(one|1|two|2|three|3)\b/);
+    const n =
+      match && (match[1] === 'two' || match[1] === '2') ? 2 :
+      match && (match[1] === 'three' || match[1] === '3') ? 3 : 1;
+
+    return { intent: 'navigate', value: n };
+  }
+
+  if (/\b(next|continue|move on|keep going)\b/.test(low)) {
+    return { intent: 'navigate', value: Math.min(getStep() + 1, 3) };
+  }
+
+  if (/\b(back|previous|go back)\b/.test(low)) {
+    return { intent: 'navigate', value: Math.max(getStep() - 1, 1) };
+  }
+
+  // ── Ideas ──
+  if (/\b(ideas?|suggest|suggestions|recommend|inspire me|what do you think)\b/.test(low)) {
+    return { intent: 'ideas' };
+  }
+
+  // ── Help ──
+  if (/\b(help|stuck|confused|what should i do|guide me)\b/.test(low)) {
+    return { intent: 'help' };
+  }
+
+  // ── Skip ──
+  if (/\b(skip|leave it blank|not sure|i don't know|maybe later)\b/.test(low)) {
+    return { intent: 'skip' };
+  }
+
+  // ── Status ──
+  if (/\b(status|progress|what have i done|what's left|what is left)\b/.test(low)) {
+    return { intent: 'status' };
+  }
+
+  // ── Confirmation ──
+  if (/^(yes|yeah|yep|yup|sure|okay|ok|go ahead|do it|sounds good|that's good|perfect)$/i.test(low)) {
+    return { intent: 'yes' };
+  }
+
+  if (/^(no|nope|nah|not really|change it)$/i.test(low)) {
+    return { intent: 'no' };
+  }
+
+  // ── Correction ──
+  if (
+    /\b(actually|wait|change|update|make it|instead|correction)\b/.test(low) &&
+    VA.lastField
+  ) {
+    return {
+      intent: 'correct',
+      value: t
+    };
+  }
+
+  // ── Natural field detection ──
+  const fields = [
+    {
+      id: 'title',
+      step: 1,
+      patterns: [
+        /\bcall(?:ing)? (?:it|this event)\b(.+)/i,
+        /\bname(?:d)?\b(.+)/i,
+        /\bevent(?: name)?\b(.+)/i,
+        /\btitle\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'description',
+      step: 1,
+      patterns: [
+        /\babout\b(.+)/i,
+        /\bdescription\b(.+)/i,
+        /\bit's (?:basically|about|for)\b(.+)/i,
+        /\bthis is (?:a|an)\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'category',
+      step: 1,
+      patterns: [
+        /\bcategory\b(.+)/i,
+        /\btype of event\b(.+)/i,
+        /\bit's (?:a|an)\b(.+)/i
+      ],
+      isPill: true
+    },
+
+    {
+      id: 'event_date',
+      step: 1,
+      patterns: [
+        /\bon ([a-z0-9 ,]+)/i,
+        /\bdate\b(.+)/i,
+        /\bhappening\b(.+)/i,
+        /\bscheduled\b(.+)/i
+      ],
+      isDate: true
+    },
+
+    {
+      id: 'start_time',
+      step: 1,
+      patterns: [
+        /\bstarts?\s*(?:at|around)?\s*(.+)/i,
+        /\bbegins?\s*(?:at|around)?\s*(.+)/i
+      ],
+      isTime: true
+    },
+
+    {
+      id: 'end_time',
+      step: 1,
+      patterns: [
+        /\bends?\s*(?:at|around)?\s*(.+)/i,
+        /\bfinishes?\s*(?:at|around)?\s*(.+)/i
+      ],
+      isTime: true
+    },
+
+    {
+      id: 'venue',
+      step: 1,
+      patterns: [
+        /\bat ([a-z0-9 ,.'-]+)/i,
+        /\bvenue\b(.+)/i,
+        /\blocation\b(.+)/i,
+        /\bheld at\b(.+)/i,
+        /\btaking place at\b(.+)/i
+      ],
+      toggle: 'inperson'
+    },
+
+    {
+      id: 'organizer_name',
+      step: 1,
+      patterns: [
+        /\borganized by\b(.+)/i,
+        /\bhosted by\b(.+)/i,
+        /\bhost is\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'organizer_contact',
+      step: 1,
+      patterns: [
+        /\bcontact(?: is)?\b(.+)/i,
+        /\bemail\b(.+)/i,
+        /\bphone\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'capacity',
+      step: 1,
+      patterns: [
+        /\bcapacity\b(.+)/i,
+        /\bup to (\d+)/i,
+        /\b(\d+) people\b/i
+      ]
+    },
+
+    {
+      id: 'event_theme',
+      step: 3,
+      patterns: [
+        /\btheme\b(.+)/i,
+        /\btheme is\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'dress_code',
+      step: 3,
+      patterns: [
+        /\bdress code\b(.+)/i,
+        /\bwear\b(.+)/i
+      ]
+    },
+
+    {
+      id: 'tags',
+      step: 3,
+      patterns: [
+        /\btags?\b(.+)/i,
+        /\bhashtags?\b(.+)/i
+      ]
+    }
   ];
 
-  for(const f of fieldMap){
-    for(const kw of f.keys){
-      if(low.includes(kw.toLowerCase())){
-        const val = cleanValue(t, [kw]);
-        if(val) return {intent:'fill', field:f, value:val, raw:t};
+  // Try to understand what the user explicitly mentioned
+  for (const field of fields) {
+    for (const pattern of field.patterns) {
+      const match = low.match(pattern);
+
+      if (match && match[1]) {
+        let value = match[1].trim();
+
+        value = value
+          .replace(/^(is|are|called|called as|going to be)\s+/i, '')
+          .replace(/[.!?]+$/, '')
+          .trim();
+
+        if (value) {
+          return {
+            intent: 'fill',
+            field,
+            value,
+            raw: t
+          };
+        }
       }
     }
   }
 
-  // 12. Fallback: if we have a current field and user just says a value, assume it's for that field
-  if(VA.field && t.length > 1 && !t.includes('step') && !t.includes('next') && !t.includes('back')){
-    const f = fieldMap.find(x => x.id === VA.field);
-    if(f) return {intent:'fill', field:f, value:t, raw:t};
+  // ── If we're already talking about a field,
+  // assume a natural answer belongs to that field ──
+  if (VA.field) {
+    const currentField = getConversationField(VA.field);
+
+    if (currentField && t.length > 1) {
+      return {
+        intent: 'fill',
+        field: currentField,
+        value: t,
+        raw: t
+      };
+    }
   }
 
-  // 13. Pure confusion
-  return {intent:'unknown'};
+  return {
+    intent: 'unknown'
+  };
+}
+function getConversationField(id) {
+  const fields = {
+    title: {
+      id: 'title',
+      step: 1,
+      next: 'description'
+    },
+
+    description: {
+      id: 'description',
+      step: 1,
+      next: 'event_date'
+    },
+
+    event_date: {
+      id: 'event_date',
+      step: 1,
+      isDate: true,
+      next: 'start_time'
+    },
+
+    start_time: {
+      id: 'start_time',
+      step: 1,
+      isTime: true,
+      next: 'end_time'
+    },
+
+    end_time: {
+      id: 'end_time',
+      step: 1,
+      isTime: true,
+      next: 'venue'
+    },
+
+    venue: {
+      id: 'venue',
+      step: 1,
+      next: 'organizer_name',
+      toggle: 'inperson'
+    },
+
+    organizer_name: {
+      id: 'organizer_name',
+      step: 1,
+      next: 'organizer_contact'
+    },
+
+    organizer_contact: {
+      id: 'organizer_contact',
+      step: 1,
+      next: 'capacity'
+    },
+
+    capacity: {
+      id: 'capacity',
+      step: 1,
+      next: 'custom_url'
+    },
+
+    event_theme: {
+      id: 'event_theme',
+      step: 3,
+      next: null
+    },
+
+    dress_code: {
+      id: 'dress_code',
+      step: 3,
+      next: null
+    },
+
+    tags: {
+      id: 'tags',
+      step: 3,
+      next: null
+    },
+
+    category: {
+      id: 'category',
+      step: 1,
+      isPill: true,
+      next: 'event_date'
+    },
+
+    ticket: {
+      id: 'ticket',
+      step: 2,
+      isTicket: true,
+      next: 'ticket'
+    }
+  };
+
+  return fields[id] || null;
 }
 
 /* ── Field Execution ── */
@@ -3318,28 +3583,32 @@ function executeFill(field, value, raw){
     VA.mode = 'chat';
 
     // Build natural response
-    let responses = [
-      `Got it. ${displayVal}.`,
-      `Alright, ${displayVal} it is.`,
-      `Nice, ${displayVal}.`,
-      `Cool. ${displayVal}.`
-    ];
-    const resp = responses[Math.floor(Math.random() * responses.length)];
+    const reactions = [
+  "Nice.",
+  "Love that.",
+  "Okay, I'm with you.",
+  "Perfect.",
+  "Got you.",
+  "Cool.",
+  "I like that.",
+  "Alright, we're cooking."
+];
+
+const resp = reactions[Math.floor(Math.random() * reactions.length)];
 
     if(field.next){
       const nextField = [
-        {id:'description', q:"What's the event about?"},
-        {id:'date', q:"When is this happening?"},
-        {id:'start_time', q:"What time does it start?"},
-        {id:'end_time', q:"And what time does it end?"},
-        {id:'venue', q:"Where is the venue?"},
-        {id:'organizer_name', q:"Who's organizing this?"},
-        {id:'organizer_contact', q:"What's their contact info?"},
-        {id:'capacity', q:"How many people can attend?"},
-        {id:'custom_url', q:"What custom URL do you want?"},
-        {id:'sales_end_date', q:"When should ticket sales end?"},
-        {id:'ticket', q:"Want to add another ticket type?"}
-      ].find(x => x.id === field.next);
+  { id: 'description', q: "What's the event about?" },
+  { id: 'event_date', q: "When's it happening?" },
+  { id: 'start_time', q: "What time does it start?" },
+  { id: 'end_time', q: "And when does it wrap up?" },
+  { id: 'venue', q: "Where are we hosting it?" },
+  { id: 'organizer_name', q: "Who's behind the event?" },
+  { id: 'organizer_contact', q: "What's the best contact for them?" },
+  { id: 'capacity', q: "Roughly how many people are you expecting?" },
+  { id: 'custom_url', q: "Want a custom link for the event?" },
+  { id: 'ticket', q: "What ticket should we add next?" }
+].find(x => x.id === field.next);
 
       if(nextField){
         const followups = [
@@ -3347,7 +3616,7 @@ function executeFill(field, value, raw){
           `${resp} Now, ${nextField.q.toLowerCase()}`,
           `${resp} Next up: ${nextField.q}`
         ];
-        say(followups[Math.floor(Math.random() * followups.length)]);
+        say(`${resp} ${nextField.q}`);
         VA.field = field.next;
       } else {
         say(`${resp} What else?`);
@@ -3356,7 +3625,7 @@ function executeFill(field, value, raw){
       say(`${resp} What else would you like to add?`);
     }
 
-  }, field.toggle ? 120 : 0);
+  }, field.toggle ? 50 : 0);
 }
 
 /* ── Present Choices ── */
@@ -3379,14 +3648,17 @@ function handleUtterance(raw){
   switch(intent.intent){
 
     case 'greet':
-      const greets = [
-        "Hey there! I'm your form assistant. What are we creating today?",
-        "Hi! Ready to build an event? What's the name?",
-        "Hello! Let's make this event together. Start with the name?"
-      ];
-      say(greets[Math.floor(Math.random() * greets.length)]);
-      VA.field = 'title';
-      break;
+  const greets = [
+    "Hey!  What are we creating today?",
+    "Heyyy! Ready to put an event together?",
+    "Hi! Let's build this thing. What are you thinking?",
+    "Hey! What kind of event are you planning?"
+  ];
+
+  say(greets[Math.floor(Math.random() * greets.length)]);
+
+  VA.field = 'title';
+  break;
 
     case 'stop':
       window.speechSynthesis.cancel();
