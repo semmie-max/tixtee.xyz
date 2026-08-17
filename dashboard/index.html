@@ -729,81 +729,222 @@ input, textarea{
 
 
 /* ── Voice Assistant ── */
-.voice-fab{
-  position:fixed; bottom:28px; right:28px;
-  width:56px; height:56px; border-radius:50%;
-  background:#47034E; color:#fff; border:none;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  box-shadow:0 4px 20px rgba(71,3,78,0.35);
-  z-index:200; transition:transform .2s ease, box-shadow .2s ease;
-}
-.voice-fab:hover{ transform:scale(1.05); box-shadow:0 6px 24px rgba(71,3,78,0.45); }
-.voice-fab svg{ width:24px; height:24px; }
 
-.voice-popup{
-  position:fixed; bottom:96px; right:28px;
-  width:340px; max-width:calc(100vw - 56px);
-  background:var(--card-color,#fff); border-radius:20px;
-  box-shadow:0 12px 40px rgba(21,0,23,0.18);
-  border:1px solid var(--border-color,#e5e5e5);
-  z-index:200; display:none; flex-direction:column; overflow:hidden;
-  animation:voicePopupIn .25s ease;
-}
-@keyframes voicePopupIn{
-  from{ opacity:0; transform:translateY(10px) scale(.96); }
-  to  { opacity:1; transform:translateY(0) scale(1); }
-}
-.voice-popup.show{ display:flex; }
+.voice-fab {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 46px;
+  border-radius: 999px;
+  background: #47034E;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 
-.voice-popup-header{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:16px 20px; background:#47034E; color:#fff;
-}
-.voice-popup-header h4{ font-size:14px; font-weight:700; margin:0; }
-.voice-popup-header .close-popup{
-  background:none; border:none; color:#fff; cursor:pointer;
-  padding:4px; display:flex;
-}
-.voice-popup-header .close-popup svg{ width:18px; height:18px; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 
-.voice-popup-body{
-  padding:20px; display:flex; flex-direction:column;
-  align-items:center; gap:16px;
-}
-.voice-popup-body p{
-  font-size:13px; color:var(--muted-color,#9a9a9a);
-  text-align:center; margin:0; line-height:1.5;
-}
-.voice-mic-btn{
-  width:64px; height:64px; border-radius:50%;
-  background:#f3e9f4; border:2px solid #47034E; color:#47034E;
-  cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:all .2s ease;
-}
-.voice-mic-btn:hover{ background:#47034E; color:#fff; }
-.voice-mic-btn.listening{
-  animation:voicePulse 1.4s infinite;
-  background:#47034E; color:#fff;
-}
-@keyframes voicePulse{
-  0%   { box-shadow:0 0 0 0 rgba(71,3,78,0.4); }
-  70%  { box-shadow:0 0 0 14px rgba(71,3,78,0); }
-  100% { box-shadow:0 0 0 0 rgba(71,3,78,0); }
-}
-.voice-mic-btn svg{ width:28px; height:28px; }
+  box-shadow: 0 8px 30px rgba(71, 3, 78, 0.28);
+  z-index: 200;
 
-.voice-transcript{
-  width:100%; min-height:60px; padding:12px; border-radius:12px;
-  background:var(--field-group-bg,#fbfafc);
-  border:1px solid var(--border-color,#e5e5e5);
-  font-size:13px; color:var(--text-color,#1a1a1a);
-  text-align:center; display:flex; align-items:center; justify-content:center;
+  transition:
+    opacity .25s ease,
+    transform .25s ease,
+    width .25s ease;
 }
-.voice-transcript.empty{ color:var(--muted-color,#9a9a9a); }
 
-@media (max-width:900px){
-  .voice-fab{ bottom:20px; right:20px; width:52px; height:52px; }
-  .voice-popup{ right:20px; bottom:84px; width:300px; }
+/* Hidden until we want to show it */
+.voice-fab.voice-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 20px);
+}
+
+/* Small microphone icon */
+.voice-fab svg {
+  width: 18px;
+  height: 18px;
+}
+
+
+/* ── Voice Bar ── */
+
+.voice-popup {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(10px);
+
+  width: 230px;
+  height: 52px;
+
+  background: #47034E;
+  border-radius: 999px;
+
+  box-shadow: 0 10px 35px rgba(71, 3, 78, 0.30);
+
+  z-index: 200;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 18px;
+
+  opacity: 0;
+
+  transition:
+    opacity .25s ease,
+    transform .25s ease;
+}
+
+.voice-popup.show {
+  display: flex;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* ── Waveform ── */
+
+.voice-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  height: 28px;
+}
+
+.voice-wave span {
+  width: 3px;
+  height: 5px;
+
+  border-radius: 999px;
+  background: #fff;
+
+  transition: height .15s ease;
+}
+
+
+/* Active waveform */
+
+.voice-popup.listening .voice-wave span {
+  animation: voiceWave 0.75s ease-in-out infinite;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(1) {
+  animation-delay: .00s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(2) {
+  animation-delay: .08s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(3) {
+  animation-delay: .16s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(4) {
+  animation-delay: .24s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(5) {
+  animation-delay: .32s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(6) {
+  animation-delay: .24s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(7) {
+  animation-delay: .16s;
+}
+
+.voice-popup.listening .voice-wave span:nth-child(8) {
+  animation-delay: .08s;
+}
+
+@keyframes voiceWave {
+  0%, 100% {
+    height: 5px;
+  }
+
+  50% {
+    height: 24px;
+  }
+}
+
+
+/* ── Voice Text ── */
+
+.voice-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,.9);
+  white-space: nowrap;
+}
+
+
+/* ── Transcript ── */
+
+.voice-transcript {
+  position: fixed;
+  left: 50%;
+  bottom: 88px;
+
+  transform: translateX(-50%);
+
+  width: min(420px, calc(100vw - 40px));
+
+  padding: 10px 14px;
+
+  border-radius: 14px;
+
+  background: rgba(255,255,255,.96);
+  border: 1px solid #e5e5e5;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+
+  font-size: 12px;
+  color: #1a1a1a;
+
+  text-align: center;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity .2s ease;
+}
+
+.voice-transcript.show {
+  opacity: 1;
+}
+
+.voice-transcript.empty {
+  color: #9a9a9a;
+}
+
+
+/* ── Mobile ── */
+
+@media (max-width: 600px) {
+
+  .voice-popup {
+    bottom: 18px;
+    width: 210px;
+    height: 48px;
+  }
+
+  .voice-transcript {
+    bottom: 78px;
+    width: calc(100vw - 32px);
+  }
+
 }
 </style>
 </head>
@@ -1710,14 +1851,25 @@ input, textarea{
     </div>
   </div>
   <!-- Voice Assistant -->
-  <button class="voice-fab" id="voiceFab" aria-label="Get help filling this form">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-      <line x1="12" y1="19" x2="12" y2="23"/>
-      <line x1="8" y1="23" x2="16" y2="23"/>
-    </svg>
-  </button>
+<button class="voice-fab" id="voiceFab" aria-label="Talk to Tixtee">
+
+  <div class="voice-wave" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <span class="voice-status" id="voiceStatus">
+    Talk to Tixtee
+  </span>
+
+</button>
   </div>
 
   <div class="voice-popup" id="voicePopup">
