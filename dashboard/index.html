@@ -728,223 +728,361 @@ input, textarea{
 }
 
 
+
 /* ── Voice Assistant ── */
 
 .voice-fab {
   position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  width: 180px;
-  height: 46px;
-  border-radius: 999px;
+  bottom: 28px;
+  right: 28px;
+
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+
   background: #47034E;
   color: #fff;
   border: none;
+
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 6px 22px rgba(71, 3, 78, 0.28);
+
+  z-index: 200;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.25s ease,
+    box-shadow 0.2s ease;
+}
+
+.voice-fab:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 28px rgba(71, 3, 78, 0.38);
+}
+
+.voice-fab svg {
+  width: 22px;
+  height: 22px;
+}
+
+
+/* ── Voice Popup ── */
+
+.voice-popup {
+  position: fixed;
+
+  left: 50%;
+  bottom: 24px;
+
+  transform: translateX(-50%);
+
+  width: min(430px, calc(100vw - 32px));
+
+  background: var(--card-color, #fff);
+
+  border: 1px solid var(--border-color, #e5e5e5);
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 12px 45px rgba(21, 0, 23, 0.16);
+
+  z-index: 201;
+
+  display: none;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  animation: voicePopupIn 0.25s ease;
+}
+
+@keyframes voicePopupIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+.voice-popup.show {
+  display: flex;
+}
+
+
+/* ── Header ── */
+
+.voice-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 16px;
+
+  background: #47034E;
+  color: #fff;
+}
+
+.voice-popup-header h4 {
+  margin: 0;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.voice-popup-header .close-popup {
+  background: transparent;
+  border: none;
+
+  color: #fff;
+
+  cursor: pointer;
+
+  padding: 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-popup-header .close-popup svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* ── Body ── */
+
+.voice-popup-body {
+  padding: 14px 16px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.voice-popup-body p {
+  margin: 0;
+
+  font-size: 12px;
+
+  color: var(--muted-color, #999);
+
+  text-align: center;
+
+  line-height: 1.4;
+}
+
+
+/* ── Small Voice Button ── */
+
+.voice-mic-btn {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 50%;
+
+  background: #f3e9f4;
+
+  border: 1.5px solid #47034E;
+
+  color: #47034E;
+
   cursor: pointer;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-
-  box-shadow: 0 8px 30px rgba(71, 3, 78, 0.28);
-  z-index: 200;
 
   transition:
-    opacity .25s ease,
-    transform .25s ease,
-    width .25s ease;
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-/* Hidden until we want to show it */
-.voice-fab.voice-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 20px);
-}
-
-/* Small microphone icon */
-.voice-fab svg {
-  width: 18px;
-  height: 18px;
-}
-
-
-/* ── Voice Bar ── */
-
-.voice-popup {
-  position: fixed;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%) translateY(10px);
-
-  width: 230px;
-  height: 52px;
-
+.voice-mic-btn:hover {
   background: #47034E;
-  border-radius: 999px;
+  color: #fff;
 
-  box-shadow: 0 10px 35px rgba(71, 3, 78, 0.30);
-
-  z-index: 200;
-
-  display: none;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0 18px;
-
-  opacity: 0;
-
-  transition:
-    opacity .25s ease,
-    transform .25s ease;
+  transform: scale(1.04);
 }
 
-.voice-popup.show {
-  display: flex;
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.voice-mic-btn svg {
+  width: 21px;
+  height: 21px;
 }
 
 
-/* ── Waveform ── */
+/* ── Listening State ── */
 
-.voice-wave {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
+.voice-mic-btn.listening {
+  background: #47034E;
+  color: #fff;
 
-  height: 28px;
+  animation: voicePulse 1.2s infinite;
 }
 
-.voice-wave span {
-  width: 3px;
-  height: 5px;
-
-  border-radius: 999px;
-  background: #fff;
-
-  transition: height .15s ease;
-}
-
-
-/* Active waveform */
-
-.voice-popup.listening .voice-wave span {
-  animation: voiceWave 0.75s ease-in-out infinite;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(1) {
-  animation-delay: .00s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(2) {
-  animation-delay: .08s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(3) {
-  animation-delay: .16s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(4) {
-  animation-delay: .24s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(5) {
-  animation-delay: .32s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(6) {
-  animation-delay: .24s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(7) {
-  animation-delay: .16s;
-}
-
-.voice-popup.listening .voice-wave span:nth-child(8) {
-  animation-delay: .08s;
-}
-
-@keyframes voiceWave {
-  0%, 100% {
-    height: 5px;
+@keyframes voicePulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0.35);
   }
 
-  50% {
-    height: 24px;
+  70% {
+    box-shadow: 0 0 0 10px rgba(71, 3, 78, 0);
   }
-}
 
-
-/* ── Voice Text ── */
-
-.voice-status {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,.9);
-  white-space: nowrap;
+  100% {
+    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0);
+  }
 }
 
 
 /* ── Transcript ── */
 
 .voice-transcript {
-  position: fixed;
-  left: 50%;
-  bottom: 88px;
+  width: 100%;
 
-  transform: translateX(-50%);
+  min-height: 42px;
 
-  width: min(420px, calc(100vw - 40px));
+  padding: 9px 12px;
 
-  padding: 10px 14px;
+  box-sizing: border-box;
 
-  border-radius: 14px;
+  border-radius: 10px;
 
-  background: rgba(255,255,255,.96);
-  border: 1px solid #e5e5e5;
+  background: var(--field-group-bg, #fbfafc);
 
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  border: 1px solid var(--border-color, #e5e5e5);
 
   font-size: 12px;
-  color: #1a1a1a;
+
+  color: var(--text-color, #1a1a1a);
 
   text-align: center;
 
-  opacity: 0;
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  transition: opacity .2s ease;
-}
-
-.voice-transcript.show {
-  opacity: 1;
+  line-height: 1.4;
 }
 
 .voice-transcript.empty {
-  color: #9a9a9a;
+  color: var(--muted-color, #9a9a9a);
+}
+
+
+/* ── Voice Activity Animation ── */
+
+.voice-wave {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  height: 24px;
+
+  opacity: 0.45;
+}
+
+.voice-wave span {
+  display: block;
+
+  width: 3px;
+
+  height: 6px;
+
+  border-radius: 999px;
+
+  background: #47034E;
+
+  transform-origin: center;
+
+  animation: voiceWave 0.8s ease-in-out infinite;
+}
+
+.voice-wave span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.voice-wave span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.voice-wave span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.voice-wave span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.voice-wave span:nth-child(5) {
+  animation-delay: 0.4s;
+}
+
+@keyframes voiceWave {
+  0%,
+  100% {
+    height: 5px;
+  }
+
+  50% {
+    height: 20px;
+  }
 }
 
 
 /* ── Mobile ── */
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+
+  .voice-fab {
+    width: 50px;
+    height: 50px;
+
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .voice-fab svg {
+    width: 20px;
+    height: 20px;
+  }
 
   .voice-popup {
-    bottom: 18px;
-    width: 210px;
-    height: 48px;
+    width: calc(100vw - 24px);
+
+    bottom: 12px;
+
+    border-radius: 16px;
+  }
+
+  .voice-popup-body {
+    padding: 12px;
+  }
+
+  .voice-mic-btn {
+    width: 44px;
+    height: 44px;
   }
 
   .voice-transcript {
-    bottom: 78px;
-    width: calc(100vw - 32px);
+    min-height: 38px;
   }
-
 }
 </style>
 </head>
@@ -3098,11 +3236,13 @@ document.getElementById('exportMailingListBtn').addEventListener('click', async 
 
 
 /* ── Conversational Voice Assistant ── */
-const voiceFab        = document.getElementById('voiceFab');
-const voicePopup      = document.getElementById('voicePopup');
-const closeVoicePopup = document.getElementById('closeVoicePopup');
-const voiceMicBtn     = document.getElementById('voiceMicBtn');
-const voiceTranscript = document.getElementById('voiceTranscript');
+const voiceAssistant = document.getElementById('voiceAssistant');
+const voiceToggle = document.getElementById('voiceToggle');
+const voiceClose = document.getElementById('voiceClose');
+const voiceStatus = document.getElementById('voiceStatus');
+const voicePrompt = document.getElementById('voicePrompt');
+const voicePromptYes = document.getElementById('voicePromptYes');
+const voicePromptNo = document.getElementById('voicePromptNo');
 
 let recognition = null;
 let isListening = false;
@@ -3162,20 +3302,31 @@ rec.interimResults = true;
 rec.lang = 'en-US';
 
   rec.onstart = () => {
-    isListening = true;
-    voiceMicBtn.classList.add('listening');
-    voiceTranscript.textContent = 'Listening…';
-    voiceTranscript.classList.remove('empty');
-  };
+  isListening = true;
+
+  voiceAssistant.classList.add('listening');
+  voiceAssistant.classList.remove('speaking');
+
+  voiceStatus.textContent = 'Listening…';
+};
   rec.onend = () => {
-    isListening = false;
-    voiceMicBtn.classList.remove('listening');
-  };
+  isListening = false;
+
+  voiceAssistant.classList.remove('listening');
+
+  if (!window.speechSynthesis.speaking) {
+    voiceStatus.textContent = 'Tap to talk';
+  }
+};
   rec.onerror = (e) => {
-    isListening = false;
-    voiceMicBtn.classList.remove('listening');
-    if(e.error !== 'no-speech') say('Mic hiccup. Tap the button again when you\'re ready.');
-  };
+  isListening = false;
+
+  voiceAssistant.classList.remove('listening');
+
+  if(e.error !== 'no-speech') {
+    say("Mic hiccup. Try again.");
+  }
+};
   rec.onresult = (e) => {
   let transcript = '';
 
@@ -3187,8 +3338,6 @@ rec.lang = 'en-US';
 
   if (!transcript) return;
 
-  // Show what you're saying immediately
-  voiceTranscript.textContent = `“${transcript}”`;
 
   // Respond immediately when speech is finalized
   const lastResult = e.results[e.results.length - 1];
@@ -3203,10 +3352,10 @@ rec.lang = 'en-US';
   return rec;
 }
 
-voiceFab.addEventListener('click', () => voicePopup.classList.toggle('show'));
-closeVoicePopup.addEventListener('click', () => voicePopup.classList.remove('show'));
+/* ── Voice UI ── */
 
-voiceMicBtn.addEventListener('click', () => {
+voiceToggle.addEventListener('click', () => {
+
   if (!recognition) {
     recognition = initSpeechRecognition();
   }
@@ -3225,6 +3374,37 @@ voiceMicBtn.addEventListener('click', () => {
   }
 });
 
+
+voiceClose.addEventListener('click', () => {
+  voiceAssistant.classList.remove('show');
+  voicePrompt.classList.remove('show');
+
+  if (recognition && isListening) {
+    recognition.stop();
+  }
+
+  window.speechSynthesis.cancel();
+});
+
+
+/* User accepts voice assistant */
+
+voicePromptYes.addEventListener('click', () => {
+
+  voicePrompt.classList.remove('show');
+
+  voiceAssistant.classList.add('show');
+
+  voiceStatus.textContent = 'Tap to talk';
+});
+
+
+/* User rejects it */
+
+voicePromptNo.addEventListener('click', () => {
+  voicePrompt.classList.remove('show');
+});
+
 /* ── TTS ── */
 function say(text) {
   if (!('speechSynthesis' in window)) return;
@@ -3236,6 +3416,22 @@ function say(text) {
   utterance.rate = 1.2;
   utterance.pitch = 1.02;
   utterance.volume = 1;
+
+  utterance.onstart = () => {
+    voiceAssistant.classList.add('show');
+    voiceAssistant.classList.add('speaking');
+    voiceAssistant.classList.remove('listening');
+
+    voiceStatus.textContent = 'Speaking…';
+  };
+
+  utterance.onend = () => {
+    voiceAssistant.classList.remove('speaking');
+
+    if (!isListening) {
+      voiceStatus.textContent = 'Tap to talk';
+    }
+  };
 
   window.speechSynthesis.speak(utterance);
 }
@@ -3955,6 +4151,28 @@ function shuffle(arr){
   }
   return a;
 }
+/* ── Random Voice Prompt ── */
+
+function showVoicePrompt() {
+  if (voiceAssistant.classList.contains('show')) return;
+
+  voicePrompt.classList.add('show');
+
+  setTimeout(() => {
+    voicePrompt.classList.remove('show');
+  }, 8000);
+}
+
+
+/* Don't show immediately */
+
+setTimeout(() => {
+
+  if (Math.random() < 0.6) {
+    showVoicePrompt();
+  }
+
+}, 12000);
 </script>
 </body>
 </html>
