@@ -2943,31 +2943,416 @@ document.getElementById('exportMailingListBtn').addEventListener('click', async 
 });
 
 
-/* ── Voice Assistant UI ── */
+
+/* ── Voice Assistant ── */
 const voiceFab        = document.getElementById('voiceFab');
 const voicePopup      = document.getElementById('voicePopup');
 const closeVoicePopup = document.getElementById('closeVoicePopup');
 const voiceMicBtn     = document.getElementById('voiceMicBtn');
 const voiceTranscript = document.getElementById('voiceTranscript');
 
-voiceFab.addEventListener('click', () => voicePopup.classList.toggle('show'));
+let recognition = null;
+let isListening = false;
 
+/* 1. Init Speech Recognition */
+function initSpeechRecognition(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    voiceTranscript.textContent = 'Voice input requires Chrome, Edge, or Safari.';
+    voiceTranscript.classList.remove('empty');
+    return null;
+  }
+  const rec = new SpeechRecognition();
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.lang = 'en-US';
+
+  rec.onstart = () => {
+    isListening = true;
+    voiceMicBtn.classList.add('listening');
+    voiceTranscript.textContent = 'Listening… Speak naturally.';
+    voiceTranscript.classList.remove('empty');
+  };
+  rec.onend = () => {
+    isListening = false;
+    voiceMicBtn.classList.remove('listening');
+  };
+  rec.onerror = (e) => {
+    isListening = false;
+    voiceMicBtn.classList.remove('listening');
+    voiceTranscript.textContent = 'Mic error: ' + e.error + '. Tap again.';
+  };
+  rec.onresult = (e) => {
+    let final = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      if(e.results[i].isFinal) final += e.results[i][0].transcript;
+    }
+    if(final){
+      voiceTranscript.textContent = '“' + final.trim() + '”';
+      processVoiceCommand(final.trim());
+    }
+  };
+  return rec;
+}
+
+/* 2. Popup controls */
+voiceFab.addEventListener('click', () => voicePopup.classList.toggle('show'));
 closeVoicePopup.addEventListener('click', () => voicePopup.classList.remove('show'));
 
-// Toggle mic state (wire Web Speech API here later)
 voiceMicBtn.addEventListener('click', () => {
-  const isListening = voiceMicBtn.classList.toggle('listening');
-
-  if (isListening) {
-    voiceTranscript.textContent = 'Listening…';
-    voiceTranscript.classList.remove('empty');
-    // TODO: start SpeechRecognition
-  } else {
-    voiceTranscript.textContent = 'Your speech will appear here…';
-    voiceTranscript.classList.add('empty');
-    // TODO: stop SpeechRecognition
-  }
+  if(!recognition) recognition = initSpeechRecognition();
+  if(!recognition) return;
+  isListening ? recognition.stop() : recognition.start();
 });
+
+/* 3. Helper utilities */
+const setVal = (id, v) => {
+  const el = document.getElementById(id);
+  if(!el) return false;
+  el.value = v;
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+  el.dispatchEvent(new Event('change', {bubbles:true}));
+  return true;
+};
+
+const extractAfter = (raw, keywords) => {
+  const low = raw.toLowerCase();
+  for(const kw of keywords){
+    const idx = low.indexOf(kw.toLowerCase());
+    if(idx !== -1) return raw.substring(idx + kw.length).trim();
+  }
+  return null;
+};
+
+const pickPill = (text) => {
+  const all = [...document.querySelectorAll('.category-pill')];
+  const hit = all.find(p => p.textContent.toLowerCase().includes(text.toLowerCase()));
+  if(hit){ hit.click(); return true; }
+  // try hidden pills
+  const seeMore = document.getElementById('seeMoreCategoriesBtn');
+  if(seeMore && document.getElementById('categoryPillsHidden').style.display !== 'flex'){
+    seeMore.click();
+    setTimeout(() => {
+      const hidden = [...document.querySelectorAll('#categoryPillsHidden .category-pill')];
+      const h2 = hidden.find(p => p.textContent.toLowerCase().includes(text.toLowerCase()));
+      if(h2) h2.click();
+    }, 60);
+  }
+  return false;
+};
+
+const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+
+const parseSmartDate = (str) => {
+  const low = str.toLowerCase();
+  const now = new Date();
+  if(low.includes('tomorrow')){ const d=new Date(now); d.setDate(d.getDate()+1); return formatDate(d); }
+  if(low.includes('next week')){ const d=new Date(now); d.setDate(d.getDate()+7); return formatDate(d); }
+  const d = new Date(str);
+  if(!isNaN(d.getTime())) return formatDate(d);
+  return null;
+};
+
+const parseTime = (str) => {
+  const m = str.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+  if(!m) return null;
+  let h = parseInt(m[1]), min = m[2]?parseInt(m[2]):0;
+  const per = m[3].toUpperCase();
+  if(per==='PM' && h!==12) h+=12;
+  if(per==='AM' && h===12) h=0;
+  const h12 = h===0?12:(h>12?h-12:h);
+  const mins = min===0?'00':String(min).padStart(2,'0');
+  return `${h12}:${mins} ${per}`;
+};
+
+const speak = (txt) => {
+  if('speechSynthesis' in window){
+    const u = new SpeechSynthesisUtterance(txt);
+    u.rate = 1.05; u.pitch = 1;
+    window.speechSynthesis.speak(u);
+  }
+};
+
+const ensureStep1 = () => { goToStep(1); };
+const ensureStep2 = () => { goToStep(2); };
+const ensureStep3 = () => { goToStep(3); };
+
+/* 4. Command processor */
+function processVoiceCommand(raw){
+  const t = raw.toLowerCase();
+
+  /* Navigation */
+  if(t.includes('step 2') || t.includes('next step') || t.includes('ticketing')){
+    ensureStep2(); speak('Moved to ticketing'); return;
+  }
+  if(t.includes('step 3') || t.includes('promotion') || t.includes('engagement')){
+    ensureStep3(); speak('Moved to promotion'); return;
+  }
+  if(t.includes('step 1') || t.includes('event setup') || t.includes('go back to step one')){
+    ensureStep1(); speak('Back to event setup'); return;
+  }
+  if(t.includes('previous') || t.includes('go back')){
+    const active = document.querySelector('.wizard-step.active');
+    const n = active ? parseInt(active.dataset.step) : 1;
+    if(n>1){ goToStep(n-1); speak('Going back'); }
+    return;
+  }
+  if(t.includes('publish') || t.includes('submit event')){
+    document.getElementById('eventForm').dispatchEvent(new Event('submit'));
+    speak('Publishing event'); return;
+  }
+
+  /* ── STEP 1: Event Setup ── */
+  if(t.includes('event name') || t.includes('title')){
+    const v = extractAfter(raw, ['event name is','title is','the title is','event name','title']);
+    if(v){ setVal('title', v); speak('Event name set'); } return;
+  }
+  if(t.includes('description')){
+    const v = extractAfter(raw, ['description is','describe','the description is']);
+    if(v){ setVal('description', v); speak('Description added'); } return;
+  }
+  if(t.includes('category')){
+    const v = extractAfter(raw, ['category is','category']);
+    if(v && pickPill(v)) speak('Category selected');
+    return;
+  }
+
+  /* Date & Time */
+  if(t.includes('date')){
+    const v = extractAfter(raw, ['date is','event date is','on','date']);
+    if(v){
+      const d = parseSmartDate(v);
+      if(d){
+        setVal('event_date', d);
+        if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
+        if(typeof updateAccordionLocks === 'function') updateAccordionLocks();
+        speak('Date set');
+      } else speak('Could not understand that date');
+    }
+    return;
+  }
+  if(t.includes('time')){
+    const tm = parseTime(raw);
+    if(tm){
+      if(t.includes('end') || t.includes('to') || t.includes('finish')) setVal('end_time', tm);
+      else setVal('start_time', tm);
+      if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
+      speak('Time set');
+    }
+    return;
+  }
+
+  /* Venue / Virtual */
+  if(t.includes('venue') || t.includes('location') || t.includes('address') || t.includes('place')){
+    const v = extractAfter(raw, ['venue is','location is','address is','at','venue','location']);
+    if(v){
+      // ensure in-person is selected
+      const inperson = document.querySelector('#virtualToggle .toggle-btn[data-value="inperson"]');
+      if(inperson) inperson.click();
+      setTimeout(() => { setVal('venue', v); updateAccordionLocks?.(); }, 80);
+      speak('Venue set');
+    }
+    return;
+  }
+  if(t.includes('virtual') || t.includes('online') || t.includes('zoom') || t.includes('link')){
+    const v = extractAfter(raw, ['virtual link is','link is','zoom link is','online at','virtual is']);
+    if(v){
+      const virt = document.querySelector('#virtualToggle .toggle-btn[data-value="virtual"]');
+      if(virt) virt.click();
+      setTimeout(() => { setVal('virtual_link', v); updateAccordionLocks?.(); }, 80);
+      speak('Virtual link set');
+    }
+    return;
+  }
+
+  /* Format & Recurrence */
+  if(t.includes('format')){
+    const v = extractAfter(raw, ['format is','format']);
+    if(v){ setVal('event_format', v); speak('Format set'); } return;
+  }
+  if(t.includes('recurring') || t.includes('repeating')){
+    const btn = document.querySelector('#recurringToggle .toggle-btn[data-value="recurring"]');
+    if(btn) btn.click();
+    const v = extractAfter(raw, ['recurring','every','pattern is']);
+    if(v) setVal('recurrence_pattern', v);
+    speak('Set as recurring'); return;
+  }
+  if(t.includes('one time') || t.includes('single event')){
+    const btn = document.querySelector('#recurringToggle .toggle-btn[data-value="single"]');
+    if(btn) btn.click();
+    speak('Set as one-time event'); return;
+  }
+
+  /* Organizer & Details */
+  if(t.includes('organizer name') || (t.includes('organizer') && !t.includes('contact'))){
+    const v = extractAfter(raw, ['organizer name is','organizer is','organizer name']);
+    if(v){ setVal('organizer_name', v); speak('Organizer name set'); } return;
+  }
+  if(t.includes('organizer contact') || t.includes('phone') || t.includes('email contact')){
+    const v = extractAfter(raw, ['contact is','organizer contact is','phone is','email is']);
+    if(v){ setVal('organizer_contact', v); speak('Contact set'); } return;
+  }
+  if(t.includes('capacity') || t.includes('limit') || t.includes('seats')){
+    const n = t.match(/(\d+)/);
+    if(n){ setVal('capacity', n[1]); speak('Capacity set to '+n[1]); } return;
+  }
+  if(t.includes('age') || t.includes('restriction')){
+    const n = t.match(/(\d+)/);
+    if(n){
+      const sel = document.getElementById('age_limit');
+      const val = n[1]+'+';
+      if(sel){ sel.value = val; speak('Age restriction set'); }
+    }
+    return;
+  }
+  if(t.includes('custom url') || t.includes('event url')){
+    const v = extractAfter(raw, ['url is','custom url is','event url is']);
+    if(v){ setVal('custom_url', v); speak('Custom URL set'); } return;
+  }
+
+  /* Guests / Speakers */
+  if(t.includes('guest') || t.includes('speaker') || t.includes('performer') || t.includes('artist') || t.includes('host') || t.includes('dj')){
+    let name = extractAfter(raw, ['guest is','speaker is','artist is','performer is','host is','dj is','add guest','add speaker','add artist','add']);
+    // Remove role words from name
+    const roles = ['speaker','performer','artist','host','dj','guest'];
+    let role = 'Performer';
+    for(const r of roles){ if(t.includes(r)) role = r.charAt(0).toUpperCase()+r.slice(1); }
+    if(t.includes('dj')) role = 'DJ';
+    if(name){
+      name = name.replace(/^(is|as)\s+/i,'');
+      ensureStep1();
+      document.getElementById('addLineupBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('.lineup-row');
+        const last = rows[rows.length-1];
+        if(last){
+          last.querySelector('.lineup-name').value = name;
+          last.querySelector('.lineup-role').value = role;
+        }
+      }, 60);
+      speak('Added '+name+' as '+role);
+    }
+    return;
+  }
+
+  /* ── STEP 2: Ticketing ── */
+  if(t.includes('ticket')){
+    const priceMatch = raw.match(/(?:for|at|costs?|price|₦|naira|number)\s*(\d[\d,]*)/i);
+    const price = priceMatch ? priceMatch[1].replace(/,/g,'') : '';
+    let name = extractAfter(raw, ['ticket','add ticket','ticket type']);
+    if(name) name = name.replace(/(?:for|at|costs?|price|₦|naira)\s*[\d,]+/gi,'').trim();
+    if(!name) name = 'General Admission';
+    ensureStep2();
+    setTimeout(() => {
+      document.getElementById('addTicketBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('.ticket-row');
+        const last = rows[rows.length-1];
+        if(last){
+          last.querySelector('.ticket-name').value = name;
+          if(price) last.querySelector('.ticket-price').value = price;
+        }
+      }, 60);
+    }, 100);
+    speak('Added '+name+' ticket');
+    return;
+  }
+  if(t.includes('sales start') || t.includes('sales begin')){
+    const v = extractAfter(raw, ['sales start','sales begin','start sales']);
+    if(v){ setVal('sales_start_date', v); speak('Sales start set'); } return;
+  }
+  if(t.includes('sales end') || t.includes('end sales')){
+    const v = extractAfter(raw, ['sales end','end sales']);
+    if(v){ setVal('sales_end_date', v); speak('Sales end set'); } return;
+  }
+  if(t.includes('refund')){
+    const sel = document.getElementById('refund_policy');
+    if(t.includes('no refund')) sel.value = 'no_refunds';
+    else if(t.includes('full')) sel.value = 'full_refund';
+    else if(t.includes('partial')) sel.value = 'partial_refund';
+    speak('Refund policy updated'); return;
+  }
+  if(t.includes('transfer') || t.includes('resell')){
+    const allow = !t.includes('not') && !t.includes('no');
+    const btn = document.querySelector('#transfersToggle .toggle-btn[data-value="'+(allow?'yes':'no')+'"]');
+    if(btn) btn.click();
+    speak(allow ? 'Transfers allowed' : 'Transfers disabled'); return;
+  }
+
+  /* ── STEP 3: Promotion ── */
+  if(t.includes('group chat') || t.includes('groupchat')){
+    const cb = document.getElementById('has_groupchat');
+    if(cb){ cb.checked = true; cb.dispatchEvent(new Event('change')); }
+    const v = extractAfter(raw, ['group chat name is','chat name is','groupchat name is']);
+    if(v) setVal('groupchat_name', v);
+    speak('Group chat enabled'); return;
+  }
+  if(t.includes('networking') || t.includes('friend finder')){
+    const cb = document.getElementById('enable_networking');
+    if(cb){ cb.checked = true; cb.dispatchEvent(new Event('change')); speak('Networking enabled'); }
+    return;
+  }
+  if(t.includes('dress code')){
+    const v = extractAfter(raw, ['dress code is','dress code']);
+    if(v){ setVal('dress_code', v); speak('Dress code set'); } return;
+  }
+  if(t.includes('theme') && !t.includes('template')){
+    const v = extractAfter(raw, ['theme is','theme']);
+    if(v){ setVal('event_theme', v); speak('Theme set'); } return;
+  }
+  if(t.includes('tag') || t.includes('hashtag')){
+    const v = extractAfter(raw, ['tags are','tag is','tags','hashtag is']);
+    if(v){ setVal('tags', v); speak('Tags added'); } return;
+  }
+  if(t.includes('highlight')){
+    const v = extractAfter(raw, ['highlights are','highlight is','highlights']);
+    if(v){ setVal('highlights', v); speak('Highlights added'); } return;
+  }
+  if(t.includes('rule') || t.includes('event rule')){
+    const v = extractAfter(raw, ['rules are','rule is','event rules are']);
+    if(v){ setVal('event_rules', v); speak('Rules added'); } return;
+  }
+  if(t.includes('sponsor')){
+    const v = extractAfter(raw, ['sponsor is','add sponsor','sponsor']);
+    if(v){
+      ensureStep3();
+      document.getElementById('addSponsorBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('#sponsorRows .lineup-row');
+        const last = rows[rows.length-1];
+        if(last) last.querySelector('.sponsor-name').value = v;
+      }, 60);
+      speak('Sponsor added');
+    }
+    return;
+  }
+  if(t.includes('instagram') || t.includes('ig ')){
+    const v = extractAfter(raw, ['instagram is','instagram handle is','ig is','ig handle is']);
+    if(v){ setVal('social_instagram', v); speak('Instagram added'); } return;
+  }
+  if(t.includes('twitter') || t.includes('x handle')){
+    const v = extractAfter(raw, ['twitter is','x is','twitter handle is','x handle is']);
+    if(v){ setVal('social_twitter', v); speak('Twitter added'); } return;
+  }
+  if(t.includes('tiktok')){
+    const v = extractAfter(raw, ['tiktok is','tiktok handle is']);
+    if(v){ setVal('social_tiktok', v); speak('TikTok added'); } return;
+  }
+
+  /* Templates */
+  if(t.includes('template') || t.includes('card style')){
+    const map = {classic:'classic', overlay:'overlay', poster:'poster', minimal:'minimal'};
+    for(const [key,val] of Object.entries(map)){
+      if(t.includes(key)){
+        const opt = document.querySelector('.template-option[data-template="'+val+'"]');
+        if(opt){ opt.click(); speak(key+' template selected'); return; }
+      }
+    }
+  }
+
+  /* Fallback */
+  speak("I heard you. Try saying: Event name is Lagos Tech Summit, or Add ticket VIP for 5000");
+}
 </script>
 </body>
 </html>
