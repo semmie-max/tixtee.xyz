@@ -729,82 +729,117 @@ input, textarea{
 
 
 
-/* ── Voice Assistant ── */
+/* =========================================================
+   STEP 2 — VOICE ASSISTANT UI
+   Small • Horizontal • Bottom Center • Voice Wave
+   ========================================================= */
+
+
+/* ─────────────────────────────────────────────────────────
+   VOICE FAB
+   Small floating button that starts the assistant
+   ───────────────────────────────────────────────────────── */
 
 .voice-fab {
   position: fixed;
-  bottom: 28px;
-  right: 28px;
+  right: 24px;
+  bottom: 24px;
 
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
+
+  padding: 0;
+  border: 0;
   border-radius: 50%;
 
-  background: #47034E;
-  color: #fff;
-  border: none;
-
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 6px 22px rgba(71, 3, 78, 0.28);
+  background: #47034E;
+  color: #fff;
 
-  z-index: 200;
+  cursor: pointer;
+
+  z-index: 300;
+
+  box-shadow:
+    0 6px 20px rgba(71, 3, 78, 0.25);
 
   transition:
     transform 0.2s ease,
-    opacity 0.25s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    opacity 0.25s ease;
 }
 
 .voice-fab:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 28px rgba(71, 3, 78, 0.38);
+  transform: scale(1.06);
+
+  box-shadow:
+    0 8px 26px rgba(71, 3, 78, 0.35);
+}
+
+.voice-fab:active {
+  transform: scale(0.96);
 }
 
 .voice-fab svg {
-  width: 22px;
-  height: 22px;
+  width: 21px;
+  height: 21px;
 }
 
 
-/* ── Voice Popup ── */
+/* ─────────────────────────────────────────────────────────
+   VOICE POPUP
+   Small horizontal assistant bar
+   ───────────────────────────────────────────────────────── */
 
 .voice-popup {
   position: fixed;
 
   left: 50%;
-  bottom: 24px;
+  bottom: 22px;
+
+  width: min(420px, calc(100vw - 28px));
+
+  min-height: 58px;
 
   transform: translateX(-50%);
 
-  width: min(430px, calc(100vw - 32px));
+  display: none;
+  align-items: center;
 
-  background: var(--card-color, #fff);
+  padding: 8px 12px;
 
-  border: 1px solid var(--border-color, #e5e5e5);
+  background: var(--card-color, #ffffff);
 
-  border-radius: 18px;
+  border: 1px solid var(--border-color, #e8e8e8);
+
+  border-radius: 999px;
 
   box-shadow:
-    0 12px 45px rgba(21, 0, 23, 0.16);
+    0 12px 35px rgba(21, 0, 23, 0.16);
 
-  z-index: 201;
-
-  display: none;
-  flex-direction: column;
+  z-index: 301;
 
   overflow: hidden;
 
-  animation: voicePopupIn 0.25s ease;
+  animation: voiceBarIn 0.25s ease;
 }
 
-@keyframes voicePopupIn {
+.voice-popup.show {
+  display: flex;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   POPUP ENTRANCE
+   ───────────────────────────────────────────────────────── */
+
+@keyframes voiceBarIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 14px) scale(0.96);
+    transform: translate(-50%, 15px) scale(0.94);
   }
 
   to {
@@ -813,89 +848,125 @@ input, textarea{
   }
 }
 
-.voice-popup.show {
-  display: flex;
-}
 
-
-/* ── Header ── */
+/* ─────────────────────────────────────────────────────────
+   VOICE POPUP HEADER
+   ───────────────────────────────────────────────────────── */
 
 .voice-popup-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
-  padding: 12px 16px;
+  flex: 0 0 auto;
 
-  background: #47034E;
-  color: #fff;
+  padding: 0;
+
+  background: transparent;
+  color: var(--text-color, #1a1a1a);
 }
 
 .voice-popup-header h4 {
   margin: 0;
 
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+
+  white-space: nowrap;
 }
 
 .voice-popup-header .close-popup {
-  background: transparent;
-  border: none;
+  width: 25px;
+  height: 25px;
 
-  color: #fff;
+  margin-left: 6px;
 
-  cursor: pointer;
+  padding: 0;
 
-  padding: 4px;
+  border: 0;
+  border-radius: 50%;
 
   display: flex;
   align-items: center;
   justify-content: center;
+
+  background: transparent;
+
+  color: var(--muted-color, #888);
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.voice-popup-header .close-popup:hover {
+  background: #f3e9f4;
+  color: #47034E;
 }
 
 .voice-popup-header .close-popup svg {
-  width: 17px;
-  height: 17px;
+  width: 14px;
+  height: 14px;
 }
 
 
-/* ── Body ── */
+/* ─────────────────────────────────────────────────────────
+   POPUP BODY
+   ───────────────────────────────────────────────────────── */
 
 .voice-popup-body {
-  padding: 14px 16px;
+  flex: 1;
+
+  min-width: 0;
+
+  padding: 0;
 
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 
   align-items: center;
+  justify-content: center;
 
   gap: 10px;
 }
 
+
+/* ─────────────────────────────────────────────────────────
+   DESCRIPTION / STATUS
+   ───────────────────────────────────────────────────────── */
+
 .voice-popup-body p {
   margin: 0;
 
-  font-size: 12px;
+  font-size: 11px;
 
-  color: var(--muted-color, #999);
+  line-height: 1.3;
 
-  text-align: center;
+  color: var(--muted-color, #8f8f8f);
 
-  line-height: 1.4;
+  white-space: nowrap;
 }
 
 
-/* ── Small Voice Button ── */
+/* ─────────────────────────────────────────────────────────
+   MICROPHONE BUTTON
+   ───────────────────────────────────────────────────────── */
 
 .voice-mic-btn {
-  width: 46px;
-  height: 46px;
+  flex: 0 0 auto;
+
+  width: 38px;
+  height: 38px;
+
+  padding: 0;
 
   border-radius: 50%;
 
-  background: #f3e9f4;
-
   border: 1.5px solid #47034E;
+
+  background: #f3e9f4;
 
   color: #47034E;
 
@@ -906,86 +977,109 @@ input, textarea{
   justify-content: center;
 
   transition:
+    transform 0.2s ease,
     background 0.2s ease,
     color 0.2s ease,
-    transform 0.2s ease;
+    box-shadow 0.2s ease;
 }
 
 .voice-mic-btn:hover {
+  transform: scale(1.05);
+
   background: #47034E;
   color: #fff;
+}
 
-  transform: scale(1.04);
+.voice-mic-btn:active {
+  transform: scale(0.94);
 }
 
 .voice-mic-btn svg {
-  width: 21px;
-  height: 21px;
+  width: 18px;
+  height: 18px;
 }
 
 
-/* ── Listening State ── */
+/* ─────────────────────────────────────────────────────────
+   ACTIVE / LISTENING MICROPHONE
+   ───────────────────────────────────────────────────────── */
 
 .voice-mic-btn.listening {
   background: #47034E;
   color: #fff;
 
-  animation: voicePulse 1.2s infinite;
+  animation: voiceMicPulse 1.2s ease-in-out infinite;
 }
 
-@keyframes voicePulse {
+@keyframes voiceMicPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0.35);
+    box-shadow:
+      0 0 0 0 rgba(71, 3, 78, 0.35);
   }
 
   70% {
-    box-shadow: 0 0 0 10px rgba(71, 3, 78, 0);
+    box-shadow:
+      0 0 0 9px rgba(71, 3, 78, 0);
   }
 
   100% {
-    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0);
+    box-shadow:
+      0 0 0 0 rgba(71, 3, 78, 0);
   }
 }
 
 
-/* ── Transcript ── */
+/* ─────────────────────────────────────────────────────────
+   TRANSCRIPT
+   ───────────────────────────────────────────────────────── */
 
 .voice-transcript {
-  width: 100%;
+  flex: 1;
 
-  min-height: 42px;
+  min-width: 0;
 
-  padding: 9px 12px;
+  min-height: 34px;
 
-  box-sizing: border-box;
+  padding: 0 8px;
 
-  border-radius: 10px;
+  border: 0;
 
-  background: var(--field-group-bg, #fbfafc);
-
-  border: 1px solid var(--border-color, #e5e5e5);
-
-  font-size: 12px;
-
-  color: var(--text-color, #1a1a1a);
-
-  text-align: center;
+  background: transparent;
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 
-  line-height: 1.4;
+  font-size: 11px;
+
+  line-height: 1.3;
+
+  color: var(--text-color, #222);
+
+  text-align: left;
+
+  overflow: hidden;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
 }
 
 .voice-transcript.empty {
-  color: var(--muted-color, #9a9a9a);
+  color: var(--muted-color, #999);
 }
 
 
-/* ── Voice Activity Animation ── */
+/* ─────────────────────────────────────────────────────────
+   HORIZONTAL VOICE WAVE
+   The music-player-style moving bars
+   ───────────────────────────────────────────────────────── */
 
 .voice-wave {
+  flex: 0 0 auto;
+
+  height: 28px;
+
   display: flex;
 
   align-items: center;
@@ -993,16 +1087,16 @@ input, textarea{
 
   gap: 3px;
 
-  height: 24px;
-
-  opacity: 0.45;
+  padding: 0 4px;
 }
+
+
+/* Individual bars */
 
 .voice-wave span {
   display: block;
 
   width: 3px;
-
   height: 6px;
 
   border-radius: 999px;
@@ -1011,77 +1105,243 @@ input, textarea{
 
   transform-origin: center;
 
-  animation: voiceWave 0.8s ease-in-out infinite;
+  animation:
+    voiceWaveIdle 1s ease-in-out infinite;
 }
+
+
+/* Different timing = organic movement */
 
 .voice-wave span:nth-child(1) {
   animation-delay: 0s;
 }
 
 .voice-wave span:nth-child(2) {
-  animation-delay: 0.1s;
+  animation-delay: 0.08s;
 }
 
 .voice-wave span:nth-child(3) {
-  animation-delay: 0.2s;
+  animation-delay: 0.16s;
 }
 
 .voice-wave span:nth-child(4) {
-  animation-delay: 0.3s;
+  animation-delay: 0.24s;
 }
 
 .voice-wave span:nth-child(5) {
-  animation-delay: 0.4s;
+  animation-delay: 0.32s;
 }
 
-@keyframes voiceWave {
+.voice-wave span:nth-child(6) {
+  animation-delay: 0.40s;
+}
+
+.voice-wave span:nth-child(7) {
+  animation-delay: 0.48s;
+}
+
+
+/* Idle wave */
+
+@keyframes voiceWaveIdle {
+  0%,
+  100% {
+    height: 5px;
+    opacity: 0.45;
+  }
+
+  50% {
+    height: 10px;
+    opacity: 0.75;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   ACTIVE VOICE WAVE
+   Used while USER or ASSISTANT is speaking
+   ───────────────────────────────────────────────────────── */
+
+.voice-popup.speaking .voice-wave span {
+  animation-name: voiceWaveActive;
+  animation-duration: 0.55s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(2) {
+  animation-delay: 0.07s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(3) {
+  animation-delay: 0.14s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(4) {
+  animation-delay: 0.21s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(5) {
+  animation-delay: 0.28s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(6) {
+  animation-delay: 0.35s;
+}
+
+.voice-popup.speaking .voice-wave span:nth-child(7) {
+  animation-delay: 0.42s;
+}
+
+@keyframes voiceWaveActive {
   0%,
   100% {
     height: 5px;
   }
 
+  25% {
+    height: 19px;
+  }
+
   50% {
-    height: 20px;
+    height: 25px;
+  }
+
+  75% {
+    height: 13px;
   }
 }
 
 
-/* ── Mobile ── */
+/* ─────────────────────────────────────────────────────────
+   ASSISTANT SPEAKING STATE
+   ───────────────────────────────────────────────────────── */
 
-@media (max-width: 900px) {
+.voice-popup.assistant-speaking .voice-wave span {
+  animation-duration: 0.42s;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   USER SPEAKING STATE
+   ───────────────────────────────────────────────────────── */
+
+.voice-popup.user-speaking .voice-wave span {
+  animation-duration: 0.28s;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   HIDE FAB WHEN VOICE BAR IS ACTIVE
+   ───────────────────────────────────────────────────────── */
+
+.voice-popup.show ~ .voice-fab {
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform: scale(0.8);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   MOBILE
+   ───────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
 
   .voice-fab {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
 
-    right: 18px;
-    bottom: 18px;
+    right: 16px;
+    bottom: 16px;
   }
 
   .voice-fab svg {
-    width: 20px;
-    height: 20px;
+    width: 19px;
+    height: 19px;
   }
 
   .voice-popup {
-    width: calc(100vw - 24px);
+    left: 50%;
+    bottom: 14px;
 
-    bottom: 12px;
+    width: calc(100vw - 20px);
 
-    border-radius: 16px;
+    min-height: 54px;
+
+    padding: 7px 9px;
+
+    border-radius: 999px;
   }
 
   .voice-popup-body {
-    padding: 12px;
+    gap: 7px;
+  }
+
+  .voice-popup-body p {
+    display: none;
+  }
+
+  .voice-popup-header h4 {
+    display: none;
+  }
+
+  .voice-popup-header .close-popup {
+    width: 23px;
+    height: 23px;
+
+    margin-left: 3px;
   }
 
   .voice-mic-btn {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .voice-mic-btn svg {
+    width: 17px;
+    height: 17px;
   }
 
   .voice-transcript {
-    min-height: 38px;
+    font-size: 10px;
+
+    padding: 0 4px;
+  }
+
+  .voice-wave {
+    gap: 2px;
+
+    height: 24px;
+  }
+
+  .voice-wave span {
+    width: 2.5px;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   VERY SMALL SCREENS
+   ───────────────────────────────────────────────────────── */
+
+@media (max-width: 380px) {
+
+  .voice-popup {
+    width: calc(100vw - 14px);
+  }
+
+  .voice-wave {
+    gap: 2px;
+  }
+
+  .voice-wave span:nth-child(6),
+  .voice-wave span:nth-child(7) {
+    display: none;
   }
 }
 </style>
