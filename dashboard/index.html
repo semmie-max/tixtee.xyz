@@ -2070,12 +2070,6 @@ async function loadMailingList(){
   document.getElementById('has_groupchat').addEventListener('change', (e) => {
     document.getElementById('groupchatFieldWrap').style.display = e.target.checked ? 'block' : 'none';
   });
-  document.getElementById('has_secret_guest').addEventListener('change', (e) => {
-    document.getElementById('secretGuestWrap').style.display = e.target.checked ? 'block' : 'none';
-  });
-  document.getElementById('has_golden_seat').addEventListener('change', (e) => {
-    document.getElementById('goldenSeatWrap').style.display = e.target.checked ? 'block' : 'none';
-  });
 
   document.getElementById('custom_url').addEventListener('input', (e) => {
     const slug = e.target.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
@@ -2408,14 +2402,14 @@ async function loadMailingList(){
       custom_url: document.getElementById('custom_url').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-') || null,
       groupchat_name: document.getElementById('has_groupchat').checked ? document.getElementById('groupchat_name').value : null,
       groupchat_rules: document.getElementById('has_groupchat').checked ? document.getElementById('groupchat_rules').value : null,
-      has_secret_guest: document.getElementById('has_secret_guest').checked,
-      secret_guest_note: document.getElementById('has_secret_guest').checked ? document.getElementById('secret_guest_note').value : null,
-      has_golden_seat: document.getElementById('has_golden_seat').checked,
-      golden_seat_note: document.getElementById('has_golden_seat').checked ? document.getElementById('golden_seat_note').value : null,
+      has_secret_guest: false,
+      secret_guest_note: null,
+      has_golden_seat: false,
+      golden_seat_note: document.getElementById('golden_seat_note') ? document.getElementById('golden_seat_note').value : null,
       groupchat_created: document.getElementById('groupchat_created') ? document.getElementById('groupchat_created').checked : false,
-      enable_networking: document.getElementById('enable_networking').checked,
+      enable_networking: false,
       event_rules: document.getElementById('event_rules').value,
-      dress_code: document.getElementById('dress_code').value,
+      dress_code: '',
       event_theme: document.getElementById('event_theme').value,
       tags: document.getElementById('tags').value,
       highlights: document.getElementById('highlights').value,
