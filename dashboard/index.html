@@ -418,6 +418,122 @@ input, textarea{
   }
   .accordion-section.open .accordion-body{ display:block; }
 
+  /* ---------- progressive accordion locking ---------- */
+  .accordion-section.locked{ opacity:0.55; }
+  .accordion-section.locked .accordion-header{ cursor:not-allowed; }
+  .accordion-section.locked .accordion-header:hover{ background:var(--field-group-bg); }
+  .accordion-section.locked .accordion-body{ display:none !important; }
+  .accordion-lock-icon{ display:none; }
+  .accordion-section.locked .accordion-lock-icon{
+    display:flex; align-items:center; justify-content:center;
+    width:16px; height:16px; color:var(--muted-color); flex-shrink:0;
+  }
+  .accordion-section.locked .accordion-chevron{ display:none; }
+  .accordion-section.locked .accordion-header h3{ color:var(--muted-color); }
+  .accordion-hint{
+    font-size:11px; font-weight:500; color:var(--muted-color);
+    margin-left:8px; white-space:nowrap;
+  }
+  .accordion-section.locked .accordion-header{
+    animation:none;
+  }
+  .accordion-section.shake .accordion-header{
+    animation:tx-shake 0.35s ease;
+  }
+  @keyframes tx-shake{
+    0%,100%{ transform:translateX(0); }
+    20%{ transform:translateX(-4px); }
+    40%{ transform:translateX(4px); }
+    60%{ transform:translateX(-3px); }
+    80%{ transform:translateX(3px); }
+  }
+  .accordion-header-left{ display:flex; align-items:center; gap:10px; }
+
+  /* ---------- branded date & time picker ---------- */
+  .datetime-field{
+    display:flex; align-items:center; gap:10px;
+    width:100%; padding:11px 13px; margin-bottom:16px;
+    border:1px solid var(--border-color); border-radius:10px; font-size:13px;
+    background:var(--input-bg); color:var(--text-color);
+    cursor:pointer; transition:border-color 0.2s ease;
+  }
+  .datetime-field:hover{ border-color:#c9a8cd; }
+  .datetime-field.open{ border-color:#47034E; }
+  .datetime-field svg{ width:16px; height:16px; color:#47034E; flex-shrink:0; }
+  .datetime-field .datetime-text{ flex:1; }
+  .datetime-field .datetime-placeholder{ color:var(--muted-color); }
+
+  .datetime-popover-wrap{ position:relative; }
+  .datetime-popover{
+    display:none;
+    position:absolute; top:calc(100% + 8px); left:0; z-index:60;
+    width:100%; min-width:320px;
+    background:var(--card-color); border:1px solid var(--border-color); border-radius:16px;
+    box-shadow:0 16px 40px rgba(21,0,23,0.18);
+    overflow:hidden;
+  }
+  .datetime-popover.show{ display:flex; flex-direction:column; }
+  @media (min-width:520px){
+    .datetime-popover.show{ flex-direction:row; }
+  }
+  .dtp-calendar{ padding:16px; flex:1; min-width:260px; }
+  .dtp-cal-header{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
+  }
+  .dtp-cal-header .dtp-month-label{ font-size:13px; font-weight:700; color:var(--text-color); }
+  .dtp-cal-nav{
+    display:flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:8px; border:1px solid var(--border-color);
+    background:var(--field-group-bg); cursor:pointer; color:#47034E;
+  }
+  .dtp-cal-nav:hover{ background:var(--hover-bg); }
+  .dtp-cal-nav svg{ width:13px; height:13px; }
+  .dtp-weekdays{ display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:4px; }
+  .dtp-weekdays span{
+    text-align:center; font-size:10px; font-weight:700; color:var(--muted-color);
+    text-transform:uppercase; padding:4px 0;
+  }
+  .dtp-days{ display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+  .dtp-day{
+    display:flex; align-items:center; justify-content:center;
+    height:32px; border-radius:9px; font-size:12.5px; font-weight:600; color:var(--text-color);
+    cursor:pointer; background:transparent; border:none;
+  }
+  .dtp-day:hover:not(.dtp-day-disabled):not(.dtp-day-empty){ background:var(--hover-bg); }
+  .dtp-day-empty{ visibility:hidden; cursor:default; }
+  .dtp-day-disabled{ color:var(--muted-color); opacity:0.35; cursor:not-allowed; }
+  .dtp-day-today{ box-shadow:inset 0 0 0 1px #47034E; }
+  .dtp-day-selected{ background:#47034E; color:#fff !important; }
+  .dtp-day-selected:hover{ background:#5c0665; }
+
+  .dtp-times{
+    width:100%; border-top:1px solid var(--border-color);
+    display:flex; flex-direction:column; min-width:180px;
+  }
+  @media (min-width:520px){
+    .dtp-times{ width:180px; border-top:none; border-left:1px solid var(--border-color); }
+  }
+  .dtp-time-tabs{ display:flex; border-bottom:1px solid var(--border-color); }
+  .dtp-time-tab{
+    flex:1; text-align:center; padding:12px 6px; font-size:11px; font-weight:700;
+    color:var(--muted-color); cursor:pointer; border-bottom:2px solid transparent;
+  }
+  .dtp-time-tab.active{ color:#47034E; border-color:#47034E; }
+  .dtp-time-list{ max-height:210px; overflow-y:auto; padding:6px; }
+  .dtp-time-option{
+    padding:9px 10px; border-radius:8px; font-size:12.5px; font-weight:600;
+    color:var(--text-color); cursor:pointer; margin-bottom:2px;
+  }
+  .dtp-time-option:hover{ background:var(--hover-bg); }
+  .dtp-time-option.dtp-time-selected{ background:#47034E; color:#fff; }
+  .dtp-apply-wrap{ padding:12px; border-top:1px solid var(--border-color); }
+  .dtp-apply-btn{
+    width:100%; background:#47034E; color:#fff; border:none; padding:10px; border-radius:9px;
+    font-size:12.5px; font-weight:700; cursor:pointer;
+  }
+  .dtp-apply-btn:disabled{ background:#d5c0d8; cursor:not-allowed; }
+  .dtp-apply-btn:not(:disabled):hover{ background:#5c0665; }
+
   .modal.modal-small{ max-width:380px; text-align:center; }
   .modal-warning-icon{
     width:52px; height:52px; border-radius:50%; background:#fdecea; color:#b3261e;
@@ -1115,10 +1231,14 @@ input, textarea{
       <div class="wizard-step active" data-step="1">
         <h2>Event details</h2>
 
-        <div class="accordion-section open">
+        <div class="accordion-section open" id="basicsSection">
           <div class="accordion-header">
-            <h3>The Basics</h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="accordion-header-left">
+              <h3>The Basics</h3>
+              <span class="accordion-hint" id="basicsHint"></span>
+            </div>
+            <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
             <label>Event name</label>
@@ -1156,26 +1276,56 @@ input, textarea{
           </div>
         </div>
 
-        <div class="accordion-section">
+        <div class="accordion-section locked" id="whenWhereSection">
           <div class="accordion-header">
-            <h3>When &amp; Where</h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="accordion-header-left">
+              <h3>When &amp; Where</h3>
+              <span class="accordion-hint" id="whenWhereHint">Finish "The Basics" first</span>
+            </div>
+            <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
+            <label>Event date &amp; time</label>
+            <div class="datetime-popover-wrap">
+              <div class="datetime-field" id="datetimeField">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span class="datetime-text datetime-placeholder" id="datetimeDisplay">Select event date &amp; time</span>
+              </div>
+              <div class="datetime-popover" id="datetimePopover">
+                <div class="dtp-calendar">
+                  <div class="dtp-cal-header">
+                    <div class="dtp-cal-nav" id="dtpPrevMonth">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                    </div>
+                    <div class="dtp-month-label" id="dtpMonthLabel"></div>
+                    <div class="dtp-cal-nav" id="dtpNextMonth">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </div>
+                  </div>
+                  <div class="dtp-weekdays">
+                    <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                  </div>
+                  <div class="dtp-days" id="dtpDays"></div>
+                </div>
+                <div class="dtp-times">
+                  <div class="dtp-time-tabs">
+                    <div class="dtp-time-tab active" id="dtpStartTab" data-which="start">Start time</div>
+                    <div class="dtp-time-tab" id="dtpEndTab" data-which="end">End time</div>
+                  </div>
+                  <div class="dtp-time-list" id="dtpTimeList"></div>
+                  <div class="dtp-apply-wrap">
+                    <button type="button" class="dtp-apply-btn" id="dtpApplyBtn" disabled>Confirm date &amp; time</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="event_date">
+            <input type="hidden" id="start_time">
+            <input type="hidden" id="end_time">
+
             <div class="grid2">
-              <div>
-                <label>Date</label>
-                <input type="date" id="event_date">
-              </div>
-              <div>
-                <label>Start time</label>
-                <input type="text" id="start_time" placeholder="6:00 PM">
-              </div>
-              <div>
-                <label>End time</label>
-                <input type="text" id="end_time" placeholder="9:00 PM">
-              </div>
-              <div>
+              <div class="full">
                 <label>Event format</label>
                 <input type="text" id="event_format" placeholder="Select how your event will be hosted">
               </div>
@@ -1210,10 +1360,14 @@ input, textarea{
           </div>
         </div>
 
-        <div class="accordion-section">
+        <div class="accordion-section locked" id="organizerSection">
           <div class="accordion-header">
-            <h3>Organizer &amp; Visuals</h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <div class="accordion-header-left">
+              <h3>Organizer &amp; Visuals</h3>
+              <span class="accordion-hint" id="organizerHint">Finish "When &amp; Where" first</span>
+            </div>
+            <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
             <div class="grid2">
@@ -1734,6 +1888,8 @@ async function loadMailingList(){
     document.getElementById('title').value = eventDraft.title || '';
     document.getElementById('event_date').value = eventDraft.event_date || '';
     document.getElementById('venue').value = eventDraft.venue || '';
+    if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
+    if(typeof updateAccordionLocks === 'function') updateAccordionLocks();
     showCreateEventView();
     goToStep(1);
   }
@@ -2269,11 +2425,247 @@ map.on("click", function(e){
 
 });
 
+  // ---------- step-1 accordion gating ----------
+  const basicsSection = document.getElementById('basicsSection');
+  const whenWhereSection = document.getElementById('whenWhereSection');
+  const organizerSection = document.getElementById('organizerSection');
+  const whenWhereHint = document.getElementById('whenWhereHint');
+  const organizerHint = document.getElementById('organizerHint');
+
+  function basicsComplete(){
+    return document.getElementById('title').value.trim().length > 0 &&
+           document.getElementById('description').value.trim().length > 0;
+  }
+  function whenWhereComplete(){
+    const hasDate = document.getElementById('event_date').value.trim().length > 0;
+    const isVirtual = document.querySelector('#virtualToggle .toggle-btn.active').dataset.value === 'virtual';
+    const hasPlace = isVirtual
+      ? document.getElementById('virtual_link').value.trim().length > 0
+      : document.getElementById('venue').value.trim().length > 0;
+    return hasDate && hasPlace;
+  }
+
+  function updateAccordionLocks(){
+    const basicsDone = basicsComplete();
+    const whenWhereDone = whenWhereComplete();
+
+    whenWhereSection.classList.toggle('locked', !basicsDone);
+    whenWhereHint.textContent = basicsDone ? '' : 'Finish "The Basics" first';
+    if(!basicsDone) whenWhereSection.classList.remove('open');
+
+    const organizerLocked = !basicsDone || !whenWhereDone;
+    organizerSection.classList.toggle('locked', organizerLocked);
+    organizerHint.textContent = organizerLocked
+      ? (basicsDone ? 'Finish "When & Where" first' : 'Finish "The Basics" first')
+      : '';
+    if(organizerLocked) organizerSection.classList.remove('open');
+  }
+
+  function shakeSection(section){
+    section.classList.add('shake');
+    setTimeout(() => section.classList.remove('shake'), 350);
+  }
+
   document.querySelectorAll('.accordion-header').forEach(header => {
-  header.addEventListener('click', () => {
-    header.closest('.accordion-section').classList.toggle('open');
+    header.addEventListener('click', () => {
+      const section = header.closest('.accordion-section');
+      if(section.classList.contains('locked')){
+        shakeSection(section);
+        return;
+      }
+      section.classList.toggle('open');
+    });
   });
-});
+
+  ['title', 'description'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateAccordionLocks);
+  });
+  document.getElementById('venue').addEventListener('input', updateAccordionLocks);
+  document.getElementById('virtual_link').addEventListener('input', updateAccordionLocks);
+  document.getElementById('virtualToggle').addEventListener('click', () => setTimeout(updateAccordionLocks, 0));
+
+  updateAccordionLocks();
+
+  // ---------- branded date & time picker ----------
+  const dtpField = document.getElementById('datetimeField');
+  const dtpPopover = document.getElementById('datetimePopover');
+  const dtpDisplay = document.getElementById('datetimeDisplay');
+  const dtpMonthLabel = document.getElementById('dtpMonthLabel');
+  const dtpDaysEl = document.getElementById('dtpDays');
+  const dtpTimeList = document.getElementById('dtpTimeList');
+  const dtpStartTab = document.getElementById('dtpStartTab');
+  const dtpEndTab = document.getElementById('dtpEndTab');
+  const dtpApplyBtn = document.getElementById('dtpApplyBtn');
+  const dtpPrevMonth = document.getElementById('dtpPrevMonth');
+  const dtpNextMonth = document.getElementById('dtpNextMonth');
+  const eventDateInput = document.getElementById('event_date');
+  const startTimeInput = document.getElementById('start_time');
+  const endTimeInput = document.getElementById('end_time');
+
+  const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  let dtpViewMonth = new Date();
+  dtpViewMonth.setDate(1);
+  let dtpSelectedDate = null; // Date object, date-only
+  let dtpSelectedStart = '';
+  let dtpSelectedEnd = '';
+  let dtpActiveTab = 'start';
+
+  function buildTimeSlots(){
+    const slots = [];
+    for(let h = 0; h < 24; h++){
+      for(let m = 0; m < 60; m += 30){
+        const period = h < 12 ? 'AM' : 'PM';
+        let hour12 = h % 12;
+        if(hour12 === 0) hour12 = 12;
+        const label = `${hour12}:${m === 0 ? '00' : m} ${period}`;
+        slots.push(label);
+      }
+    }
+    return slots;
+  }
+  const TIME_SLOTS = buildTimeSlots();
+
+  function pad2(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function renderCalendar(){
+    dtpMonthLabel.textContent = `${MONTH_NAMES[dtpViewMonth.getMonth()]} ${dtpViewMonth.getFullYear()}`;
+    dtpDaysEl.innerHTML = '';
+
+    const firstDay = new Date(dtpViewMonth.getFullYear(), dtpViewMonth.getMonth(), 1);
+    const startOffset = firstDay.getDay();
+    const daysInMonth = new Date(dtpViewMonth.getFullYear(), dtpViewMonth.getMonth() + 1, 0).getDate();
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    for(let i = 0; i < startOffset; i++){
+      const empty = document.createElement('div');
+      empty.className = 'dtp-day dtp-day-empty';
+      dtpDaysEl.appendChild(empty);
+    }
+
+    for(let d = 1; d <= daysInMonth; d++){
+      const cellDate = new Date(dtpViewMonth.getFullYear(), dtpViewMonth.getMonth(), d);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dtp-day';
+      btn.textContent = d;
+
+      if(cellDate < today){
+        btn.classList.add('dtp-day-disabled');
+      } else {
+        btn.addEventListener('click', () => {
+          dtpSelectedDate = cellDate;
+          renderCalendar();
+          updateApplyState();
+        });
+      }
+      if(cellDate.getTime() === today.getTime()) btn.classList.add('dtp-day-today');
+      if(dtpSelectedDate && cellDate.getTime() === dtpSelectedDate.getTime()) btn.classList.add('dtp-day-selected');
+
+      dtpDaysEl.appendChild(btn);
+    }
+  }
+
+  function renderTimeList(){
+    dtpTimeList.innerHTML = '';
+    const selected = dtpActiveTab === 'start' ? dtpSelectedStart : dtpSelectedEnd;
+    TIME_SLOTS.forEach(slot => {
+      const opt = document.createElement('div');
+      opt.className = 'dtp-time-option' + (slot === selected ? ' dtp-time-selected' : '');
+      opt.textContent = slot;
+      opt.addEventListener('click', () => {
+        if(dtpActiveTab === 'start'){
+          dtpSelectedStart = slot;
+          dtpActiveTab = 'end';
+          dtpStartTab.classList.remove('active');
+          dtpEndTab.classList.add('active');
+        } else {
+          dtpSelectedEnd = slot;
+        }
+        renderTimeList();
+        updateApplyState();
+      });
+      dtpTimeList.appendChild(opt);
+    });
+    const selectedEl = dtpTimeList.querySelector('.dtp-time-selected');
+    if(selectedEl) selectedEl.scrollIntoView({ block:'center' });
+  }
+
+  function updateApplyState(){
+    dtpApplyBtn.disabled = !(dtpSelectedDate && dtpSelectedStart);
+  }
+
+  dtpStartTab.addEventListener('click', () => {
+    dtpActiveTab = 'start';
+    dtpStartTab.classList.add('active');
+    dtpEndTab.classList.remove('active');
+    renderTimeList();
+  });
+  dtpEndTab.addEventListener('click', () => {
+    dtpActiveTab = 'end';
+    dtpEndTab.classList.add('active');
+    dtpStartTab.classList.remove('active');
+    renderTimeList();
+  });
+
+  dtpPrevMonth.addEventListener('click', () => {
+    dtpViewMonth.setMonth(dtpViewMonth.getMonth() - 1);
+    renderCalendar();
+  });
+  dtpNextMonth.addEventListener('click', () => {
+    dtpViewMonth.setMonth(dtpViewMonth.getMonth() + 1);
+    renderCalendar();
+  });
+
+  function openDtp(){
+    dtpField.classList.add('open');
+    dtpPopover.classList.add('show');
+    renderCalendar();
+    renderTimeList();
+    updateApplyState();
+  }
+  function closeDtp(){
+    dtpField.classList.remove('open');
+    dtpPopover.classList.remove('show');
+  }
+
+  dtpField.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if(dtpPopover.classList.contains('show')) closeDtp(); else openDtp();
+  });
+  dtpPopover.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => closeDtp());
+
+  function updateDatetimeDisplay(){
+    if(!eventDateInput.value){
+      dtpDisplay.textContent = 'Select event date & time';
+      dtpDisplay.classList.add('datetime-placeholder');
+      return;
+    }
+    const [y, m, d] = eventDateInput.value.split('-').map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    let label = dateObj.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    if(startTimeInput.value){
+      label += ` · ${startTimeInput.value}`;
+      if(endTimeInput.value) label += ` – ${endTimeInput.value}`;
+    }
+    dtpDisplay.textContent = label;
+    dtpDisplay.classList.remove('datetime-placeholder');
+  }
+
+  dtpApplyBtn.addEventListener('click', () => {
+    if(!dtpSelectedDate || !dtpSelectedStart) return;
+    eventDateInput.value = `${dtpSelectedDate.getFullYear()}-${pad2(dtpSelectedDate.getMonth() + 1)}-${pad2(dtpSelectedDate.getDate())}`;
+    startTimeInput.value = dtpSelectedStart;
+    endTimeInput.value = dtpSelectedEnd;
+    updateDatetimeDisplay();
+    updateAccordionLocks();
+    closeDtp();
+  });
+
+  updateDatetimeDisplay();
 
 function addFaqRow(){
     const row = document.createElement('div');
