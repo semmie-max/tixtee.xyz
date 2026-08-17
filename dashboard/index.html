@@ -729,620 +729,395 @@ input, textarea{
 
 
 
-/* =========================================================
-   STEP 2 — VOICE ASSISTANT UI
-   Small • Horizontal • Bottom Center • Voice Wave
-   ========================================================= */
+/* ─────────────────────────────────────
+   VOICE ASSISTANT
+   ───────────────────────────────────── */
 
-
-/* ─────────────────────────────────────────────────────────
-   VOICE FAB
-   Small floating button that starts the assistant
-   ───────────────────────────────────────────────────────── */
-
+/* Main voice bar */
 .voice-fab {
   position: fixed;
-  right: 24px;
+  left: 50%;
   bottom: 24px;
+  transform: translateX(-50%);
 
-  width: 48px;
-  height: 48px;
+  width: 180px;
+  height: 46px;
 
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
+  padding: 0 16px;
 
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 14px;
+
+  border: 1px solid rgba(71, 3, 78, 0.12);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.94);
+  color: #47034E;
+
+  cursor: pointer;
+
+  box-shadow: 0 8px 28px rgba(21, 0, 23, 0.12);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  z-index: 200;
+
+  transition:
+    width .25s ease,
+    height .25s ease,
+    opacity .25s ease,
+    transform .25s ease,
+    background .25s ease,
+    box-shadow .25s ease;
+}
+
+
+/* Hide the microphone icon from the old button */
+.voice-fab svg {
+  display: none;
+}
+
+
+
+
+/* Hover */
+.voice-fab:hover {
+  box-shadow: 0 10px 34px rgba(21, 0, 23, 0.18);
+}
+
+
+/* ─────────────────────────────────────
+   LISTENING STATE
+   ───────────────────────────────────── */
+
+.voice-fab.listening {
+  width: 145px;
 
   background: #47034E;
   color: #fff;
 
-  cursor: pointer;
-
-  z-index: 300;
-
-  box-shadow:
-    0 6px 20px rgba(71, 3, 78, 0.25);
-
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    opacity 0.25s ease;
-}
-
-.voice-fab:hover {
-  transform: scale(1.06);
-
-  box-shadow:
-    0 8px 26px rgba(71, 3, 78, 0.35);
-}
-
-.voice-fab:active {
-  transform: scale(0.96);
-}
-
-.voice-fab svg {
-  width: 21px;
-  height: 21px;
+  box-shadow: 0 10px 32px rgba(71, 3, 78, 0.30);
 }
 
 
-/* ─────────────────────────────────────────────────────────
+
+
+
+@keyframes voiceWave {
+  0% {
+    transform: scaleY(.35);
+  }
+
+  25% {
+    transform: scaleY(1.25);
+  }
+
+  50% {
+    transform: scaleY(.55);
+  }
+
+  75% {
+    transform: scaleY(1);
+  }
+
+  100% {
+    transform: scaleY(.35);
+  }
+}
+.voice-status{
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.voice-wave{
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.voice-wave span{
+  width: 3px;
+  height: 14px;
+  border-radius: 999px;
+  background: #47034E;
+  transform: scaleY(.5);
+  transition: transform .2s ease, background .2s ease;
+}
+
+.voice-fab.listening .voice-wave span{
+  background: #fff;
+  animation: voiceWave .65s ease-in-out infinite;
+}
+.voice-fab.listening .voice-wave span:nth-child(2){ animation-delay: .08s; }
+.voice-fab.listening .voice-wave span:nth-child(3){ animation-delay: .16s; }
+.voice-fab.listening .voice-wave span:nth-child(4){ animation-delay: .24s; }
+.voice-fab.listening .voice-wave span:nth-child(5){ animation-delay: .32s; }
+.voice-fab.listening .voice-wave span:nth-child(6){ animation-delay: .4s; }
+.voice-fab.listening .voice-wave span:nth-child(7){ animation-delay: .48s; }
+.voice-fab.listening .voice-wave span:nth-child(8){ animation-delay: .56s; }
+.voice-fab.listening .voice-wave span:nth-child(9){ animation-delay: .64s; }
+
+
+/* ─────────────────────────────────────
    VOICE POPUP
-   Small horizontal assistant bar
-   ───────────────────────────────────────────────────────── */
+   ───────────────────────────────────── */
 
 .voice-popup {
   position: fixed;
 
   left: 50%;
-  bottom: 22px;
-
-  width: min(420px, calc(100vw - 28px));
-
-  min-height: 58px;
+  bottom: 82px;
 
   transform: translateX(-50%);
 
+  width: 300px;
+  max-width: calc(100vw - 32px);
+
+  background: var(--card-color, #fff);
+
+  border: 1px solid var(--border-color, #e5e5e5);
+
+  border-radius: 18px;
+
+  box-shadow: 0 14px 45px rgba(21, 0, 23, 0.16);
+
+  z-index: 201;
+
   display: none;
-  align-items: center;
-
-  padding: 8px 12px;
-
-  background: var(--card-color, #ffffff);
-
-  border: 1px solid var(--border-color, #e8e8e8);
-
-  border-radius: 999px;
-
-  box-shadow:
-    0 12px 35px rgba(21, 0, 23, 0.16);
-
-  z-index: 301;
+  flex-direction: column;
 
   overflow: hidden;
 
-  animation: voiceBarIn 0.25s ease;
+  animation: voicePopupIn .25s ease;
 }
+
 
 .voice-popup.show {
   display: flex;
 }
 
 
-/* ─────────────────────────────────────────────────────────
-   POPUP ENTRANCE
-   ───────────────────────────────────────────────────────── */
-
-@keyframes voiceBarIn {
+@keyframes voicePopupIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 15px) scale(0.94);
+
+    transform:
+      translateX(-50%)
+      translateY(10px)
+      scale(.96);
   }
 
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+
+    transform:
+      translateX(-50%)
+      translateY(0)
+      scale(1);
   }
 }
 
 
-/* ─────────────────────────────────────────────────────────
-   VOICE POPUP HEADER
-   ───────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────
+   POPUP HEADER
+   ───────────────────────────────────── */
 
 .voice-popup-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
-  flex: 0 0 auto;
-
-  padding: 0;
-
-  background: transparent;
-  color: var(--text-color, #1a1a1a);
-}
-
-.voice-popup-header h4 {
-  margin: 0;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.voice-popup-header .close-popup {
-  width: 25px;
-  height: 25px;
-
-  margin-left: 6px;
-
-  padding: 0;
-
-  border: 0;
-  border-radius: 50%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: transparent;
-
-  color: var(--muted-color, #888);
-
-  cursor: pointer;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
-}
-
-.voice-popup-header .close-popup:hover {
-  background: #f3e9f4;
-  color: #47034E;
-}
-
-.voice-popup-header .close-popup svg {
-  width: 14px;
-  height: 14px;
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   POPUP BODY
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup-body {
-  flex: 1;
-
-  min-width: 0;
-
-  padding: 0;
-
-  display: flex;
-  flex-direction: row;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 10px;
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   DESCRIPTION / STATUS
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup-body p {
-  margin: 0;
-
-  font-size: 11px;
-
-  line-height: 1.3;
-
-  color: var(--muted-color, #8f8f8f);
-
-  white-space: nowrap;
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   MICROPHONE BUTTON
-   ───────────────────────────────────────────────────────── */
-
-.voice-mic-btn {
-  flex: 0 0 auto;
-
-  width: 38px;
-  height: 38px;
-
-  padding: 0;
-
-  border-radius: 50%;
-
-  border: 1.5px solid #47034E;
-
-  background: #f3e9f4;
-
-  color: #47034E;
-
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  transition:
-    transform 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.voice-mic-btn:hover {
-  transform: scale(1.05);
+  padding: 14px 16px;
 
   background: #47034E;
   color: #fff;
 }
 
-.voice-mic-btn:active {
-  transform: scale(0.94);
+
+.voice-popup-header h4 {
+  margin: 0;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.voice-mic-btn svg {
-  width: 18px;
-  height: 18px;
+
+.voice-popup-header .close-popup {
+  background: none;
+  border: none;
+
+  color: #fff;
+
+  cursor: pointer;
+
+  padding: 3px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
-/* ─────────────────────────────────────────────────────────
-   ACTIVE / LISTENING MICROPHONE
-   ───────────────────────────────────────────────────────── */
+.voice-popup-header .close-popup svg {
+  width: 17px;
+  height: 17px;
+}
+
+
+/* ─────────────────────────────────────
+   POPUP BODY
+   ───────────────────────────────────── */
+
+.voice-popup-body {
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 14px;
+}
+
+
+.voice-popup-body p {
+  margin: 0;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  color: var(--muted-color, #888);
+
+  text-align: center;
+}
+
+
+/* ─────────────────────────────────────
+   MICROPHONE BUTTON
+   ───────────────────────────────────── */
+
+.voice-mic-btn {
+  width: 52px;
+  height: 52px;
+
+  border-radius: 50%;
+
+  background: #f3e9f4;
+
+  border: 2px solid #47034E;
+
+  color: #47034E;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background .2s ease,
+    color .2s ease,
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+
+.voice-mic-btn:hover {
+  background: #47034E;
+  color: #fff;
+
+  transform: scale(1.05);
+}
+
 
 .voice-mic-btn.listening {
   background: #47034E;
   color: #fff;
 
-  animation: voiceMicPulse 1.2s ease-in-out infinite;
+  animation: micPulse 1.2s infinite;
 }
 
-@keyframes voiceMicPulse {
+
+@keyframes micPulse {
   0% {
-    box-shadow:
-      0 0 0 0 rgba(71, 3, 78, 0.35);
+    box-shadow: 0 0 0 0 rgba(71, 3, 78, .35);
   }
 
   70% {
-    box-shadow:
-      0 0 0 9px rgba(71, 3, 78, 0);
+    box-shadow: 0 0 0 12px rgba(71, 3, 78, 0);
   }
 
   100% {
-    box-shadow:
-      0 0 0 0 rgba(71, 3, 78, 0);
+    box-shadow: 0 0 0 0 rgba(71, 3, 78, 0);
   }
 }
 
 
-/* ─────────────────────────────────────────────────────────
+.voice-mic-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+
+/* ─────────────────────────────────────
    TRANSCRIPT
-   ───────────────────────────────────────────────────────── */
+   ───────────────────────────────────── */
 
 .voice-transcript {
-  flex: 1;
+  width: 100%;
+  min-height: 48px;
 
-  min-width: 0;
+  box-sizing: border-box;
 
-  min-height: 34px;
+  padding: 10px;
 
-  padding: 0 8px;
+  border-radius: 10px;
 
-  border: 0;
+  background: var(--field-group-bg, #fbfafc);
 
-  background: transparent;
+  border: 1px solid var(--border-color, #e5e5e5);
 
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  font-size: 12px;
 
-  font-size: 11px;
+  color: var(--text-color, #1a1a1a);
 
-  line-height: 1.3;
-
-  color: var(--text-color, #222);
-
-  text-align: left;
-
-  overflow: hidden;
-
-  white-space: nowrap;
-
-  text-overflow: ellipsis;
-}
-
-.voice-transcript.empty {
-  color: var(--muted-color, #999);
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   HORIZONTAL VOICE WAVE
-   The music-player-style moving bars
-   ───────────────────────────────────────────────────────── */
-
-.voice-wave {
-  flex: 0 0 auto;
-
-  height: 28px;
+  text-align: center;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
-
-  gap: 3px;
-
-  padding: 0 4px;
 }
 
 
-/* Individual bars */
-
-.voice-wave span {
-  display: block;
-
-  width: 3px;
-  height: 6px;
-
-  border-radius: 999px;
-
-  background: #47034E;
-
-  transform-origin: center;
-
-  animation:
-    voiceWaveIdle 1s ease-in-out infinite;
+.voice-transcript.empty {
+  color: var(--muted-color, #9a9a9a);
 }
 
 
-/* Different timing = organic movement */
-
-.voice-wave span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.voice-wave span:nth-child(2) {
-  animation-delay: 0.08s;
-}
-
-.voice-wave span:nth-child(3) {
-  animation-delay: 0.16s;
-}
-
-.voice-wave span:nth-child(4) {
-  animation-delay: 0.24s;
-}
-
-.voice-wave span:nth-child(5) {
-  animation-delay: 0.32s;
-}
-
-.voice-wave span:nth-child(6) {
-  animation-delay: 0.40s;
-}
-
-.voice-wave span:nth-child(7) {
-  animation-delay: 0.48s;
-}
-
-
-/* Idle wave */
-
-@keyframes voiceWaveIdle {
-  0%,
-  100% {
-    height: 5px;
-    opacity: 0.45;
-  }
-
-  50% {
-    height: 10px;
-    opacity: 0.75;
-  }
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   ACTIVE VOICE WAVE
-   Used while USER or ASSISTANT is speaking
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup.speaking .voice-wave span {
-  animation-name: voiceWaveActive;
-  animation-duration: 0.55s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(2) {
-  animation-delay: 0.07s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(3) {
-  animation-delay: 0.14s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(4) {
-  animation-delay: 0.21s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(5) {
-  animation-delay: 0.28s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(6) {
-  animation-delay: 0.35s;
-}
-
-.voice-popup.speaking .voice-wave span:nth-child(7) {
-  animation-delay: 0.42s;
-}
-
-@keyframes voiceWaveActive {
-  0%,
-  100% {
-    height: 5px;
-  }
-
-  25% {
-    height: 19px;
-  }
-
-  50% {
-    height: 25px;
-  }
-
-  75% {
-    height: 13px;
-  }
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   ASSISTANT SPEAKING STATE
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup.assistant-speaking .voice-wave span {
-  animation-duration: 0.42s;
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   USER SPEAKING STATE
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup.user-speaking .voice-wave span {
-  animation-duration: 0.28s;
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   HIDE FAB WHEN VOICE BAR IS ACTIVE
-   ───────────────────────────────────────────────────────── */
-
-.voice-popup.show ~ .voice-fab {
-  opacity: 0;
-
-  pointer-events: none;
-
-  transform: scale(0.8);
-}
-
-
-/* ─────────────────────────────────────────────────────────
+/* ─────────────────────────────────────
    MOBILE
-   ───────────────────────────────────────────────────────── */
+   ───────────────────────────────────── */
 
 @media (max-width: 600px) {
 
   .voice-fab {
-    width: 46px;
-    height: 46px;
+    bottom: 18px;
 
-    right: 16px;
-    bottom: 16px;
-  }
-
-  .voice-fab svg {
-    width: 19px;
-    height: 19px;
+    width: 160px;
+    height: 44px;
   }
 
   .voice-popup {
-    left: 50%;
-    bottom: 14px;
+    width: calc(100vw - 32px);
 
-    width: calc(100vw - 20px);
-
-    min-height: 54px;
-
-    padding: 7px 9px;
-
-    border-radius: 999px;
+    bottom: 72px;
   }
 
-  .voice-popup-body {
-    gap: 7px;
-  }
-
-  .voice-popup-body p {
-    display: none;
-  }
-
-  .voice-popup-header h4 {
-    display: none;
-  }
-
-  .voice-popup-header .close-popup {
-    width: 23px;
-    height: 23px;
-
-    margin-left: 3px;
-  }
-
-  .voice-mic-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .voice-mic-btn svg {
-    width: 17px;
-    height: 17px;
-  }
-
-  .voice-transcript {
-    font-size: 10px;
-
-    padding: 0 4px;
-  }
-
-  .voice-wave {
-    gap: 2px;
-
-    height: 24px;
-  }
-
-  .voice-wave span {
-    width: 2.5px;
-  }
-}
-
-
-/* ─────────────────────────────────────────────────────────
-   VERY SMALL SCREENS
-   ───────────────────────────────────────────────────────── */
-
-@media (max-width: 380px) {
-
-  .voice-popup {
-    width: calc(100vw - 14px);
-  }
-
-  .voice-wave {
-    gap: 2px;
-  }
-
-  .voice-wave span:nth-child(6),
-  .voice-wave span:nth-child(7) {
-    display: none;
-  }
 }
 </style>
 </head>
@@ -3495,17 +3270,18 @@ document.getElementById('exportMailingListBtn').addEventListener('click', async 
 
 
 
-/* ── Conversational Voice Assistant ── */
-const voiceAssistant = document.getElementById('voiceAssistant');
-const voiceToggle = document.getElementById('voiceToggle');
-const voiceClose = document.getElementById('voiceClose');
+const voiceFab = document.getElementById('voiceFab');
 const voiceStatus = document.getElementById('voiceStatus');
-const voicePrompt = document.getElementById('voicePrompt');
-const voicePromptYes = document.getElementById('voicePromptYes');
-const voicePromptNo = document.getElementById('voicePromptNo');
+const voiceWave = voiceFab?.querySelector('.voice-wave');
+const voicePopup = document.getElementById('voicePopup');
+const closeVoicePopup = document.getElementById('closeVoicePopup');
+const voiceMicBtn = document.getElementById('voiceMicBtn');
+const voiceTranscript = document.getElementById('voiceTranscript');
 
 let recognition = null;
 let isListening = false;
+let voiceActive = false;
+let voicePromptTimer = null;
 
 /* ── State & Memory ── */
 const VA = {
@@ -3553,7 +3329,7 @@ const IDEAS = {
 function initSpeechRecognition(){
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR){
-    voiceTranscript.textContent = 'Voice input works best on Chrome, Edge, or Safari.';
+    voiceStatus.textContent = 'Voice input works best on Chrome, Edge, or Safari.';
     return null;
   }
   const rec = new SR();
@@ -3564,27 +3340,30 @@ rec.lang = 'en-US';
   rec.onstart = () => {
   isListening = true;
 
-  voiceAssistant.classList.add('listening');
-  voiceAssistant.classList.remove('speaking');
+  voicePopup.classList.add('show');
+  voiceFab.classList.add('listening');
+  voiceMicBtn.classList.add('listening');
 
-  voiceStatus.textContent = 'Listening…';
+  voiceTranscript.textContent = 'Listening…';
+  voiceTranscript.classList.remove('empty');
 };
   rec.onend = () => {
   isListening = false;
 
-  voiceAssistant.classList.remove('listening');
+  voiceFab.classList.remove('listening');
 
-  if (!window.speechSynthesis.speaking) {
-    voiceStatus.textContent = 'Tap to talk';
+  if (voiceActive) {
+    voiceStatus.textContent = 'Talk to Tixtee';
   }
 };
   rec.onerror = (e) => {
   isListening = false;
 
-  voiceAssistant.classList.remove('listening');
+  voiceFab.classList.remove('listening');
 
-  if(e.error !== 'no-speech') {
-    say("Mic hiccup. Try again.");
+  if (e.error !== 'no-speech') {
+    voiceStatus.textContent = 'Try again';
+    say("Mic hiccup. Try again when you're ready.");
   }
 };
   rec.onresult = (e) => {
@@ -3614,8 +3393,11 @@ rec.lang = 'en-US';
 
 /* ── Voice UI ── */
 
-voiceToggle.addEventListener('click', () => {
+voiceFab.addEventListener('click', () => {
+  voicePopup.classList.add('show');
+});
 
+voiceMicBtn.addEventListener('click', () => {
   if (!recognition) {
     recognition = initSpeechRecognition();
   }
@@ -3634,35 +3416,16 @@ voiceToggle.addEventListener('click', () => {
   }
 });
 
-
-voiceClose.addEventListener('click', () => {
-  voiceAssistant.classList.remove('show');
-  voicePrompt.classList.remove('show');
+closeVoicePopup.addEventListener('click', () => {
+  voicePopup.classList.remove('show');
+  voiceFab.classList.remove('listening');
+  voiceMicBtn.classList.remove('listening');
 
   if (recognition && isListening) {
     recognition.stop();
   }
 
   window.speechSynthesis.cancel();
-});
-
-
-/* User accepts voice assistant */
-
-voicePromptYes.addEventListener('click', () => {
-
-  voicePrompt.classList.remove('show');
-
-  voiceAssistant.classList.add('show');
-
-  voiceStatus.textContent = 'Tap to talk';
-});
-
-
-/* User rejects it */
-
-voicePromptNo.addEventListener('click', () => {
-  voicePrompt.classList.remove('show');
 });
 
 /* ── TTS ── */
@@ -3678,18 +3441,16 @@ function say(text) {
   utterance.volume = 1;
 
   utterance.onstart = () => {
-    voiceAssistant.classList.add('show');
-    voiceAssistant.classList.add('speaking');
-    voiceAssistant.classList.remove('listening');
+    voicePopup.classList.add('show');
+    voiceFab.classList.remove('listening');
+    voiceMicBtn.classList.remove('listening');
 
     voiceStatus.textContent = 'Speaking…';
   };
 
   utterance.onend = () => {
-    voiceAssistant.classList.remove('speaking');
-
     if (!isListening) {
-      voiceStatus.textContent = 'Tap to talk';
+      voiceStatus.textContent = 'Talk to Tixtee';
     }
   };
 
@@ -4414,15 +4175,10 @@ function shuffle(arr){
 /* ── Random Voice Prompt ── */
 
 function showVoicePrompt() {
-  if (voiceAssistant.classList.contains('show')) return;
-
-  voicePrompt.classList.add('show');
-
-  setTimeout(() => {
-    voicePrompt.classList.remove('show');
-  }, 8000);
+  if (voicePopup.classList.contains('show')) return;
+  voiceFab.classList.add('nudge');
+  setTimeout(() => voiceFab.classList.remove('nudge'), 1200);
 }
-
 
 /* Don't show immediately */
 
@@ -4435,4 +4191,4 @@ setTimeout(() => {
 }, 12000);
 </script>
 </body>
-</html>
+</html> 
