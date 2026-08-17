@@ -2944,7 +2944,9 @@ document.getElementById('exportMailingListBtn').addEventListener('click', async 
 
 
 
-/* ── Voice Assistant ── */
+
+
+/* ── Conversational Voice Assistant ── */
 const voiceFab        = document.getElementById('voiceFab');
 const voicePopup      = document.getElementById('voicePopup');
 const closeVoicePopup = document.getElementById('closeVoicePopup');
@@ -2954,15 +2956,56 @@ const voiceTranscript = document.getElementById('voiceTranscript');
 let recognition = null;
 let isListening = false;
 
-/* 1. Init Speech Recognition */
+/* ── State & Memory ── */
+const VA = {
+  step: 1,
+  field: null,        // what field we're currently discussing
+  lastField: null,    // previous field (for "actually change it")
+  filled: new Set(),  // which fields have values
+  mode: 'chat',       // 'chat' | 'choosing' | 'confirming'
+  choices: [],        // when presenting numbered options
+  pending: null,      // value waiting for confirmation
+  turn: 0,            // conversation turn count
+  name: ''            // user's name (extracted if mentioned)
+};
+
+/* ── Idea Banks ── */
+const IDEAS = {
+  names: [
+    "Sunset Sessions", "Electric Avenue", "The Main Stage", "Midnight Groove",
+    "Urban Nights", "Golden Hour", "Nova Experience", "The Collective",
+    "Afro-Fusion Night", "Remy's Corner", "Lagos Lights", "Velvet Room"
+  ],
+  venues: [
+    "Landmark Event Centre, Lagos", "Eko Hotel & Suites, Victoria Island",
+    "an outdoor rooftop in Lekki", "a warehouse space on the mainland",
+    "your favorite beachfront pavilion", "a secret garden venue",
+    "a private lounge in Ikoyi", "an art gallery space"
+  ],
+  themes: [
+    "Neon Nights", "All White Affair", "Retro 90s Party", "Afro-Future",
+    "Garden of Eden", "Black Tie & Diamonds", "Costume Masquerade",
+    "Sunset & Sangria", "Old School Hip-Hop"
+  ],
+  dressCodes: [
+    "Smart Casual", "All Black Everything", "Traditional & Cultural",
+    "Beach Chic", "Formal Evening Wear", "Creative Casual", "Streetwear"
+  ],
+  categories: [
+    "Music & Concerts", "Business", "Technology", "Food And Drink",
+    "Art & Culture", "Comedy", "Fashion & Beauty", "Gaming"
+  ],
+  ticketNames: ["Early Bird", "Regular", "VIP", "VVIP", "Group of 5", "Backstage Pass"]
+};
+
+/* ── Speech Recognition ── */
 function initSpeechRecognition(){
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRecognition){
-    voiceTranscript.textContent = 'Voice input requires Chrome, Edge, or Safari.';
-    voiceTranscript.classList.remove('empty');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    voiceTranscript.textContent = 'Voice input works best on Chrome, Edge, or Safari.';
     return null;
   }
-  const rec = new SpeechRecognition();
+  const rec = new SR();
   rec.continuous = true;
   rec.interimResults = true;
   rec.lang = 'en-US';
@@ -2970,7 +3013,7 @@ function initSpeechRecognition(){
   rec.onstart = () => {
     isListening = true;
     voiceMicBtn.classList.add('listening');
-    voiceTranscript.textContent = 'Listening… Speak naturally.';
+    voiceTranscript.textContent = 'Listening…';
     voiceTranscript.classList.remove('empty');
   };
   rec.onend = () => {
@@ -2980,7 +3023,7 @@ function initSpeechRecognition(){
   rec.onerror = (e) => {
     isListening = false;
     voiceMicBtn.classList.remove('listening');
-    voiceTranscript.textContent = 'Mic error: ' + e.error + '. Tap again.';
+    if(e.error !== 'no-speech') say('Mic hiccup. Tap the button again when you\'re ready.');
   };
   rec.onresult = (e) => {
     let final = '';
@@ -2989,13 +3032,12 @@ function initSpeechRecognition(){
     }
     if(final){
       voiceTranscript.textContent = '“' + final.trim() + '”';
-      processVoiceCommand(final.trim());
+      handleUtterance(final.trim());
     }
   };
   return rec;
 }
 
-/* 2. Popup controls */
 voiceFab.addEventListener('click', () => voicePopup.classList.toggle('show'));
 closeVoicePopup.addEventListener('click', () => voicePopup.classList.remove('show'));
 
@@ -3005,55 +3047,45 @@ voiceMicBtn.addEventListener('click', () => {
   isListening ? recognition.stop() : recognition.start();
 });
 
-/* 3. Helper utilities */
+/* ── TTS ── */
+function say(text){
+  if('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05; u.pitch = 1.02;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+/* ── Form Helpers ── */
+const $ = (id) => document.getElementById(id);
 const setVal = (id, v) => {
-  const el = document.getElementById(id);
+  const el = $(id);
   if(!el) return false;
   el.value = v;
   el.dispatchEvent(new Event('input', {bubbles:true}));
   el.dispatchEvent(new Event('change', {bubbles:true}));
   return true;
 };
-
-const extractAfter = (raw, keywords) => {
-  const low = raw.toLowerCase();
-  for(const kw of keywords){
-    const idx = low.indexOf(kw.toLowerCase());
-    if(idx !== -1) return raw.substring(idx + kw.length).trim();
-  }
-  return null;
+const ensureStep = (n) => { if(typeof goToStep === 'function') goToStep(n); VA.step = n; };
+const getStep = () => {
+  const a = document.querySelector('.wizard-step.active');
+  return a ? parseInt(a.dataset.step) : VA.step;
 };
 
-const pickPill = (text) => {
-  const all = [...document.querySelectorAll('.category-pill')];
-  const hit = all.find(p => p.textContent.toLowerCase().includes(text.toLowerCase()));
-  if(hit){ hit.click(); return true; }
-  // try hidden pills
-  const seeMore = document.getElementById('seeMoreCategoriesBtn');
-  if(seeMore && document.getElementById('categoryPillsHidden').style.display !== 'flex'){
-    seeMore.click();
-    setTimeout(() => {
-      const hidden = [...document.querySelectorAll('#categoryPillsHidden .category-pill')];
-      const h2 = hidden.find(p => p.textContent.toLowerCase().includes(text.toLowerCase()));
-      if(h2) h2.click();
-    }, 60);
-  }
-  return false;
-};
-
-const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-
-const parseSmartDate = (str) => {
+/* ── Smart Parsers ── */
+function parseDate(str){
   const low = str.toLowerCase();
   const now = new Date();
-  if(low.includes('tomorrow')){ const d=new Date(now); d.setDate(d.getDate()+1); return formatDate(d); }
-  if(low.includes('next week')){ const d=new Date(now); d.setDate(d.getDate()+7); return formatDate(d); }
+  if(low.includes('tomorrow')){ const d=new Date(now); d.setDate(d.getDate()+1); return fmt(d); }
+  if(low.includes('next week')){ const d=new Date(now); d.setDate(d.getDate()+7); return fmt(d); }
+  if(low.includes('next month')){ const d=new Date(now); d.setMonth(d.getMonth()+1); return fmt(d); }
   const d = new Date(str);
-  if(!isNaN(d.getTime())) return formatDate(d);
+  if(!isNaN(d.getTime())) return fmt(d);
   return null;
-};
-
-const parseTime = (str) => {
+  function fmt(d){ return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+}
+function parseTime(str){
   const m = str.match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
   if(!m) return null;
   let h = parseInt(m[1]), min = m[2]?parseInt(m[2]):0;
@@ -3063,295 +3095,442 @@ const parseTime = (str) => {
   const h12 = h===0?12:(h>12?h-12:h);
   const mins = min===0?'00':String(min).padStart(2,'0');
   return `${h12}:${mins} ${per}`;
-};
+}
+function cleanValue(raw, prefixes){
+  let v = raw;
+  for(const p of prefixes){
+    const i = v.toLowerCase().indexOf(p.toLowerCase());
+    if(i !== -1) v = v.substring(i + p.length);
+  }
+  return v.replace(/^[:\s\-—]+/,'').replace(/^(is|are|to|at|for|on|in|by|a|an|the|it|this|that)\s+/i,'').trim();
+}
 
-const speak = (txt) => {
-  if('speechSynthesis' in window){
-    const u = new SpeechSynthesisUtterance(txt);
-    u.rate = 1.05; u.pitch = 1;
-    window.speechSynthesis.speak(u);
-  }
-};
+/* ── Intent Detection ── */
+function detectIntent(t){
+  const low = t.toLowerCase();
 
-const ensureStep1 = () => { goToStep(1); };
-const ensureStep2 = () => { goToStep(2); };
-const ensureStep3 = () => { goToStep(3); };
+  // 1. Greeting
+  if(/^(hi|hello|hey|yo|what's up|good morning|good afternoon|good evening)/.test(low))
+    return {intent:'greet'};
 
-/* 4. Command processor */
-function processVoiceCommand(raw){
-  const t = raw.toLowerCase();
+  // 2. Stop / quiet
+  if(/(stop|shut up|be quiet|cancel|nevermind)/.test(low))
+    return {intent:'stop'};
 
-  /* Navigation */
-  if(t.includes('step 2') || t.includes('next step') || t.includes('ticketing')){
-    ensureStep2(); speak('Moved to ticketing'); return;
+  // 3. Navigation
+  if(/(go to |switch to |open |take me to )?step (one|1|two|2|three|3)/.test(low)){
+    const n = low.includes('2')||low.includes('two')?2:(low.includes('3')||low.includes('three')?3:1);
+    return {intent:'navigate', value:n};
   }
-  if(t.includes('step 3') || t.includes('promotion') || t.includes('engagement')){
-    ensureStep3(); speak('Moved to promotion'); return;
-  }
-  if(t.includes('step 1') || t.includes('event setup') || t.includes('go back to step one')){
-    ensureStep1(); speak('Back to event setup'); return;
-  }
-  if(t.includes('previous') || t.includes('go back')){
-    const active = document.querySelector('.wizard-step.active');
-    const n = active ? parseInt(active.dataset.step) : 1;
-    if(n>1){ goToStep(n-1); speak('Going back'); }
-    return;
-  }
-  if(t.includes('publish') || t.includes('submit event')){
-    document.getElementById('eventForm').dispatchEvent(new Event('submit'));
-    speak('Publishing event'); return;
-  }
+  if(/(next step|next page|move forward|proceed|continue)/.test(low))
+    return {intent:'navigate', value:getStep()+1};
+  if(/(previous|go back|last step|back up)/.test(low))
+    return {intent:'navigate', value:getStep()-1};
+  if(/(publish|submit|save event|finish|i'm done)/.test(low))
+    return {intent:'submit'};
 
-  /* ── STEP 1: Event Setup ── */
-  if(t.includes('event name') || t.includes('title')){
-    const v = extractAfter(raw, ['event name is','title is','the title is','event name','title']);
-    if(v){ setVal('title', v); speak('Event name set'); } return;
-  }
-  if(t.includes('description')){
-    const v = extractAfter(raw, ['description is','describe','the description is']);
-    if(v){ setVal('description', v); speak('Description added'); } return;
-  }
-  if(t.includes('category')){
-    const v = extractAfter(raw, ['category is','category']);
-    if(v && pickPill(v)) speak('Category selected');
-    return;
+  // 4. Selection from list ("the first one", "number 2", "that second option")
+  if(VA.mode === 'choosing'){
+    if(/(first|number one|the one|that first)/.test(low)) return {intent:'choose', value:0};
+    if(/(second|number two|the second|option two)/.test(low)) return {intent:'choose', value:1};
+    if(/(third|number three|the third)/.test(low)) return {intent:'choose', value:2};
+    if(/(fourth|number four|the fourth)/.test(low)) return {intent:'choose', value:3};
+    if(/(fifth|number five)/.test(low)) return {intent:'choose', value:4};
+    if(/(none of these|none|nah|no thanks|something else|different)/.test(low))
+      return {intent:'reject_choices'};
   }
 
-  /* Date & Time */
-  if(t.includes('date')){
-    const v = extractAfter(raw, ['date is','event date is','on','date']);
-    if(v){
-      const d = parseSmartDate(v);
-      if(d){
-        setVal('event_date', d);
-        if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
-        if(typeof updateAccordionLocks === 'function') updateAccordionLocks();
-        speak('Date set');
-      } else speak('Could not understand that date');
-    }
-    return;
-  }
-  if(t.includes('time')){
-    const tm = parseTime(raw);
-    if(tm){
-      if(t.includes('end') || t.includes('to') || t.includes('finish')) setVal('end_time', tm);
-      else setVal('start_time', tm);
-      if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
-      speak('Time set');
-    }
-    return;
+  // 5. Skip / Don't know
+  if(/(skip this|skip it|pass|not sure|i don't know|i dunno|no idea|maybe later|i'll come back|leave it blank)/.test(low))
+    return {intent:'skip'};
+
+  // 6. Status check
+  if(/(what have i filled|what's left|what did i do|status|progress|how am i doing)/.test(low))
+    return {intent:'status'};
+
+  // 7. Help / Ideas
+  if(/(help|i'm stuck|confused|what should i do|what do i do now|guide me)/.test(low))
+    return {intent:'help'};
+  if(/(give me ideas?|suggest|recommend|what do you think|inspire me|examples?|options|i need ideas|i need help|i want options)/.test(low))
+    return {intent:'ideas'};
+
+  // 8. Yes / No (confirmation)
+  if(/^(yes|yeah|yep|sure|okay|ok|definitely|absolutely|correct|right|go ahead|do it|that's right|perfect)$/i.test(low))
+    return {intent:'yes'};
+  if(/^(no|nope|nah|not really|wrong|incorrect|change it|different|actually)/i.test(low))
+    return {intent:'no'};
+
+  // 9. "Use that" / "Go with that" / "Sounds good"
+  if(/(use that|go with that|sounds good|that works|i like that|let's do that|that's fine)/.test(low))
+    return {intent:'accept'};
+
+  // 10. Correction ("actually make it..." / "change it to...")
+  if(/(actually|change it to|make it|update it to|correct that to|no wait)/.test(low) && VA.lastField){
+    return {intent:'correct', value: t};
   }
 
-  /* Venue / Virtual */
-  if(t.includes('venue') || t.includes('location') || t.includes('address') || t.includes('place')){
-    const v = extractAfter(raw, ['venue is','location is','address is','at','venue','location']);
-    if(v){
-      // ensure in-person is selected
-      const inperson = document.querySelector('#virtualToggle .toggle-btn[data-value="inperson"]');
-      if(inperson) inperson.click();
-      setTimeout(() => { setVal('venue', v); updateAccordionLocks?.(); }, 80);
-      speak('Venue set');
-    }
-    return;
-  }
-  if(t.includes('virtual') || t.includes('online') || t.includes('zoom') || t.includes('link')){
-    const v = extractAfter(raw, ['virtual link is','link is','zoom link is','online at','virtual is']);
-    if(v){
-      const virt = document.querySelector('#virtualToggle .toggle-btn[data-value="virtual"]');
-      if(virt) virt.click();
-      setTimeout(() => { setVal('virtual_link', v); updateAccordionLocks?.(); }, 80);
-      speak('Virtual link set');
-    }
-    return;
-  }
+  // 11. Direct field input (flexible matching)
+  const fieldMap = [
+    {keys:['event name is','name is','call it','name it','title is','the title is','event name','the name is'], id:'title', step:1, next:'description'},
+    {keys:['description is','describe it as','about the event','details are','it is about','the description is'], id:'description', step:1, next:'date'},
+    {keys:['category is','type is','this is a','the category is'], id:'category', step:1, isPill:true, next:'date'},
+    {keys:['date is','on the','happening on','scheduled for','event date','the date is'], id:'event_date', step:1, isDate:true, next:'start_time'},
+    {keys:['start time is','starts at','from','beginning at','time is'], id:'start_time', step:1, isTime:true, next:'end_time'},
+    {keys:['end time is','finishes at','ends at','until','ending at'], id:'end_time', step:1, isTime:true, next:'venue'},
+    {keys:['venue is','location is','address is','at','place is','the venue is'], id:'venue', step:1, next:'organizer_name', toggle:'inperson'},
+    {keys:['virtual link is','online link is','zoom is','stream is','link is'], id:'virtual_link', step:1, next:'organizer_name', toggle:'virtual'},
+    {keys:['organizer is','host is','organized by','organizer name is'], id:'organizer_name', step:1, next:'organizer_contact'},
+    {keys:['contact is','phone is','email is','organizer contact is','reach them at'], id:'organizer_contact', step:1, next:'capacity'},
+    {keys:['capacity is','limit is','max is','seats are','capacity'], id:'capacity', step:1, next:'custom_url'},
+    {keys:['url is','custom url is','slug is','event url is'], id:'custom_url', step:1, next:null},
+    {keys:['format is','event format is'], id:'event_format', step:1, next:null},
+    {keys:['recurring','repeating','every week','every month','pattern is'], id:'recurrence_pattern', step:1, toggle:'recurring', next:null},
+    {keys:['ticket is','add ticket','ticket type is','price is'], id:'ticket', step:2, isTicket:true, next:'ticket'},
+    {keys:['sales start is','sales begin','start sales'], id:'sales_start_date', step:2, next:'sales_end_date'},
+    {keys:['sales end is','end sales','sales stop'], id:'sales_end_date', step:2, next:null},
+    {keys:['refund is','refund policy is'], id:'refund_policy', step:2, next:null},
+    {keys:['group chat is','chat name is','whatsapp group is'], id:'groupchat_name', step:3, check:'has_groupchat', next:null},
+    {keys:['dress code is','dress is','wear','attire is'], id:'dress_code', step:3, next:null},
+    {keys:['theme is','event theme is'], id:'event_theme', step:3, next:null},
+    {keys:['tags are','tag is','hashtag is'], id:'tags', step:3, next:null},
+    {keys:['highlights are','highlight is'], id:'highlights', step:3, next:null},
+    {keys:['rules are','rule is','event rules are'], id:'event_rules', step:3, next:null},
+    {keys:['sponsor is','sponsored by','brought by'], id:'sponsor', step:3, isSponsor:true, next:null},
+    {keys:['instagram is','ig is','ig handle is'], id:'social_instagram', step:3, next:null},
+    {keys:['twitter is','x is','x handle is'], id:'social_twitter', step:3, next:null},
+    {keys:['tiktok is','tiktok handle is'], id:'social_tiktok', step:3, next:null},
+    {keys:['guest is','speaker is','performer is','artist is','host is','dj is','add guest','add speaker'], id:'lineup', step:1, isLineup:true, next:null}
+  ];
 
-  /* Format & Recurrence */
-  if(t.includes('format')){
-    const v = extractAfter(raw, ['format is','format']);
-    if(v){ setVal('event_format', v); speak('Format set'); } return;
-  }
-  if(t.includes('recurring') || t.includes('repeating')){
-    const btn = document.querySelector('#recurringToggle .toggle-btn[data-value="recurring"]');
-    if(btn) btn.click();
-    const v = extractAfter(raw, ['recurring','every','pattern is']);
-    if(v) setVal('recurrence_pattern', v);
-    speak('Set as recurring'); return;
-  }
-  if(t.includes('one time') || t.includes('single event')){
-    const btn = document.querySelector('#recurringToggle .toggle-btn[data-value="single"]');
-    if(btn) btn.click();
-    speak('Set as one-time event'); return;
-  }
-
-  /* Organizer & Details */
-  if(t.includes('organizer name') || (t.includes('organizer') && !t.includes('contact'))){
-    const v = extractAfter(raw, ['organizer name is','organizer is','organizer name']);
-    if(v){ setVal('organizer_name', v); speak('Organizer name set'); } return;
-  }
-  if(t.includes('organizer contact') || t.includes('phone') || t.includes('email contact')){
-    const v = extractAfter(raw, ['contact is','organizer contact is','phone is','email is']);
-    if(v){ setVal('organizer_contact', v); speak('Contact set'); } return;
-  }
-  if(t.includes('capacity') || t.includes('limit') || t.includes('seats')){
-    const n = t.match(/(\d+)/);
-    if(n){ setVal('capacity', n[1]); speak('Capacity set to '+n[1]); } return;
-  }
-  if(t.includes('age') || t.includes('restriction')){
-    const n = t.match(/(\d+)/);
-    if(n){
-      const sel = document.getElementById('age_limit');
-      const val = n[1]+'+';
-      if(sel){ sel.value = val; speak('Age restriction set'); }
-    }
-    return;
-  }
-  if(t.includes('custom url') || t.includes('event url')){
-    const v = extractAfter(raw, ['url is','custom url is','event url is']);
-    if(v){ setVal('custom_url', v); speak('Custom URL set'); } return;
-  }
-
-  /* Guests / Speakers */
-  if(t.includes('guest') || t.includes('speaker') || t.includes('performer') || t.includes('artist') || t.includes('host') || t.includes('dj')){
-    let name = extractAfter(raw, ['guest is','speaker is','artist is','performer is','host is','dj is','add guest','add speaker','add artist','add']);
-    // Remove role words from name
-    const roles = ['speaker','performer','artist','host','dj','guest'];
-    let role = 'Performer';
-    for(const r of roles){ if(t.includes(r)) role = r.charAt(0).toUpperCase()+r.slice(1); }
-    if(t.includes('dj')) role = 'DJ';
-    if(name){
-      name = name.replace(/^(is|as)\s+/i,'');
-      ensureStep1();
-      document.getElementById('addLineupBtn').click();
-      setTimeout(() => {
-        const rows = document.querySelectorAll('.lineup-row');
-        const last = rows[rows.length-1];
-        if(last){
-          last.querySelector('.lineup-name').value = name;
-          last.querySelector('.lineup-role').value = role;
-        }
-      }, 60);
-      speak('Added '+name+' as '+role);
-    }
-    return;
-  }
-
-  /* ── STEP 2: Ticketing ── */
-  if(t.includes('ticket')){
-    const priceMatch = raw.match(/(?:for|at|costs?|price|₦|naira|number)\s*(\d[\d,]*)/i);
-    const price = priceMatch ? priceMatch[1].replace(/,/g,'') : '';
-    let name = extractAfter(raw, ['ticket','add ticket','ticket type']);
-    if(name) name = name.replace(/(?:for|at|costs?|price|₦|naira)\s*[\d,]+/gi,'').trim();
-    if(!name) name = 'General Admission';
-    ensureStep2();
-    setTimeout(() => {
-      document.getElementById('addTicketBtn').click();
-      setTimeout(() => {
-        const rows = document.querySelectorAll('.ticket-row');
-        const last = rows[rows.length-1];
-        if(last){
-          last.querySelector('.ticket-name').value = name;
-          if(price) last.querySelector('.ticket-price').value = price;
-        }
-      }, 60);
-    }, 100);
-    speak('Added '+name+' ticket');
-    return;
-  }
-  if(t.includes('sales start') || t.includes('sales begin')){
-    const v = extractAfter(raw, ['sales start','sales begin','start sales']);
-    if(v){ setVal('sales_start_date', v); speak('Sales start set'); } return;
-  }
-  if(t.includes('sales end') || t.includes('end sales')){
-    const v = extractAfter(raw, ['sales end','end sales']);
-    if(v){ setVal('sales_end_date', v); speak('Sales end set'); } return;
-  }
-  if(t.includes('refund')){
-    const sel = document.getElementById('refund_policy');
-    if(t.includes('no refund')) sel.value = 'no_refunds';
-    else if(t.includes('full')) sel.value = 'full_refund';
-    else if(t.includes('partial')) sel.value = 'partial_refund';
-    speak('Refund policy updated'); return;
-  }
-  if(t.includes('transfer') || t.includes('resell')){
-    const allow = !t.includes('not') && !t.includes('no');
-    const btn = document.querySelector('#transfersToggle .toggle-btn[data-value="'+(allow?'yes':'no')+'"]');
-    if(btn) btn.click();
-    speak(allow ? 'Transfers allowed' : 'Transfers disabled'); return;
-  }
-
-  /* ── STEP 3: Promotion ── */
-  if(t.includes('group chat') || t.includes('groupchat')){
-    const cb = document.getElementById('has_groupchat');
-    if(cb){ cb.checked = true; cb.dispatchEvent(new Event('change')); }
-    const v = extractAfter(raw, ['group chat name is','chat name is','groupchat name is']);
-    if(v) setVal('groupchat_name', v);
-    speak('Group chat enabled'); return;
-  }
-  if(t.includes('networking') || t.includes('friend finder')){
-    const cb = document.getElementById('enable_networking');
-    if(cb){ cb.checked = true; cb.dispatchEvent(new Event('change')); speak('Networking enabled'); }
-    return;
-  }
-  if(t.includes('dress code')){
-    const v = extractAfter(raw, ['dress code is','dress code']);
-    if(v){ setVal('dress_code', v); speak('Dress code set'); } return;
-  }
-  if(t.includes('theme') && !t.includes('template')){
-    const v = extractAfter(raw, ['theme is','theme']);
-    if(v){ setVal('event_theme', v); speak('Theme set'); } return;
-  }
-  if(t.includes('tag') || t.includes('hashtag')){
-    const v = extractAfter(raw, ['tags are','tag is','tags','hashtag is']);
-    if(v){ setVal('tags', v); speak('Tags added'); } return;
-  }
-  if(t.includes('highlight')){
-    const v = extractAfter(raw, ['highlights are','highlight is','highlights']);
-    if(v){ setVal('highlights', v); speak('Highlights added'); } return;
-  }
-  if(t.includes('rule') || t.includes('event rule')){
-    const v = extractAfter(raw, ['rules are','rule is','event rules are']);
-    if(v){ setVal('event_rules', v); speak('Rules added'); } return;
-  }
-  if(t.includes('sponsor')){
-    const v = extractAfter(raw, ['sponsor is','add sponsor','sponsor']);
-    if(v){
-      ensureStep3();
-      document.getElementById('addSponsorBtn').click();
-      setTimeout(() => {
-        const rows = document.querySelectorAll('#sponsorRows .lineup-row');
-        const last = rows[rows.length-1];
-        if(last) last.querySelector('.sponsor-name').value = v;
-      }, 60);
-      speak('Sponsor added');
-    }
-    return;
-  }
-  if(t.includes('instagram') || t.includes('ig ')){
-    const v = extractAfter(raw, ['instagram is','instagram handle is','ig is','ig handle is']);
-    if(v){ setVal('social_instagram', v); speak('Instagram added'); } return;
-  }
-  if(t.includes('twitter') || t.includes('x handle')){
-    const v = extractAfter(raw, ['twitter is','x is','twitter handle is','x handle is']);
-    if(v){ setVal('social_twitter', v); speak('Twitter added'); } return;
-  }
-  if(t.includes('tiktok')){
-    const v = extractAfter(raw, ['tiktok is','tiktok handle is']);
-    if(v){ setVal('social_tiktok', v); speak('TikTok added'); } return;
-  }
-
-  /* Templates */
-  if(t.includes('template') || t.includes('card style')){
-    const map = {classic:'classic', overlay:'overlay', poster:'poster', minimal:'minimal'};
-    for(const [key,val] of Object.entries(map)){
-      if(t.includes(key)){
-        const opt = document.querySelector('.template-option[data-template="'+val+'"]');
-        if(opt){ opt.click(); speak(key+' template selected'); return; }
+  for(const f of fieldMap){
+    for(const kw of f.keys){
+      if(low.includes(kw.toLowerCase())){
+        const val = cleanValue(t, [kw]);
+        if(val) return {intent:'fill', field:f, value:val, raw:t};
       }
     }
   }
 
-  /* Fallback */
-  speak("oshey boss ooo");
+  // 12. Fallback: if we have a current field and user just says a value, assume it's for that field
+  if(VA.field && t.length > 1 && !t.includes('step') && !t.includes('next') && !t.includes('back')){
+    const f = fieldMap.find(x => x.id === VA.field);
+    if(f) return {intent:'fill', field:f, value:t, raw:t};
+  }
+
+  // 13. Pure confusion
+  return {intent:'unknown'};
+}
+
+/* ── Field Execution ── */
+function executeFill(field, value, raw){
+  ensureStep(field.step);
+  VA.field = field.id;
+  VA.lastField = field.id;
+
+  // Handle toggles
+  if(field.toggle){
+    const btn = document.querySelector(`#virtualToggle .toggle-btn[data-value="${field.toggle}"]`) ||
+                document.querySelector(`#recurringToggle .toggle-btn[data-value="${field.toggle}"]`);
+    if(btn) btn.click();
+  }
+  if(field.check){
+    const cb = $(field.check);
+    if(cb && !cb.checked){ cb.checked = true; cb.dispatchEvent(new Event('change')); }
+  }
+
+  setTimeout(() => {
+    let displayVal = value;
+
+    if(field.isDate){
+      const d = parseDate(value);
+      if(!d){ say("I didn't catch that date. Try: tomorrow, December 25th, or next Friday."); return; }
+      setVal(field.id, d); displayVal = d;
+    }
+    else if(field.isTime){
+      const tm = parseTime(value);
+      if(!tm){ say("Say a time like: 6 PM or 7:30 AM."); return; }
+      setVal(field.id, tm); displayVal = tm;
+    }
+    else if(field.isPill){
+      const all = [...document.querySelectorAll('.category-pill')];
+      const hit = all.find(p => p.textContent.toLowerCase().includes(value.toLowerCase()));
+      if(hit){ hit.click(); }
+      else {
+        const seeMore = $('seeMoreCategoriesBtn');
+        if(seeMore && $('categoryPillsHidden').style.display !== 'flex') seeMore.click();
+        setTimeout(() => {
+          const hidden = [...document.querySelectorAll('#categoryPillsHidden .category-pill')];
+          const h2 = hidden.find(p => p.textContent.toLowerCase().includes(value.toLowerCase()));
+          if(h2) h2.click(); else { say("I couldn't find that category. Try: Music, Business, or Comedy."); return; }
+        }, 80);
+      }
+    }
+    else if(field.id === 'refund_policy'){
+      const sel = $('refund_policy');
+      if(raw.toLowerCase().includes('no refund')) sel.value = 'no_refunds';
+      else if(raw.toLowerCase().includes('full')) sel.value = 'full_refund';
+      else if(raw.toLowerCase().includes('partial')) sel.value = 'partial_refund';
+      else { say("Say: no refunds, full refund, or partial refund."); return; }
+    }
+    else if(field.isTicket){
+      const priceMatch = raw.match(/(?:for|at|costs?|price|₦|naira|number)\s*(\d[\d,]*)/i);
+      const price = priceMatch ? priceMatch[1].replace(/,/g,'') : '';
+      let name = value.replace(/(?:for|at|costs?|price|₦|naira)\s*[\d,]+/gi,'').trim();
+      if(!name) name = 'General Admission';
+      $('addTicketBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('.ticket-row');
+        const last = rows[rows.length-1];
+        if(last){ last.querySelector('.ticket-name').value = name; if(price) last.querySelector('.ticket-price').value = price; }
+      }, 80);
+      displayVal = name + (price ? ` at ₦${price}` : '');
+    }
+    else if(field.isLineup){
+      const roles = ['speaker','performer','artist','host','dj','guest','mc'];
+      let role = 'Performer';
+      for(const r of roles){ if(raw.toLowerCase().includes(r)) role = r==='dj'?'DJ':(r.charAt(0).toUpperCase()+r.slice(1)); }
+      $('addLineupBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('.lineup-row');
+        const last = rows[rows.length-1];
+        if(last){ last.querySelector('.lineup-name').value = value; last.querySelector('.lineup-role').value = role; }
+      }, 80);
+      displayVal = value + ' as ' + role;
+    }
+    else if(field.isSponsor){
+      $('addSponsorBtn').click();
+      setTimeout(() => {
+        const rows = document.querySelectorAll('#sponsorRows .lineup-row');
+        const last = rows[rows.length-1];
+        if(last) last.querySelector('.sponsor-name').value = value;
+      }, 80);
+    }
+    else {
+      setVal(field.id, value);
+    }
+
+    // Update locks & display
+    if(field.step === 1){
+      if(typeof updateAccordionLocks === 'function') updateAccordionLocks();
+      if(typeof updateDatetimeDisplay === 'function') updateDatetimeDisplay();
+    }
+
+    VA.filled.add(field.id);
+    VA.mode = 'chat';
+
+    // Build natural response
+    let responses = [
+      `Got it. ${displayVal}.`,
+      `Alright, ${displayVal} it is.`,
+      `Nice, ${displayVal}.`,
+      `Cool. ${displayVal}.`
+    ];
+    const resp = responses[Math.floor(Math.random() * responses.length)];
+
+    if(field.next){
+      const nextField = [
+        {id:'description', q:"What's the event about?"},
+        {id:'date', q:"When is this happening?"},
+        {id:'start_time', q:"What time does it start?"},
+        {id:'end_time', q:"And what time does it end?"},
+        {id:'venue', q:"Where is the venue?"},
+        {id:'organizer_name', q:"Who's organizing this?"},
+        {id:'organizer_contact', q:"What's their contact info?"},
+        {id:'capacity', q:"How many people can attend?"},
+        {id:'custom_url', q:"What custom URL do you want?"},
+        {id:'sales_end_date', q:"When should ticket sales end?"},
+        {id:'ticket', q:"Want to add another ticket type?"}
+      ].find(x => x.id === field.next);
+
+      if(nextField){
+        const followups = [
+          `${resp} ${nextField.q}`,
+          `${resp} Now, ${nextField.q.toLowerCase()}`,
+          `${resp} Next up: ${nextField.q}`
+        ];
+        say(followups[Math.floor(Math.random() * followups.length)]);
+        VA.field = field.next;
+      } else {
+        say(`${resp} What else?`);
+      }
+    } else {
+      say(`${resp} What else would you like to add?`);
+    }
+
+  }, field.toggle ? 120 : 0);
+}
+
+/* ── Present Choices ── */
+function presentChoices(items, question, fieldId){
+  VA.mode = 'choosing';
+  VA.choices = items;
+  VA.field = fieldId;
+  const list = items.map((it, i) => `${i+1}. ${it}`).join(', ');
+  say(`${question} Here are some ideas: ${list}. Say "the first one", "number two", or "none of these".`);
+}
+
+/* ── Main Router ── */
+function handleUtterance(raw){
+  const t = raw.trim();
+  if(!t) return;
+  VA.turn++;
+
+  const intent = detectIntent(t);
+
+  switch(intent.intent){
+
+    case 'greet':
+      const greets = [
+        "Hey there! I'm your form assistant. What are we creating today?",
+        "Hi! Ready to build an event? What's the name?",
+        "Hello! Let's make this event together. Start with the name?"
+      ];
+      say(greets[Math.floor(Math.random() * greets.length)]);
+      VA.field = 'title';
+      break;
+
+    case 'stop':
+      window.speechSynthesis.cancel();
+      if(recognition) recognition.stop();
+      VA.mode = 'chat';
+      break;
+
+    case 'navigate':
+      let n = intent.value;
+      if(n < 1) n = 1; if(n > 3) n = 3;
+      ensureStep(n);
+      const navReplies = [
+        `Here we are on step ${n}. What would you like to fill?`,
+        `Step ${n}. What are we working on?`,
+        `Switched to step ${n}. Need ideas for anything here?`
+      ];
+      say(navReplies[Math.floor(Math.random() * navReplies.length)]);
+      VA.step = n;
+      VA.field = null;
+      break;
+
+    case 'submit':
+      $('eventForm').dispatchEvent(new Event('submit'));
+      say("Publishing your event now. Fingers crossed!");
+      break;
+
+    case 'skip':
+      VA.filled.add(VA.field || 'skipped');
+      const skipReplies = [
+        "No worries, we can come back to it. What's next?",
+        "Skipped. What else should we fill?",
+        "Alright, moving on. What would you like to do next?"
+      ];
+      say(skipReplies[Math.floor(Math.random() * skipReplies.length)]);
+      VA.mode = 'chat';
+      break;
+
+    case 'status':
+      const filledCount = VA.filled.size;
+      if(filledCount === 0){
+        say("We haven't started yet. Let's begin with the event name. What should we call it?");
+        VA.field = 'title';
+      } else {
+        say(`So far we've filled ${filledCount} fields. You're on step ${getStep()}. Want me to suggest what's missing?`);
+      }
+      break;
+
+    case 'help':
+      const helps = [
+        "I'm here to help. You can tell me things like: Event name is Remy, or ask me for ideas if you're stuck.",
+        "Just talk naturally. Say: The venue is Landmark Centre, or ask: Give me venue ideas.",
+        "Try saying: Step 2 to jump to tickets, or: Add ticket VIP for 5000."
+      ];
+      say(helps[Math.floor(Math.random() * helps.length)]);
+      break;
+
+    case 'ideas':
+      if(!VA.field || VA.field === 'title'){
+        presentChoices(shuffle(IDEAS.names).slice(0,3), "Need an event name?", 'title');
+      } else if(VA.field === 'venue' || VA.field === 'virtual_link'){
+        presentChoices(shuffle(IDEAS.venues).slice(0,3), "How about one of these venues?", 'venue');
+      } else if(VA.field === 'event_theme'){
+        presentChoices(shuffle(IDEAS.themes).slice(0,3), "Here are some theme ideas.", 'event_theme');
+      } else if(VA.field === 'dress_code'){
+        presentChoices(shuffle(IDEAS.dressCodes).slice(0,3), "Dress code ideas?", 'dress_code');
+      } else if(VA.field === 'category'){
+        presentChoices(shuffle(IDEAS.categories).slice(0,3), "What category fits best?", 'category');
+      } else if(VA.field === 'ticket'){
+        presentChoices(shuffle(IDEAS.ticketNames).slice(0,3), "Ticket type ideas?", 'ticket');
+      } else {
+        say("What kind of ideas do you need? Names, venues, themes, or ticket types?");
+      }
+      break;
+
+    case 'choose':
+      if(VA.mode !== 'choosing' || !VA.choices.length){
+        say("I wasn't offering choices just then. What would you like to fill?");
+        return;
+      }
+      const choice = VA.choices[intent.value];
+      if(choice){
+        VA.mode = 'chat';
+        // Re-inject as if user said it directly
+        handleUtterance(`${VA.field} is ${choice}`);
+      } else {
+        say("That option wasn't on the list. Want me to give different ideas?");
+      }
+      break;
+
+    case 'reject_choices':
+      VA.mode = 'chat';
+      say("No problem. Want to tell me your own idea, or should I suggest something different?");
+      break;
+
+    case 'yes':
+      if(VA.mode === 'confirming' && VA.pending){
+        handleUtterance(`${VA.field} is ${VA.pending}`);
+        VA.pending = null; VA.mode = 'chat';
+      } else {
+        say("Great. What should we do next?");
+      }
+      break;
+
+    case 'no':
+      if(VA.mode === 'confirming'){
+        VA.pending = null; VA.mode = 'chat';
+        say("Okay, what would you like instead?");
+      } else {
+        say("Alright. What's on your mind?");
+      }
+      break;
+
+    case 'correct':
+      if(VA.lastField){
+        const newVal = cleanValue(raw, ['actually','change it to','make it','update it to','correct that to','no wait']);
+        handleUtterance(`${VA.lastField} is ${newVal}`);
+      } else {
+        say("What would you like to change?");
+      }
+      break;
+
+    case 'fill':
+      executeFill(intent.field, intent.value, intent.raw);
+      break;
+
+    case 'unknown':
+    default:
+      const confused = [
+        "I'm not sure I got that. Try saying: Event name is Remy, or ask me for ideas.",
+        "Hmm, I missed that. You can say things naturally, like: The venue is Landmark Centre.",
+        "I didn't catch that. Need help? Just say 'help' or ask for ideas."
+      ];
+      say(confused[Math.floor(Math.random() * confused.length)]);
+  }
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i = a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
 }
 </script>
 </body>
