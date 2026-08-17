@@ -8,10 +8,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="/common.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link 
-  rel="stylesheet" 
-  href="https://unpkg.com/leaflet/dist/leaflet.css"
-/>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
   body{background:var(--page-bg); color:var(--text-color); min-height:100vh; display:flex; transition:background 0.2s ease, color 0.2s ease;}
@@ -319,9 +315,6 @@ input, textarea{
   font-size: 16px;
 }
   }
-  @media (max-width:600px){
-  #map{ height: 220px; }
-}
 
   @media (max-width:420px){
     .stats-grid{
@@ -392,12 +385,6 @@ input, textarea{
   .tpl-line-md{ width:60%; }
   .tpl-line-lg{ width:80%; }
 
-  #map {
-  width: 100%;
-  height: 350px;
-  border-radius: 16px;
-  margin-top: 15px;
-}
 
 .accordion-section{
     border:1px solid var(--border-color); border-radius:12px; margin-bottom:14px; overflow:hidden;
@@ -1348,10 +1335,9 @@ input, textarea{
               <div class="toggle-btn" data-value="virtual">Hybrid</div>
             </div>
             <div id="locationFieldWrap">
-              <label>Location</label>
-              <input type="text" id="venue" placeholder="e.g. Landmark Event Centre, Lagos">
-              <label>Pin your event location on the map.</label>
-              <div id="map"></div>
+              <label>Venue address</label>
+              <input type="text" id="venue" placeholder="Enter the full address, or paste a Google Maps link">
+              <p class="pill-hint" style="margin-top:-10px;">You can type the full address (e.g. "Landmark Event Centre, Lagos") or paste a Google Maps location link — either works.</p>
             </div>
             <div id="virtualFieldWrap" style="display:none;">
               <label>Virtual event link</label>
@@ -1660,7 +1646,6 @@ input, textarea{
     </div>
   </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
   const API = 'https://api.tixtee.xyz/api';
@@ -2244,9 +2229,7 @@ async function loadMailingList(){
       start_time: document.getElementById('start_time').value,
       end_time: document.getElementById('end_time').value,
       venue: document.getElementById('venue').value,
-      
-      latitude: selectedLatitude,
-      longitude: selectedLongitude,
+
 
       capacity: document.getElementById('capacity').value || null,
       sales_start_date: document.getElementById('sales_start_date').value || null,
@@ -2392,38 +2375,6 @@ async function loadMailingList(){
       container.innerHTML = `<div class="empty-state"><h3>Could not load events</h3><p>Check that the backend is running.</p></div>`;
     }
   }
-
-  const map = L.map("map").setView([6.5244, 3.3792], 13);
-
-L.tileLayer(
-  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-  {
-    attribution: "&copy; OpenStreetMap contributors"
-  }
-).addTo(map);
-
-
-const marker = L.marker([6.5244, 3.3792])
-.addTo(map)
-.bindPopup("Event Location")
-.openPopup();
-let selectedLatitude = null;
-let selectedLongitude = null;
-
-map.on("click", function(e){
-
-    selectedLatitude = e.latlng.lat;
-    selectedLongitude = e.latlng.lng;
-
-    marker.setLatLng([
-        selectedLatitude,
-        selectedLongitude
-    ]);
-
-    console.log(selectedLatitude);
-    console.log(selectedLongitude);
-
-});
 
   // ---------- step-1 accordion gating ----------
   const basicsSection = document.getElementById('basicsSection');
