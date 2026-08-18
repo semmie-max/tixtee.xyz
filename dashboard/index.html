@@ -926,7 +926,7 @@ input, textarea{
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
   Mailing List
 </a>
-    <a href="#" class="nav-item" id="entryCheckNavBtn">
+    <a href="#" class="nav-item" style="text-decoration:none;">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
   Entry Check
 </a>
@@ -2066,7 +2066,6 @@ async function loadMailingList(){
     (value === 'virtual' || value === 'hybrid') ? 'block' : 'none';
 
 });
-  setupToggle('transfersToggle', () => {});
 
   document.getElementById('has_groupchat').addEventListener('change', (e) => {
     document.getElementById('groupchatFieldWrap').style.display = e.target.checked ? 'block' : 'none';
@@ -2390,16 +2389,16 @@ const isVirtual = format === 'virtual' || format === 'hybrid';
       age_limit: document.getElementById('age_limit').value || null,
 
 
-      capacity: document.getElementById('capacity').value || null,
-      sales_start_date: document.getElementById('sales_start_date').value || null,
-      sales_end_date: document.getElementById('sales_end_date').value || null,
-      allow_transfers: document.querySelector('#transfersToggle .toggle-btn.active').dataset.value === 'yes',
+            capacity: document.getElementById('unlimitedCapacity').checked ? null : (document.getElementById('capacity').value || null),
+      sales_start_date: null,
+      sales_end_date: null,
+      allow_transfers: false,
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
       event_template: document.getElementById('event_template').value,
       has_groupchat: document.getElementById('has_groupchat').checked,
       category: document.getElementById('category').value,
-      event_format: document.getElementById('event_format').value,
+            event_format: format,
       is_recurring: isRecurring,
       recurrence_pattern: isRecurring ? document.getElementById('recurrence_pattern').value : null,
       is_virtual: isVirtual,
@@ -2419,9 +2418,9 @@ const isVirtual = format === 'virtual' || format === 'hybrid';
       enable_networking: false,
       event_rules: document.getElementById('event_rules').value,
       dress_code: '',
-      event_theme: document.getElementById('event_theme').value,
-      tags: document.getElementById('tags').value,
-      highlights: document.getElementById('highlights').value,
+            event_theme: null,
+      tags: null,
+      highlights: null,
       lineup,
       tickets,
       faqs,
