@@ -1258,29 +1258,13 @@ input, textarea{
     </div>
   </div><!-- closes #settingsView -->
 
-  <div id="mailingListView" style="display:none;">
+    <div id="mailingListView" style="display:none;">
   <div class="main-header">
     <div>
       <h1>Mailing List</h1>
       <div class="sub" id="mailingListCount">Loading…</div>
     </div>
     <button class="btn-primary" id="exportMailingListBtn">Export CSV</button>
-  </div>
-    <div id="entryCheckView" style="display:none;">
-    <div class="main-header">
-      <div>
-        <h1>Entry Check</h1>
-        <div class="sub">Verify ticket holders as they arrive.</div>
-      </div>
-    </div>
-
-    <div class="section-card">
-      <label>Search by name, email, or ticket ID</label>
-      <input type="text" id="entryCheckSearch" placeholder="Type to search…">
-      <div id="entryCheckResults" class="empty-state">
-        <h3>Start typing to look up a guest</h3>
-      </div>
-    </div>
   </div>
 
   <div class="section-card">
@@ -1297,6 +1281,23 @@ input, textarea{
     </table>
   </div>
 </div>
+
+  <div id="entryCheckView" style="display:none;">
+    <div class="main-header">
+      <div>
+        <h1>Entry Check</h1>
+        <div class="sub">Verify ticket holders as they arrive.</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <label>Search by name, email, or ticket ID</label>
+      <input type="text" id="entryCheckSearch" placeholder="Type to search…">
+      <div id="entryCheckResults" class="empty-state">
+        <h3>Start typing to look up a guest</h3>
+      </div>
+    </div>
+  </div>
 
   <!-- Delete Account Confirmation Modal -->
   <div class="delete-modal" id="deleteAccountModal">
@@ -1909,8 +1910,15 @@ input, textarea{
     }
   });
 
-  
-
+  function hideAllViews(){
+    document.getElementById('overviewView').style.display = 'none';
+    document.getElementById('createEventView').style.display = 'none';
+    document.getElementById('settingsView').style.display = 'none';
+    document.getElementById('blogView').style.display = 'none';
+    document.getElementById('writeBlogView').style.display = 'none';
+    document.getElementById('mailingListView').style.display = 'none';
+    document.getElementById('entryCheckView').style.display = 'none';
+}
 function showMailingListView(){
   hideAllViews();
   document.getElementById('mailingListView').style.display = 'block';
