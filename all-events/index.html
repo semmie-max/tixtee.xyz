@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="/images/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css">
 <style>
   :root{
     --accent:#47034E;
@@ -117,6 +118,329 @@
     .panel{ margin:-24px 16px 40px; padding:22px 18px 6px; }
     .event-thumb{ width:76px; height:56px; }
   }
+
+
+  /* =====================================================
+   TIXTEE FOOTER
+   All styles are scoped with .tx-footer
+   ===================================================== */
+
+.tx-footer {
+  position: relative;
+  width: 100%;
+  min-height: 620px;
+  overflow: hidden;
+  background: #111;
+  color: #fff;
+  font-family: inherit;
+  isolation: isolate;
+}
+
+
+/* -----------------------------
+   BACKGROUND IMAGE
+   Replace the URL below
+   ----------------------------- */
+
+.tx-footer-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+
+  background-image: url("YOUR-IMAGE-HERE.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Makes the photo slightly blurred */
+  filter: blur(4px);
+
+  /* Prevents blurred edges from showing */
+  transform: scale(1.04);
+}
+
+
+/* -----------------------------
+   DARK OVERLAY
+   ----------------------------- */
+
+.tx-footer-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.55),
+      rgba(0, 0, 0, 0.72)
+    );
+}
+
+
+/* -----------------------------
+   MAIN CONTENT
+   ----------------------------- */
+
+.tx-footer-content {
+  position: relative;
+
+  min-height: 520px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 90px 24px 70px;
+}
+
+
+/* -----------------------------
+   MAIN TITLE
+   ----------------------------- */
+
+.tx-footer-title {
+  margin: 0;
+
+  max-width: 850px;
+
+  font-family: Georgia, "Times New Roman", serif;
+
+  font-size: clamp(42px, 5.5vw, 76px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+
+  color: #f5f2ee;
+}
+
+
+/* -----------------------------
+   PURPLE DIVIDER
+   ----------------------------- */
+
+.tx-footer-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+
+  margin: 28px 0 20px;
+}
+
+.tx-footer-divider span {
+  display: block;
+
+  width: 38px;
+  height: 1px;
+
+  background: #9b4dff;
+}
+
+.tx-footer-divider b {
+  color: #9b4dff;
+
+  font-size: 18px;
+  font-weight: 400;
+}
+
+
+/* -----------------------------
+   DESCRIPTION
+   ----------------------------- */
+
+.tx-footer-description {
+  margin: 0;
+
+  max-width: 520px;
+
+  color: rgba(255, 255, 255, 0.72);
+
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+
+/* -----------------------------
+   SOCIAL LINKS
+   ----------------------------- */
+
+.tx-footer-socials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 26px;
+
+  margin-top: 34px;
+}
+
+.tx-footer-socials a {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: rgba(255, 255, 255, 0.85);
+
+  text-decoration: none;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+
+.tx-footer-socials a:hover {
+  color: #fff;
+
+  border-color: #9b4dff;
+
+  background: rgba(155, 77, 255, 0.12);
+
+  transform: translateY(-3px);
+}
+
+.tx-footer-socials i {
+  font-size: 17px;
+}
+
+
+/* -----------------------------
+   BOTTOM FOOTER
+   ----------------------------- */
+
+.tx-footer-bottom {
+  position: relative;
+
+  min-height: 88px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+
+  align-items: center;
+
+  padding: 0 4%;
+
+  border-top: 1px solid rgba(155, 77, 255, 0.75);
+
+  background: rgba(8, 8, 8, 0.82);
+
+  backdrop-filter: blur(10px);
+}
+
+
+/* Copyright */
+
+.tx-footer-copy {
+  font-size: 14px;
+
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.tx-footer-copy span {
+  color: #9b4dff;
+}
+
+
+/* Navigation */
+
+.tx-footer-nav {
+  display: flex;
+  align-items: center;
+
+  gap: 30px;
+}
+
+.tx-footer-nav a {
+  color: rgba(255, 255, 255, 0.72);
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  transition: color 0.2s ease;
+}
+
+.tx-footer-nav a:hover {
+  color: #fff;
+}
+
+
+/* Made with */
+
+.tx-footer-made {
+  justify-self: end;
+
+  color: rgba(255, 255, 255, 0.62);
+
+  font-size: 14px;
+}
+
+.tx-footer-made span {
+  color: #9b4dff;
+
+  font-size: 17px;
+}
+
+
+/* -----------------------------
+   MOBILE
+   ----------------------------- */
+
+@media (max-width: 800px) {
+
+  .tx-footer {
+    min-height: auto;
+  }
+
+  .tx-footer-content {
+    min-height: 470px;
+
+    padding: 80px 22px 60px;
+  }
+
+  .tx-footer-title {
+    font-size: clamp(38px, 10vw, 58px);
+    letter-spacing: -1px;
+  }
+
+  .tx-footer-description {
+    font-size: 15px;
+  }
+
+  .tx-footer-bottom {
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+
+    padding: 30px 20px;
+
+    text-align: center;
+  }
+
+  .tx-footer-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    gap: 18px 24px;
+  }
+
+  .tx-footer-made {
+    justify-self: auto;
+  }
+
+}
 </style>
 </head>
 <body>
@@ -139,6 +463,80 @@
 </div>
 
 <!-- Your footer / quote / search section goes here — handled separately -->
+ <!-- ================= TIXTEE FOOTER ================= -->
+<footer class="tx-footer">
+
+  <!-- Background image -->
+  <div class="tx-footer-bg"></div>
+
+  <!-- Dark overlay -->
+  <div class="tx-footer-overlay"></div>
+
+  <!-- Main footer content -->
+  <div class="tx-footer-content">
+
+    <h2 class="tx-footer-title">
+      Great events start<br>
+      with a single ticket.
+    </h2>
+
+    <div class="tx-footer-divider">
+      <span></span>
+      <b>✦</b>
+      <span></span>
+    </div>
+
+    <p class="tx-footer-description">
+      Making events easier to discover, create, and experience.
+    </p>
+
+    <!-- Social links -->
+    <div class="tx-footer-socials">
+
+      <a href="#" aria-label="X / Twitter">
+        <i class="ri-twitter-x-line"></i>
+      </a>
+
+      <a href="#" aria-label="Instagram">
+        <i class="ri-instagram-line"></i>
+      </a>
+
+      <a href="#" aria-label="LinkedIn">
+        <i class="ri-linkedin-line"></i>
+      </a>
+
+      <a href="#" aria-label="Email">
+        <i class="ri-mail-line"></i>
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- Bottom footer -->
+  <div class="tx-footer-bottom">
+
+    <div class="tx-footer-copy">
+      © 2026 <span>Tixtee.</span> All rights reserved.
+    </div>
+
+    <nav class="tx-footer-nav">
+      <a href="/">Home</a>
+      <a href="/events">Events</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+    </nav>
+
+    <div class="tx-footer-made">
+      Made with <span>♥</span> for great events.
+    </div>
+
+  </div>
+
+</footer>
+<!-- =============== END TIXTEE FOOTER =============== -->
 
 <script>
   const API = 'https://api.tixtee.xyz/api';
