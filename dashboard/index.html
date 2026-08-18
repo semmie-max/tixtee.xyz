@@ -28,19 +28,7 @@
   --field-group-bg: #fbfafc;
 }
 
-.dark-theme {
-  --bg-color: #0b0b0f;
-  --page-bg: #0b0b0f;
-  --card-color: #14141b;
-  --text-color: #f0f0f0;
-  --muted-color: #a1a1aa;
-  --border-color: #27272a;
-  --input-bg: #1c1c22;
-  --primary-color: #a855f7;
-  --card-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  --hover-bg: #1f1626;
-  --field-group-bg: #18181e;
-}
+
   .sidebar{
     width:240px; background:#150017; color:#fff;
     min-height:100vh; padding:28px 20px; display:flex; flex-direction:column;
@@ -385,8 +373,7 @@ input, textarea{
   .tpl-line-md{ width:60%; }
   .tpl-line-lg{ width:80%; }
 
-  /* ---------- actual rendered card styles per template ---------- */
-.event-card.card-overlay{
+  .event-card.card-overlay{
   display:flex; flex-direction:column; justify-content:flex-end; min-height:220px; color:#fff;
 }
 .event-card.card-overlay .thumb{
@@ -410,6 +397,8 @@ input, textarea{
 .event-card.card-minimal .card-dot{
   width:10px; height:10px; border-radius:50%; background:#47034E; margin-bottom:12px;
 }
+
+  /* ---------- actual rendered card styles per template ---------- */
 
 
 .accordion-section{
@@ -933,6 +922,10 @@ input, textarea{
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M22 6l-10 7L2 6"/></svg>
   Mailing List
 </a>
+    <a href="#" class="nav-item" id="entryCheckNavBtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+  Entry Check
+</a>
     <div class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
       Ratings
@@ -1154,13 +1147,24 @@ input, textarea{
       </div>
     </div>
 
-    <div class="accordion-section">
+        <div class="accordion-section">
       <div class="accordion-header">
         <h3>Platform</h3>
-        <svg ...></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="accordion-body">
-        ...
+        <label>Commission (%)</label>
+        <input type="number" id="settingsCommission" min="0" max="100" step="0.1" placeholder="e.g. 5">
+
+        <label>Currency</label>
+        <select id="settingsCurrency">
+          <option value="NGN">NGN (₦)</option>
+          <option value="USD">USD ($)</option>
+        </select>
+
+        <label>Support Email</label>
+        <input type="email" id="settingsSupportEmail" placeholder="support@tixtee.xyz">
+
         <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
       </div>
     </div>
@@ -1206,12 +1210,6 @@ input, textarea{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="accordion-body">
-        <label>Theme</label>
-        <select id="settingsTheme">
-          <option value="system">System Default</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
 
         <label>Language</label>
         <select id="settingsLanguage">
@@ -1267,6 +1265,22 @@ input, textarea{
       <div class="sub" id="mailingListCount">Loading…</div>
     </div>
     <button class="btn-primary" id="exportMailingListBtn">Export CSV</button>
+  </div>
+    <div id="entryCheckView" style="display:none;">
+    <div class="main-header">
+      <div>
+        <h1>Entry Check</h1>
+        <div class="sub">Verify ticket holders as they arrive.</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <label>Search by name, email, or ticket ID</label>
+      <input type="text" id="entryCheckSearch" placeholder="Type to search…">
+      <div id="entryCheckResults" class="empty-state">
+        <h3>Start typing to look up a guest</h3>
+      </div>
+    </div>
   </div>
 
   <div class="section-card">
@@ -1431,7 +1445,7 @@ input, textarea{
   <div class="category-pill" data-value="Private Events">Private Events</div>
 </div>
             <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">see more</button>
-            <input type="hidden" id="category" value="Corporate event">
+            <input type="hidden" id="category" value="Music & Concerts">
           </div>
         </div>
 
@@ -1571,7 +1585,7 @@ input, textarea{
         </div>
         <label>Custom Event URL</label>
         <input type="text" id="custom_url" placeholder="e.g. lagos-tech-summit">
-        <div class="url-preview">Your event will be available at<b>tixtee.xyz/e/<span id="urlPreview">your-url</span></b></div>
+        <div class="url-preview">A custom URL is optional for now — every event gets a shareable link automatically when published.</div>
 
         <div class="field-group">
           <div class="field-group-title">Guests & Speakers</div>
@@ -1833,20 +1847,7 @@ input, textarea{
   }
   checkSession();
 
-  // ---------- theme ----------
-function applyTheme(mode){
-  const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.body.classList.toggle('dark-theme', isDark);
-}
 
-const savedTheme = localStorage.getItem('tixteeTheme') || 'system';
-applyTheme(savedTheme);
-document.getElementById('settingsTheme').value = savedTheme;
-
-document.getElementById('settingsTheme').addEventListener('change', (e) => {
-  localStorage.setItem('tixteeTheme', e.target.value);
-  applyTheme(e.target.value);
-});
 
   document.getElementById('logoutBtn').addEventListener('click', async ()=>{
     await fetch(`${API}/auth/logout`, { method:'POST', credentials:'include' });
@@ -1908,26 +1909,18 @@ document.getElementById('settingsTheme').addEventListener('change', (e) => {
     }
   });
 
-  function hideAllViews(){
-  document.getElementById('overviewView').style.display = 'none';
-  document.getElementById('createEventView').style.display = 'none';
-  document.getElementById('settingsView').style.display = 'none';
-  document.getElementById('blogView').style.display = 'none';
-  document.getElementById('writeBlogView').style.display = 'none';
-  document.getElementById('mailingListView').style.display = 'none';
-  document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
-document.getElementById('settingsNavBtn').addEventListener('click', showSettingsView);
-document.getElementById('blogNavBtn').addEventListener('click', showBlogView);
-document.getElementById('mailingListNavBtn').addEventListener('click', showMailingListView); // ADD THIS LINE
-document.getElementById('openBlogModalBtn').addEventListener('click', showWriteBlogView);
-document.getElementById('backToBlogBtn').addEventListener('click', showBlogView);
-}
+  
 
 function showMailingListView(){
   hideAllViews();
   document.getElementById('mailingListView').style.display = 'block';
   document.getElementById('mailingListNavBtn').classList.add('active');
   loadMailingList();
+}
+function showEntryCheckView(){
+  hideAllViews();
+  document.getElementById('entryCheckView').style.display = 'block';
+  document.getElementById('entryCheckNavBtn').classList.add('active');
 }
 
 async function loadMailingList(){
@@ -2010,9 +2003,11 @@ async function loadMailingList(){
     document.getElementById('blogNavBtn').classList.add('active');
   }
 
-  document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
+      document.getElementById('overviewNavBtn').addEventListener('click', showOverviewView);
   document.getElementById('settingsNavBtn').addEventListener('click', showSettingsView);
   document.getElementById('blogNavBtn').addEventListener('click', showBlogView);
+  document.getElementById('mailingListNavBtn').addEventListener('click', showMailingListView);
+  document.getElementById('entryCheckNavBtn').addEventListener('click', showEntryCheckView);
   document.getElementById('openBlogModalBtn').addEventListener('click', showWriteBlogView);
   document.getElementById('backToBlogBtn').addEventListener('click', showBlogView);
 
@@ -2083,10 +2078,7 @@ async function loadMailingList(){
     document.getElementById('groupchatFieldWrap').style.display = e.target.checked ? 'block' : 'none';
   });
 
-  document.getElementById('custom_url').addEventListener('input', (e) => {
-    const slug = e.target.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
-    document.getElementById('urlPreview').textContent = slug || 'your-url';
-  });
+  
 
   function addLineupRow(){
     const row = document.createElement('div');
@@ -2438,11 +2430,36 @@ async function loadMailingList(){
         body: JSON.stringify(body)
       });
       const data = await res.json();
-      if(!res.ok){ showMsg(data.error || 'Could not create event', 'error'); return; }
-      showMsg('Event published — check the homepage.', 'success');
+            if(!res.ok){ showMsg(data.error || 'Could not create event', 'error'); return; }
+
+      const eventUrl = `https://tixtee.xyz/event.html?id=${data.id}`;
+
+      const msgEl = document.getElementById('msg');
+      msgEl.className = 'msg success';
+      msgEl.innerHTML = `
+        Event published! 🎉
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+          <input type="text" readonly value="${eventUrl}" id="publishedEventLink"
+            style="flex:1; margin:0; padding:8px 10px; font-size:12px;">
+          <button type="button" id="copyEventLinkBtn"
+            style="background:#47034E; color:#fff; border:none; padding:8px 14px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;">
+            Copy link
+          </button>
+        </div>
+      `;
+
+      document.getElementById('copyEventLinkBtn').addEventListener('click', () => {
+        const input = document.getElementById('publishedEventLink');
+        input.select();
+        navigator.clipboard.writeText(input.value).then(() => {
+          const btn = document.getElementById('copyEventLinkBtn');
+          btn.textContent = 'Copied ✓';
+          setTimeout(() => { btn.textContent = 'Copy link'; }, 2000);
+        });
+      });
+
       document.getElementById('eventForm').reset();
       eventDraft = null;
-      setTimeout(()=> showOverviewView(), 900);
     }catch(err){
       showMsg('Could not reach the server — is the backend running?', 'error');
     }
@@ -3006,8 +3023,7 @@ confirmDelete.onclick = () => {
 
 document.getElementById("savePreferencesBtn").addEventListener("click", () => {
 
-  const preferences = {
-    theme: document.getElementById("settingsTheme").value,
+    const preferences = {
     language: document.getElementById("settingsLanguage").value,
     dateFormat: document.getElementById("settingsDateFormat").value,
     timeFormat: document.getElementById("settingsTimeFormat").value
