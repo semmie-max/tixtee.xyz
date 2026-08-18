@@ -1832,6 +1832,18 @@ input, textarea{
 
 <script>
   const API = 'https://api.tixtee.xyz/api';
+
+function to24Hour(t){
+  if(!t) return null;
+  const m = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if(!m) return t;
+  let h = parseInt(m[1], 10);
+  const min = m[2];
+  const period = m[3].toUpperCase();
+  if(period === 'PM' && h !== 12) h += 12;
+  if(period === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2,'0')}:${min}:00`;
+}
   async function checkSession(){
     try{
       const res = await fetch(`${API}/auth/me`, { credentials:'include' });
@@ -2387,10 +2399,14 @@ async function loadMailingList(){
     const body = {
       title: document.getElementById('title').value,
       description: document.getElementById('description').value,
-      event_date: document.getElementById('event_date').value,
-      start_time: document.getElementById('start_time').value,
-      end_time: document.getElementById('end_time').value,
+            event_date: document.getElementById('event_date').value,
+      start_time: to24Hour(document.getElementById('start_time').value),
+      end_time: to24Hour(document.getElementById('end_time').value),
       venue: document.getElementById('venue').value,
+
+      organizer_name: document.getElementById('organizer_name').value || null,
+      organizer_contact: document.getElementById('organizer_contact').value || null,
+      age_limit: document.getElementById('age_limit').value || null,
 
 
       capacity: document.getElementById('capacity').value || null,
@@ -2430,15 +2446,23 @@ async function loadMailingList(){
       sponsors,
     };
 
-    try{
+        try{
       const res = await fetch(`${API}/events`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         credentials:'include',
         body: JSON.stringify(body)
       });
-      const data = await res.json();
-            if(!res.ok){ showMsg(data.error || 'Could not create event', 'error'); return; }
+
+      let data;
+      const raw = await res.text();
+      try { data = JSON.parse(raw); } catch { data = null; }
+
+      if(!res.ok){
+        showMsg((data && data.error) || `Server error (${res.status}): ${raw.slice(0,200)}`, 'error');
+        console.error('Publish failed:', res.status, raw);
+        return;
+      }
 
       const eventUrl = `https://tixtee.xyz/event.html?id=${data.id}`;
 
@@ -2619,17 +2643,11 @@ function renderEventCard(ev){
   const whenWhereHint = document.getElementById('whenWhereHint');
   const organizerHint = document.getElementById('organizerHint');
 
-  function basicsComplete(){
-    return document.getElementById('title').value.trim().length > 0 &&
-           document.getElementById('description').value.trim().length > 0;
+    function basicsComplete(){
+    return document.getElementById('title').value.trim().length > 0;
   }
   function whenWhereComplete(){
-    const hasDate = document.getElementById('event_date').value.trim().length > 0;
-    const isVirtual = document.querySelector('#virtualToggle .toggle-btn.active').dataset.value === 'virtual';
-    const hasPlace = isVirtual
-      ? document.getElementById('virtual_link').value.trim().length > 0
-      : document.getElementById('venue').value.trim().length > 0;
-    return hasDate && hasPlace;
+    return document.getElementById('event_date').value.trim().length > 0;
   }
 
   function updateAccordionLocks(){
