@@ -827,23 +827,24 @@ function renderEvent(ev) {
 
   /* EVENT IMAGE */
 
-  const image =
-    ev.image ||
-    ev.cover_image ||
-    ev.banner ||
-    ev.event_image;
+const image = ev.image_url;
 
-  if (image) {
+if (image) {
 
-    eventCover.innerHTML = `
-      <img
-        src="${escapeHTML(image)}"
-        alt="${escapeHTML(ev.title || 'Event')}"
-      >
-    `;
+  let imageUrl = image;
 
+  if (imageUrl.startsWith('/')) {
+    imageUrl = `https://api.tixtee.xyz${imageUrl}`;
   }
 
+  eventCover.innerHTML = `
+    <img
+      src="${escapeHTML(imageUrl)}"
+      alt="${escapeHTML(ev.title || 'Event')}"
+    >
+  `;
+
+}
 
   /* TICKETS */
 
