@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8">
+<script>
+  var path = window.location.pathname; // e.g. /e/my-cool-party
+  var match = path.match(/^\/e\/(.+)$/);
+  if (match) {
+    window.location.replace('/e/?slug=' + encodeURIComponent(match[1]));
+  } else {
+    document.write('Page not found. <a href="/">Go home</a>');
+  }
+</script>
+</head>
+<body></body>
+</html>

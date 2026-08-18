@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Event — Tixtee</title>
+</head>
+<body>
+<div id="eventContent">Loading…</div>
+
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('slug');
+
+  async function loadEvent(){
+    if(!slug){
+      document.getElementById('eventContent').textContent = 'Event not found.';
+      return;
+    }
+    try{
+      const res = await fetch(`${API}/events/${slug}`);
+      if(!res.ok) throw new Error();
+      const ev = await res.json();
+      // TODO: render ev.title, ev.description, ev.venue, ev.tickets, etc. here
+      document.getElementById('eventContent').innerHTML = `<h1>${ev.title}</h1>`;
+    }catch(err){
+      document.getElementById('eventContent').textContent = 'Could not load this event.';
+    }
+  }
+  loadEvent();
+</script>
+</body>
+</html>
