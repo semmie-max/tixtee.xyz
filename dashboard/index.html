@@ -385,6 +385,32 @@ input, textarea{
   .tpl-line-md{ width:60%; }
   .tpl-line-lg{ width:80%; }
 
+  /* ---------- actual rendered card styles per template ---------- */
+.event-card.card-overlay{
+  display:flex; flex-direction:column; justify-content:flex-end; min-height:220px; color:#fff;
+}
+.event-card.card-overlay .thumb{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+}
+.event-card.card-overlay .card-scrim{
+  position:absolute; left:0; right:0; bottom:0; height:65%; z-index:1;
+  background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+}
+.event-card.card-overlay .body{ position:relative; z-index:2; padding:16px; }
+.event-card.card-overlay .date,
+.event-card.card-overlay .venue{ color:rgba(255,255,255,0.7); }
+.event-card.card-overlay .title{ color:#fff; }
+
+.event-card.card-poster .badge{
+  position:absolute; top:10px; left:10px; width:28px; height:28px; border-radius:8px;
+  background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.15); z-index:2;
+}
+
+.event-card.card-minimal{ padding:18px; }
+.event-card.card-minimal .card-dot{
+  width:10px; height:10px; border-radius:50%; background:#47034E; margin-bottom:12px;
+}
+
 
 .accordion-section{
     border:1px solid var(--border-color); border-radius:12px; margin-bottom:14px; overflow:hidden;
@@ -1383,27 +1409,27 @@ input, textarea{
             <label>Event Category</label>
             <p class="pill-hint">What's this event about? Pick the one category that best describes it.</p>
             <div class="category-pills" id="categoryPillsVisible">
-              <div class="category-pill active" data-value="Corporate event">Music & Concerts</div>
-              <div class="category-pill" data-value="Club Gigs">Business</div>
-              <div class="category-pill" data-value="Indoor Concerts">Technology</div>
-              <div class="category-pill" data-value="Music & Concerts">Education</div>
-              <div class="category-pill" data-value="Comedy">Conferences</div>
-              <div class="category-pill" data-value="Networking">Networking</div>
-              <div class="category-pill" data-value="Workshop">Sports</div>
-              <div class="category-pill" data-value="Conference">Gaming</div>
-            </div>
+  <div class="category-pill active" data-value="Music & Concerts">Music & Concerts</div>
+  <div class="category-pill" data-value="Business">Business</div>
+  <div class="category-pill" data-value="Technology">Technology</div>
+  <div class="category-pill" data-value="Education">Education</div>
+  <div class="category-pill" data-value="Conferences">Conferences</div>
+  <div class="category-pill" data-value="Networking">Networking</div>
+  <div class="category-pill" data-value="Sports">Sports</div>
+  <div class="category-pill" data-value="Gaming">Gaming</div>
+</div>
             <div class="category-pills" id="categoryPillsHidden" style="display:none;">
-              <div class="category-pill" data-value="Festival">Art & Culture</div>
-              <div class="category-pill" data-value="Sports">Comedy</div>
-              <div class="category-pill" data-value="Wedding">Food And Drink</div>
-              <div class="category-pill" data-value="Religious">Health & Wellness</div>
-              <div class="category-pill" data-value="Food & Drink">Fashion &amp; Beauty</div>
-              <div class="category-pill" data-value="Fashion">Community</div>
-              <div class="category-pill" data-value="Tech">Religious</div>
-              <div class="category-pill" data-value="Art & Exhibition">Family &amp; Kids</div>
-              <div class="category-pill" data-value="Nightlife">Charity</div>
-              <div class="category-pill" data-value="Family & Kids">Private Events</div>
-            </div>
+  <div class="category-pill" data-value="Art & Culture">Art & Culture</div>
+  <div class="category-pill" data-value="Comedy">Comedy</div>
+  <div class="category-pill" data-value="Food And Drink">Food And Drink</div>
+  <div class="category-pill" data-value="Health & Wellness">Health & Wellness</div>
+  <div class="category-pill" data-value="Fashion & Beauty">Fashion & Beauty</div>
+  <div class="category-pill" data-value="Community">Community</div>
+  <div class="category-pill" data-value="Religious">Religious</div>
+  <div class="category-pill" data-value="Family & Kids">Family & Kids</div>
+  <div class="category-pill" data-value="Charity">Charity</div>
+  <div class="category-pill" data-value="Private Events">Private Events</div>
+</div>
             <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">see more</button>
             <input type="hidden" id="category" value="Corporate event">
           </div>
@@ -1589,13 +1615,6 @@ input, textarea{
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
-            <label>Refund policy</label>
-            <select id="refund_policy">
-              <option value="no_refunds">No refunds</option>
-              <option value="full_refund">Full refund before event</option>
-              <option value="partial_refund">Partial refund before event</option>
-            </select>
-
             <label>Are ticket transfers allowed?</label>
             <div class="toggle-group" id="transfersToggle">
               <div class="toggle-btn active" data-value="yes">Allowed</div>
@@ -1796,13 +1815,6 @@ input, textarea{
     </div>
   </div>
 
-
-
-  <script
-  src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places"
-  async
-  defer>
-</script>
 <script>
   const API = 'https://api.tixtee.xyz/api';
   async function checkSession(){
@@ -2384,7 +2396,6 @@ async function loadMailingList(){
       capacity: document.getElementById('capacity').value || null,
       sales_start_date: document.getElementById('sales_start_date').value || null,
       sales_end_date: document.getElementById('sales_end_date').value || null,
-      refund_policy: document.getElementById('refund_policy').value,
       allow_transfers: document.querySelector('#transfersToggle .toggle-btn.active').dataset.value === 'yes',
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
@@ -2457,6 +2468,67 @@ async function loadMailingList(){
     </div>`).join('')}</div>`;
 }
 
+function renderEventCard(ev){
+  const img = ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url) : '/images/tix.jpg';
+  const dateLabel = new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+  const chatTag = ev.has_groupchat ? '<div class="tag">Group chat on</div>' : '';
+  const template = ev.event_template || 'classic';
+
+  if(template === 'overlay'){
+    return `
+      <div class="event-card card-overlay">
+        <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
+        <img class="thumb" src="${img}" alt="Event Image">
+        <div class="card-scrim"></div>
+        <div class="body">
+          <div class="date">${dateLabel}</div>
+          <div class="title">${ev.title}</div>
+          <div class="venue">${ev.venue || 'Venue TBA'}</div>
+          ${chatTag}
+        </div>
+      </div>`;
+  }
+
+  if(template === 'poster'){
+    return `
+      <div class="event-card card-poster">
+        <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
+        <div class="badge"></div>
+        <img class="thumb" src="${img}" alt="Event Image">
+        <div class="body">
+          <div class="date">${dateLabel}</div>
+          <div class="title">${ev.title}</div>
+          <div class="venue">${ev.venue || 'Venue TBA'}</div>
+          ${chatTag}
+        </div>
+      </div>`;
+  }
+
+  if(template === 'minimal'){
+    return `
+      <div class="event-card card-minimal">
+        <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
+        <div class="card-dot"></div>
+        <div class="date">${dateLabel}</div>
+        <div class="title">${ev.title}</div>
+        <div class="venue">${ev.venue || 'Venue TBA'}</div>
+        ${chatTag}
+      </div>`;
+  }
+
+  return `
+    <div class="event-card">
+      <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
+      <img class="thumb" src="${img}" alt="Event Image">
+      <div class="body">
+        <div class="date">${dateLabel}</div>
+        <div class="title">${ev.title}</div>
+        <div class="venue">${ev.venue || 'Venue TBA'}</div>
+        ${chatTag}
+      </div>
+    </div>`;
+}
+
   async function loadEvents(){
     renderDashboardSkeleton();
     const container = document.getElementById('eventsContainer');
@@ -2496,18 +2568,7 @@ async function loadMailingList(){
         return;
       }
 
-      container.innerHTML = `<div class="events-grid">${draftCardHTML}${events.map(ev => `
-        <div class="event-card">
-          <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
-          <img class="thumb" src="${ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url) : '/images/tix.jpg'}" alt="Event Image">
-          <div class="body">
-            <div class="date">${new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })}</div>
-            <div class="title">${ev.title}</div>
-            <div class="venue">${ev.venue || 'Venue TBA'}</div>
-            ${ev.has_groupchat ? '<div class="tag">Group chat on</div>' : ''}
-          </div>
-        </div>
-      `).join('')}</div>`;
+      container.innerHTML = `<div class="events-grid">${draftCardHTML}${events.map(renderEventCard).join('')}</div>`;
 
       const draftCardEl = document.getElementById('draftCard');
       if(draftCardEl){
@@ -3002,7 +3063,7 @@ const VA = {
   name: ''            // user's name (extracted if mentioned)
 };
 
-/* ── Idea Banks ── */
+ 
 const IDEAS = {
   names: [
     "Sunset Sessions", "Electric Avenue", "The Main Stage", "Midnight Groove",
