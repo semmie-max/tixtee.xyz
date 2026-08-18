@@ -2352,10 +2352,10 @@ groupchatCreated.addEventListener('change', () => {
       return;
     }
 
-    const lineup = Array.from(document.querySelectorAll('.lineup-row')).map(row => ({
-      name: row.querySelector('.lineup-name').value,
-      role: row.querySelector('.lineup-role').value,
-    })).filter(person => person.name.trim());
+    const lineup = Array.from(document.querySelectorAll('#lineupRows .lineup-row')).map(row => ({
+  name: row.querySelector('.lineup-name').value,
+  role: row.querySelector('.lineup-role').value,
+})).filter(person => person.name.trim());
 
     const tickets = Array.from(document.querySelectorAll('.ticket-row')).map(row => ({
       tier_name: row.querySelector('.ticket-name').value,
