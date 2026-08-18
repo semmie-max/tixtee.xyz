@@ -121,30 +121,33 @@
 
 
   /* =====================================================
-   TIXTEE FOOTER
-   All styles are scoped with .tx-footer
+   TIXTEE COMPACT FOOTER
+   Everything is scoped to .tx-footer
    ===================================================== */
 
 .tx-footer {
   position: relative;
   width: 100%;
-  min-height: 620px;
+  height: 430px;
+  min-height: 430px;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
+
   background: #111;
   color: #fff;
-  font-family: inherit;
+
   isolation: isolate;
 }
 
 
-/* -----------------------------
+/* ================================
    BACKGROUND IMAGE
-   Replace the URL below
-   ----------------------------- */
+   ================================ */
 
 .tx-footer-bg {
   position: absolute;
-  inset: 0;
+  inset: -12px;
   z-index: -3;
 
   background-image: url("YOUR-IMAGE-HERE.jpg");
@@ -152,40 +155,29 @@
   background-position: center;
   background-repeat: no-repeat;
 
-  /* Makes the photo slightly blurred */
   filter: blur(4px);
-
-  /* Prevents blurred edges from showing */
-  transform: scale(1.04);
 }
 
 
-/* -----------------------------
+/* ================================
    DARK OVERLAY
-   ----------------------------- */
+   ================================ */
 
 .tx-footer-overlay {
   position: absolute;
   inset: 0;
   z-index: -2;
 
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.55),
-      rgba(0, 0, 0, 0.72)
-    );
+  background: rgba(0, 0, 0, 0.63);
 }
 
 
-/* -----------------------------
-   MAIN CONTENT
-   ----------------------------- */
+/* ================================
+   MAIN FOOTER AREA
+   ================================ */
 
 .tx-footer-content {
-  position: relative;
-
-  min-height: 520px;
+  height: 340px;
 
   display: flex;
   flex-direction: column;
@@ -194,47 +186,45 @@
 
   text-align: center;
 
-  padding: 90px 24px 70px;
+  padding: 35px 20px 20px;
+  box-sizing: border-box;
 }
 
 
-/* -----------------------------
-   MAIN TITLE
-   ----------------------------- */
+/* ================================
+   TITLE
+   ================================ */
 
 .tx-footer-title {
   margin: 0;
 
-  max-width: 850px;
+  max-width: 700px;
 
   font-family: Georgia, "Times New Roman", serif;
 
-  font-size: clamp(42px, 5.5vw, 76px);
+  font-size: clamp(34px, 5vw, 58px);
   font-weight: 400;
-  line-height: 1.12;
-  letter-spacing: -1.5px;
+  line-height: 1.08;
+  letter-spacing: -1px;
 
   color: #f5f2ee;
 }
 
 
-/* -----------------------------
-   PURPLE DIVIDER
-   ----------------------------- */
+/* ================================
+   DIVIDER
+   ================================ */
 
 .tx-footer-divider {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
+  gap: 10px;
 
-  margin: 28px 0 20px;
+  margin: 18px 0 12px;
 }
 
 .tx-footer-divider span {
-  display: block;
-
-  width: 38px;
+  width: 30px;
   height: 1px;
 
   background: #9b4dff;
@@ -242,72 +232,59 @@
 
 .tx-footer-divider b {
   color: #9b4dff;
-
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 400;
 }
 
 
-/* -----------------------------
+/* ================================
    DESCRIPTION
-   ----------------------------- */
+   ================================ */
 
 .tx-footer-description {
   margin: 0;
 
-  max-width: 520px;
+  max-width: 450px;
 
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.7);
 
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 
-/* -----------------------------
+/* ================================
    SOCIAL LINKS
-   ----------------------------- */
+   ================================ */
 
 .tx-footer-socials {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 26px;
+  gap: 22px;
 
-  margin-top: 34px;
+  margin-top: 22px;
 }
 
 .tx-footer-socials a {
-  width: 42px;
-  height: 42px;
-
   display: flex;
   align-items: center;
   justify-content: center;
+
+  width: 34px;
+  height: 34px;
 
   color: rgba(255, 255, 255, 0.85);
 
   text-decoration: none;
 
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 50%;
-
-  transition:
-    color 0.25s ease,
-    border-color 0.25s ease,
-    transform 0.25s ease,
-    background 0.25s ease;
+  transition: 0.2s ease;
 }
 
 .tx-footer-socials a:hover {
-  color: #fff;
-
-  border-color: #9b4dff;
-
-  background: rgba(155, 77, 255, 0.12);
-
-  transform: translateY(-3px);
+  color: #9b4dff;
+  transform: translateY(-2px);
 }
 
 .tx-footer-socials i {
@@ -315,14 +292,17 @@
 }
 
 
-/* -----------------------------
-   BOTTOM FOOTER
-   ----------------------------- */
+/* ================================
+   BOTTOM BAR
+   ================================ */
 
 .tx-footer-bottom {
-  position: relative;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 
-  min-height: 88px;
+  width: 100%;
+  height: 90px;
 
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -330,21 +310,19 @@
   align-items: center;
 
   padding: 0 4%;
+  box-sizing: border-box;
 
-  border-top: 1px solid rgba(155, 77, 255, 0.75);
+  border-top: 1px solid rgba(155, 77, 255, 0.65);
 
-  background: rgba(8, 8, 8, 0.82);
-
-  backdrop-filter: blur(10px);
+  background: rgba(7, 7, 7, 0.86);
 }
 
 
 /* Copyright */
 
 .tx-footer-copy {
-  font-size: 14px;
-
-  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .tx-footer-copy span {
@@ -358,15 +336,15 @@
   display: flex;
   align-items: center;
 
-  gap: 30px;
+  gap: 24px;
 }
 
 .tx-footer-nav a {
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.65);
 
   text-decoration: none;
 
-  font-size: 14px;
+  font-size: 13px;
 
   transition: color 0.2s ease;
 }
@@ -381,63 +359,113 @@
 .tx-footer-made {
   justify-self: end;
 
-  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
 
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .tx-footer-made span {
   color: #9b4dff;
-
-  font-size: 17px;
 }
 
 
-/* -----------------------------
+/* =====================================================
    MOBILE
-   ----------------------------- */
+   ===================================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
 
   .tx-footer {
-    min-height: auto;
+    height: 480px;
+    min-height: 480px;
   }
+
 
   .tx-footer-content {
-    min-height: 470px;
+    height: 385px;
 
-    padding: 80px 22px 60px;
+    padding: 35px 20px 20px;
   }
+
 
   .tx-footer-title {
-    font-size: clamp(38px, 10vw, 58px);
-    letter-spacing: -1px;
+    max-width: 350px;
+
+    font-size: 38px;
+    line-height: 1.08;
   }
+
 
   .tx-footer-description {
-    font-size: 15px;
+    max-width: 300px;
+
+    font-size: 13px;
   }
+
+
+  .tx-footer-socials {
+    margin-top: 18px;
+    gap: 18px;
+  }
+
 
   .tx-footer-bottom {
+    height: 95px;
+
     display: flex;
-    flex-direction: column;
-
-    gap: 24px;
-
-    padding: 30px 20px;
-
-    text-align: center;
-  }
-
-  .tx-footer-nav {
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
 
-    gap: 18px 24px;
+    gap: 8px;
+
+    padding: 12px 15px;
+
+    flex-wrap: wrap;
   }
 
+
+  .tx-footer-copy,
   .tx-footer-made {
-    justify-self: auto;
+    font-size: 11px;
+  }
+
+
+  .tx-footer-nav {
+    display: none;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 400px) {
+
+  .tx-footer {
+    height: 440px;
+    min-height: 440px;
+  }
+
+
+  .tx-footer-content {
+    height: 350px;
+  }
+
+
+  .tx-footer-title {
+    font-size: 32px;
+  }
+
+
+  .tx-footer-description {
+    font-size: 12px;
+  }
+
+
+  .tx-footer-bottom {
+    height: 90px;
   }
 
 }
