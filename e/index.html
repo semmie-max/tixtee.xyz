@@ -41,6 +41,7 @@ body {
 }
 
 button { font-family: inherit; }
+a { color: inherit; }
 
 /* =========================
    NAVBAR
@@ -161,13 +162,42 @@ button { font-family: inherit; }
   letter-spacing: -1.2px;
   font-weight: 800;
   color: var(--text-color);
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
+
+/* ---- badge row (secret guest / golden seat) ---- */
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.badge-row:empty { display: none; margin: 0; }
+
+.feature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--tag-bg);
+  color: var(--primary-color);
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 100px;
+}
+.feature-badge svg { width: 13px; height: 13px; }
+
+/* ---- meta grid ---- */
 
 .event-meta {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 36px;
+}
+
+@media (min-width: 640px) {
+  .event-meta { grid-template-columns: repeat(2, 1fr); gap: 16px 24px; }
 }
 
 .meta-item {
@@ -190,7 +220,7 @@ button { font-family: inherit; }
 
 .meta-icon svg { width: 17px; height: 17px; }
 
-.meta-content { padding-top: 3px; }
+.meta-content { padding-top: 3px; min-width: 0; }
 
 .meta-label {
   display: block;
@@ -206,15 +236,23 @@ button { font-family: inherit; }
   font-size: 14px;
   font-weight: 600;
   color: var(--text-color);
+  word-break: break-word;
 }
 
 .section { margin-top: 40px; }
+.section:empty { display: none; }
 
 .section-title {
   font-size: 17px;
   font-weight: 700;
   letter-spacing: -.2px;
   margin-bottom: 14px;
+}
+
+.section-sub {
+  font-size: 12.5px;
+  color: var(--muted-color);
+  margin: -8px 0 14px;
 }
 
 .description {
@@ -224,14 +262,148 @@ button { font-family: inherit; }
   white-space: pre-line;
 }
 
+/* ---- chips (highlights / tags / sponsors) ---- */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: var(--field-group-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 100px;
+}
+.chip.accent { background: var(--tag-bg); border-color: transparent; color: var(--primary-color); }
+
+/* ---- lineup ---- */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.lineup-card {
+  background: var(--field-group-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 13px 14px;
+}
+.lineup-card .name { font-size: 13.5px; font-weight: 700; }
+.lineup-card .role {
+  font-size: 11px; font-weight: 600; color: var(--primary-color);
+  text-transform: uppercase; letter-spacing: .05em; margin-top: 3px;
+}
+
+/* ---- generic info card (virtual access, community) ---- */
+.info-card {
+  background: var(--field-group-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 18px 20px;
+}
+.info-card p {
+  font-size: 13.5px;
+  color: #5a5a5f;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.info-card p:last-child { margin-bottom: 0; }
+.info-card .info-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--primary-color);
+  color: #fff;
+  text-decoration: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  transition: background .2s ease;
+}
+.info-btn:hover { background: var(--primary-hover); }
+.info-btn svg { width: 13px; height: 13px; }
+.info-muted-note {
+  font-size: 12.5px;
+  color: var(--muted-color);
+  font-style: italic;
+}
+
+/* ---- FAQ accordion ---- */
+.faq-item {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: var(--field-group-bg);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.faq-question:hover { background: var(--hover-bg); }
+.faq-question svg {
+  width: 15px; height: 15px; color: var(--primary-color); flex-shrink: 0;
+  transition: transform .2s ease;
+}
+.faq-item.open .faq-question svg { transform: rotate(180deg); }
+.faq-answer {
+  display: none;
+  padding: 14px 16px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  color: #5a5a5f;
+  line-height: 1.7;
+}
+.faq-item.open .faq-answer { display: block; }
+
+/* ---- policies list ---- */
+.policy-list { display: grid; gap: 10px; }
+.policy-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #5a5a5f;
+  line-height: 1.6;
+}
+.policy-row svg {
+  width: 15px; height: 15px; color: var(--primary-color); flex-shrink: 0; margin-top: 2px;
+}
+
+/* ---- socials ---- */
+.social-row { display: flex; gap: 10px; }
+.social-link {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--tag-bg); color: var(--primary-color);
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none; transition: background .15s ease;
+}
+.social-link:hover { background: var(--hover-bg); }
+.social-link svg { width: 16px; height: 16px; }
+
 .organizer {
   border-top: 1px solid var(--border-color);
   padding-top: 22px;
   margin-top: 44px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
 }
+
+.organizer-info { display: flex; align-items: center; gap: 12px; }
 
 .organizer-avatar {
   width: 36px;
@@ -261,6 +433,12 @@ button { font-family: inherit; }
   font-size: 14px;
 }
 
+.organizer-contact {
+  font-size: 12px;
+  color: var(--muted-color);
+  margin-top: 2px;
+}
+
 /* =========================
    TICKET CARD
 ========================= */
@@ -280,7 +458,6 @@ button { font-family: inherit; }
   overflow: hidden;
 }
 
-/* subtle brand texture, same technique used on the dashboard's stat cards */
 .ticket-texture {
   position: absolute;
   inset: 0;
@@ -457,10 +634,7 @@ button { font-family: inherit; }
   .event-title {
     font-size: clamp(28px, 9vw, 38px);
     letter-spacing: -.8px;
-    margin-bottom: 22px;
   }
-
-  .event-meta { margin-bottom: 28px; }
 
   .section { margin-top: 32px; }
 
@@ -555,57 +729,65 @@ button { font-family: inherit; }
         Event title
       </h1>
 
+      <div class="badge-row" id="badgeRow"></div>
 
-      <div class="event-meta">
-
-        <div class="meta-item">
-          <div class="meta-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          </div>
-
-          <div class="meta-content">
-            <span class="meta-label">Date & time</span>
-            <span id="eventDate" class="meta-value">—</span>
-          </div>
-        </div>
-
-
-        <div class="meta-item">
-          <div class="meta-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
-          </div>
-
-          <div class="meta-content">
-            <span class="meta-label">Location</span>
-            <span id="eventVenue" class="meta-value">—</span>
-          </div>
-        </div>
-
-      </div>
-
+      <div class="event-meta" id="eventMeta"></div>
 
       <section class="section">
-
-        <h2 class="section-title">
-          About this event
-        </h2>
-
-        <div id="eventDescription" class="description">
-          —
-        </div>
-
+        <h2 class="section-title">About this event</h2>
+        <div id="eventDescription" class="description">—</div>
       </section>
 
+      <section class="section" id="virtualSection" style="display:none;">
+        <h2 class="section-title" id="virtualSectionTitle">Virtual access</h2>
+        <div class="info-card" id="virtualContent"></div>
+      </section>
+
+      <section class="section" id="lineupSection" style="display:none;">
+        <h2 class="section-title">Featured guests & speakers</h2>
+        <div class="lineup-grid" id="lineupContent"></div>
+      </section>
+
+      <section class="section" id="highlightsSection" style="display:none;">
+        <h2 class="section-title">Highlights</h2>
+        <div class="chip-row" id="highlightsContent"></div>
+      </section>
+
+      <section class="section" id="styleSection" style="display:none;">
+        <h2 class="section-title">Style & theme</h2>
+        <div class="chip-row" id="styleContent"></div>
+      </section>
+
+      <section class="section" id="communitySection" style="display:none;">
+        <h2 class="section-title">Community chat</h2>
+        <div class="info-card" id="communityContent"></div>
+      </section>
+
+      <section class="section" id="faqSection" style="display:none;">
+        <h2 class="section-title">Frequently asked questions</h2>
+        <div id="faqContent"></div>
+      </section>
+
+      <section class="section" id="sponsorSection" style="display:none;">
+        <h2 class="section-title">Event partners</h2>
+        <div class="chip-row" id="sponsorContent"></div>
+      </section>
+
+      <section class="section" id="policySection" style="display:none;">
+        <h2 class="section-title">Tickets & policies</h2>
+        <div class="policy-list" id="policyContent"></div>
+      </section>
 
       <div class="organizer">
-
-        <div class="organizer-avatar" id="organizerAvatar">T</div>
-
-        <div>
-          <div class="organizer-label">Organized by</div>
-          <div id="organizerName" class="organizer-name">—</div>
+        <div class="organizer-info">
+          <div class="organizer-avatar" id="organizerAvatar">T</div>
+          <div>
+            <div class="organizer-label">Organized by</div>
+            <div id="organizerName" class="organizer-name">—</div>
+            <div class="organizer-contact" id="organizerContact"></div>
+          </div>
         </div>
-
+        <div class="social-row" id="socialRow"></div>
       </div>
 
     </section>
@@ -651,7 +833,7 @@ button { font-family: inherit; }
           Get Ticket
         </button>
 
-        <div class="ticket-fineprint">Instant confirmation · No hidden fees</div>
+        <div class="ticket-fineprint" id="ticketFineprint">Instant confirmation · No hidden fees</div>
 
       </div>
 
@@ -716,100 +898,117 @@ const eventPage = document.getElementById('eventPage');
 const errorPage = document.getElementById('errorPage');
 
 const eventTitle = document.getElementById('eventTitle');
-const eventDate = document.getElementById('eventDate');
-const eventVenue = document.getElementById('eventVenue');
 const eventDescription = document.getElementById('eventDescription');
+const eventMeta = document.getElementById('eventMeta');
+const badgeRow = document.getElementById('badgeRow');
 const organizerName = document.getElementById('organizerName');
 const organizerAvatar = document.getElementById('organizerAvatar');
+const organizerContact = document.getElementById('organizerContact');
+const socialRow = document.getElementById('socialRow');
 const eventCover = document.getElementById('eventCover');
 const ticketList = document.getElementById('ticketList');
+const ticketFineprint = document.getElementById('ticketFineprint');
 
 const ticketButton = document.getElementById('ticketButton');
 const mobileTicketButton = document.getElementById('mobileTicketButton');
 
+/* =========================
+   ICONS
+========================= */
+
+const ICONS = {
+  calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>',
+  tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 11 3.8A2 2 0 0 0 9.2 3H4a1 1 0 0 0-1 1v5.2a2 2 0 0 0 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l5-5a2 2 0 0 0 0-2.8z"/><circle cx="7.5" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>',
+  globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg>',
+  shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6z"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  repeat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+  gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v9H5v-9"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C9.5 3 12 8 12 8s2.5-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>',
+  star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg>',
+  link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.2 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4A8.5 8.5 0 0 1 4 15.2 8.4 8.4 0 0 1 12.5 4 8.4 8.4 0 0 1 21 11.5z"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>',
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  twitter: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.9 3H21l-6.7 7.7L22.3 21h-6.9l-5.4-6.8L3.7 21H1.6l7.2-8.2L1 3h7l4.9 6.2L18.9 3zM17.7 19h1.9L7.4 5H5.4l12.3 14z"/></svg>',
+  tiktok: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M14 3c.5 2.3 2 3.8 4.3 4v2.7c-1.5 0-2.9-.4-4.3-1.3v6.3a5.7 5.7 0 1 1-5.7-5.7c.4 0 .8 0 1.2.1v2.8a3 3 0 1 0 2.1 2.9V3h2.4z"/></svg>'
+};
 
 /* =========================
    HELPERS
 ========================= */
 
 function showError() {
-
   loading.style.display = 'none';
   eventPage.style.display = 'none';
   errorPage.style.display = 'flex';
-
 }
 
-
 function formatDate(date) {
-
-  if (!date) return 'Date to be announced';
-
+  if (!date) return null;
   const d = new Date(date);
-
-  if (isNaN(d.getTime())) {
-    return date;
-  }
-
+  if (isNaN(d.getTime())) return date;
   return d.toLocaleDateString('en-NG', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
 }
 
+function formatShortDate(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date;
+  return d.toLocaleDateString('en-NG', { day: '2-digit', month: 'short', year: 'numeric' });
+}
 
 function escapeHTML(value) {
-
-  if (value === null || value === undefined) {
-    return '';
-  }
-
+  if (value === null || value === undefined) return '';
   const div = document.createElement('div');
   div.textContent = value;
-
   return div.innerHTML;
 }
 
+function metaItemHTML(icon, label, value) {
+  return `
+    <div class="meta-item">
+      <div class="meta-icon">${ICONS[icon]}</div>
+      <div class="meta-content">
+        <span class="meta-label">${escapeHTML(label)}</span>
+        <span class="meta-value">${escapeHTML(value)}</span>
+      </div>
+    </div>`;
+}
+
+const CATEGORY_LABELS = {}; // categories are already stored human-readable
+const AGE_LABELS = {
+  'all-ages': 'All ages', '13+': '13 and over', '16+': '16 and over',
+  '18+': '18 and over', '21+': '21 and over'
+};
+const FORMAT_LABELS = { inperson: 'In person', virtual: 'Virtual', hybrid: 'Hybrid' };
+const REFUND_LABELS = {
+  no_refunds: 'This event has a no-refunds policy.',
+  full_refund: 'Full refunds are available for this event.',
+  partial_refund: 'Partial refunds are available for this event.'
+};
 
 /* =========================
    LOAD EVENT
 ========================= */
 
 async function loadEvent() {
-
-  if (!slug) {
-    showError();
-    return;
-  }
+  if (!slug) { showError(); return; }
 
   try {
-
-    const res = await fetch(
-      `${API}/events/${encodeURIComponent(slug)}`
-    );
-
-    if (!res.ok) {
-      throw new Error('Event not found');
-    }
-
+    const res = await fetch(`${API}/events/${encodeURIComponent(slug)}`);
+    if (!res.ok) throw new Error('Event not found');
     const ev = await res.json();
-
     console.log('Event:', ev);
-
     renderEvent(ev);
-
   } catch (err) {
-
     console.error(err);
-
     showError();
-
   }
-
 }
-
 
 /* =========================
    RENDER EVENT
@@ -820,203 +1019,320 @@ function renderEvent(ev) {
   loading.style.display = 'none';
   eventPage.style.display = 'block';
 
-  /* TITLE */
-
-  eventTitle.textContent =
-    ev.title ||
-    ev.name ||
-    'Untitled Event';
-
-
-  /* DATE */
-
-  eventDate.textContent =
-    formatDate(
-      ev.event_date ||
-      ev.date ||
-      ev.start_date
-    );
-
-
-  /* TIME */
-
-  if (ev.time) {
-
-    eventDate.textContent += ` · ${ev.time}`;
-
-  }
-
-
-  /* VENUE */
-
-  eventVenue.textContent =
-    ev.venue ||
-    ev.location ||
-    ev.address ||
-    'Location to be announced';
-
-
-  /* DESCRIPTION */
+  eventTitle.textContent = ev.title || ev.name || 'Untitled Event';
 
   eventDescription.textContent =
-    ev.description ||
-    'More information about this event will be available soon.';
+    ev.description || 'More information about this event will be available soon.';
 
-
-  /* ORGANIZER */
-
-  const organizerText =
-    ev.organizer_name ||
-    ev.organizer ||
-    ev.creator_name ||
-    'Tixtee Organizer';
-
-  organizerName.textContent = organizerText;
-
-  organizerAvatar.textContent =
-    organizerText.trim().charAt(0).toUpperCase() || 'T';
-
-
-  /* EVENT IMAGE */
-
-const image = ev.image_url;
-
-if (image) {
-
-  let imageUrl = image;
-
-  if (imageUrl.startsWith('/')) {
-    imageUrl = `https://api.tixtee.xyz${imageUrl}`;
-  }
-
-  eventCover.innerHTML = `
-    <img
-      src="${escapeHTML(imageUrl)}"
-      alt="${escapeHTML(ev.title || 'Event')}"
-    >
-  `;
-
-}
-
-  /* TICKETS */
-
+  renderBadges(ev);
+  renderMeta(ev);
+  renderVirtual(ev);
+  renderLineup(ev);
+  renderHighlights(ev);
+  renderStyle(ev);
+  renderCommunity(ev);
+  renderFaqs(ev);
+  renderSponsors(ev);
+  renderPolicies(ev);
+  renderOrganizer(ev);
+  renderCover(ev);
   renderTickets(ev);
 
-
-  /* PAGE TITLE */
-
-  document.title =
-    `${ev.title || 'Event'} — Tixtee`;
-
+  document.title = `${ev.title || 'Event'} — Tixtee`;
 }
 
+/* ---- badges ---- */
+function renderBadges(ev) {
+  const badges = [];
+  if (ev.has_secret_guest) {
+    badges.push(`<span class="feature-badge">${ICONS.gift} Surprise guest</span>`);
+  }
+  if (ev.has_golden_seat) {
+    badges.push(`<span class="feature-badge">${ICONS.star} Golden seat</span>`);
+  }
+  badgeRow.innerHTML = badges.join('');
+}
+
+/* ---- meta grid: date, venue/link, category, format, age limit, capacity, recurrence ---- */
+function renderMeta(ev) {
+  const items = [];
+
+  let dateVal = formatDate(ev.event_date || ev.date || ev.start_date) || 'Date to be announced';
+  if (ev.start_time) {
+    dateVal += ` · ${ev.start_time}`;
+    if (ev.end_time) dateVal += ` – ${ev.end_time}`;
+  }
+  items.push(metaItemHTML('calendar', 'Date & time', dateVal));
+
+  const isVirtualOnly = ev.event_format === 'virtual';
+  if (!isVirtualOnly) {
+    items.push(metaItemHTML('pin', 'Location',
+      ev.venue || ev.location || ev.address || 'Location to be announced'));
+  }
+
+  if (ev.category) {
+    items.push(metaItemHTML('tag', 'Category', CATEGORY_LABELS[ev.category] || ev.category));
+  }
+
+  if (ev.event_format) {
+    items.push(metaItemHTML('globe', 'Format', FORMAT_LABELS[ev.event_format] || ev.event_format));
+  }
+
+  if (ev.age_limit) {
+    items.push(metaItemHTML('shield', 'Age limit', AGE_LABELS[ev.age_limit] || ev.age_limit));
+  }
+
+  if (ev.capacity) {
+    items.push(metaItemHTML('users', 'Capacity', `Up to ${Number(ev.capacity).toLocaleString()} guests`));
+  }
+
+  if (ev.is_recurring) {
+    items.push(metaItemHTML('repeat', 'Recurrence', ev.recurrence_pattern || 'Repeating event'));
+  }
+
+  eventMeta.innerHTML = items.join('');
+}
+
+/* ---- virtual / hybrid access ---- */
+function renderVirtual(ev) {
+  const section = document.getElementById('virtualSection');
+  const title = document.getElementById('virtualSectionTitle');
+  const content = document.getElementById('virtualContent');
+
+  if (!ev.is_virtual && ev.event_format !== 'virtual' && ev.event_format !== 'hybrid') {
+    section.style.display = 'none';
+    return;
+  }
+
+  title.textContent = ev.event_format === 'hybrid' ? 'Join online' : 'Virtual access';
+
+  if (ev.virtual_link) {
+    content.innerHTML = `
+      <p>This event can be joined online${ev.event_format === 'hybrid' ? ', in addition to attending in person' : ''}.</p>
+      <a class="info-btn" href="${escapeHTML(ev.virtual_link)}" target="_blank" rel="noopener">
+        ${ICONS.link} Open virtual link
+      </a>`;
+  } else {
+    content.innerHTML = `<p class="info-muted-note">The virtual access link will be shared with ticket holders closer to the event.</p>`;
+  }
+
+  section.style.display = 'block';
+}
+
+/* ---- lineup ---- */
+function renderLineup(ev) {
+  const section = document.getElementById('lineupSection');
+  const content = document.getElementById('lineupContent');
+  const lineup = Array.isArray(ev.lineup) ? ev.lineup.filter(p => p.name) : [];
+
+  if (!lineup.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = lineup.map(p => `
+    <div class="lineup-card">
+      <div class="name">${escapeHTML(p.name)}</div>
+      ${p.role ? `<div class="role">${escapeHTML(p.role)}</div>` : ''}
+    </div>
+  `).join('');
+
+  section.style.display = 'block';
+}
+
+/* ---- highlights / tags ---- */
+function renderHighlights(ev) {
+  const section = document.getElementById('highlightsSection');
+  const content = document.getElementById('highlightsContent');
+  const items = [ev.highlights, ev.tags]
+    .filter(Boolean)
+    .join(',')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (!items.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = items.map(i => `<span class="chip accent">${escapeHTML(i)}</span>`).join('');
+  section.style.display = 'block';
+}
+
+/* ---- style & theme ---- */
+function renderStyle(ev) {
+  const section = document.getElementById('styleSection');
+  const content = document.getElementById('styleContent');
+  const chips = [];
+
+  if (ev.event_theme) chips.push(`<span class="chip">Theme: ${escapeHTML(ev.event_theme)}</span>`);
+  if (ev.dress_code) chips.push(`<span class="chip">Dress code: ${escapeHTML(ev.dress_code)}</span>`);
+
+  if (!chips.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = chips.join('');
+  section.style.display = 'block';
+}
+
+/* ---- community chat ---- */
+function renderCommunity(ev) {
+  const section = document.getElementById('communitySection');
+  const content = document.getElementById('communityContent');
+
+  if (!ev.has_groupchat) { section.style.display = 'none'; return; }
+
+  let html = `<div class="info-title">${escapeHTML(ev.groupchat_name || 'Event community chat')}</div>`;
+  if (ev.groupchat_rules) html += `<p>${escapeHTML(ev.groupchat_rules)}</p>`;
+
+  if (ev.groupchat_created && ev.groupchat_link) {
+    html += `<a class="info-btn" href="${escapeHTML(ev.groupchat_link)}" target="_blank" rel="noopener">${ICONS.chat} Join the chat</a>`;
+  } else {
+    html += `<p class="info-muted-note">The chat link will be shared once it's ready.</p>`;
+  }
+
+  content.innerHTML = html;
+  section.style.display = 'block';
+}
+
+/* ---- FAQs ---- */
+function renderFaqs(ev) {
+  const section = document.getElementById('faqSection');
+  const content = document.getElementById('faqContent');
+  const faqs = Array.isArray(ev.faqs) ? ev.faqs.filter(f => f.question) : [];
+
+  if (!faqs.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = faqs.map((f, i) => `
+    <div class="faq-item" id="faqItem${i}">
+      <div class="faq-question" onclick="document.getElementById('faqItem${i}').classList.toggle('open')">
+        <span>${escapeHTML(f.question)}</span>
+        ${ICONS.chevron}
+      </div>
+      <div class="faq-answer">${escapeHTML(f.answer || '')}</div>
+    </div>
+  `).join('');
+
+  section.style.display = 'block';
+}
+
+/* ---- sponsors ---- */
+function renderSponsors(ev) {
+  const section = document.getElementById('sponsorSection');
+  const content = document.getElementById('sponsorContent');
+  const sponsors = Array.isArray(ev.sponsors) ? ev.sponsors.filter(s => s.name) : [];
+
+  if (!sponsors.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = sponsors.map(s => `<span class="chip">${escapeHTML(s.name)}</span>`).join('');
+  section.style.display = 'block';
+}
+
+/* ---- ticket rules, refund policy, transfers, sales window ---- */
+function renderPolicies(ev) {
+  const section = document.getElementById('policySection');
+  const content = document.getElementById('policyContent');
+  const rows = [];
+
+  if (ev.ticket_rules) {
+    rows.push(`<div class="policy-row">${ICONS.check}<span>${escapeHTML(ev.ticket_rules)}</span></div>`);
+  }
+  if (ev.event_rules) {
+    rows.push(`<div class="policy-row">${ICONS.check}<span>${escapeHTML(ev.event_rules)}</span></div>`);
+  }
+  if (ev.refund_policy) {
+    rows.push(`<div class="policy-row">${ICONS.check}<span>${escapeHTML(REFUND_LABELS[ev.refund_policy] || ev.refund_policy)}</span></div>`);
+  }
+  rows.push(`<div class="policy-row">${ICONS.check}<span>Tickets are ${ev.allow_transfers === false ? 'non-transferable' : 'transferable'}.</span></div>`);
+
+  const salesStart = formatShortDate(ev.sales_start_date);
+  const salesEnd = formatShortDate(ev.sales_end_date);
+  if (salesStart || salesEnd) {
+    const label = salesStart && salesEnd
+      ? `Ticket sales run from ${salesStart} to ${salesEnd}.`
+      : salesEnd ? `Ticket sales close on ${salesEnd}.` : `Ticket sales open on ${salesStart}.`;
+    rows.push(`<div class="policy-row">${ICONS.check}<span>${label}</span></div>`);
+    ticketFineprint.textContent = salesEnd ? `Sales close ${salesEnd}` : 'Instant confirmation · No hidden fees';
+  }
+
+  if (!rows.length) { section.style.display = 'none'; return; }
+
+  content.innerHTML = rows.join('');
+  section.style.display = 'block';
+}
+
+/* ---- organizer + socials ---- */
+function renderOrganizer(ev) {
+  const organizerText = ev.organizer_name || ev.organizer || ev.creator_name || 'Tixtee Organizer';
+  organizerName.textContent = organizerText;
+  organizerAvatar.textContent = organizerText.trim().charAt(0).toUpperCase() || 'T';
+  organizerContact.textContent = ev.organizer_contact || '';
+
+  const socials = [];
+  if (ev.social_instagram) socials.push(['instagram', `https://instagram.com/${ev.social_instagram.replace(/^@/, '')}`]);
+  if (ev.social_twitter) socials.push(['twitter', `https://x.com/${ev.social_twitter.replace(/^@/, '')}`]);
+  if (ev.social_tiktok) socials.push(['tiktok', `https://tiktok.com/@${ev.social_tiktok.replace(/^@/, '')}`]);
+
+  socialRow.innerHTML = socials.map(([icon, url]) => `
+    <a class="social-link" href="${escapeHTML(url)}" target="_blank" rel="noopener">${ICONS[icon]}</a>
+  `).join('');
+}
+
+/* ---- cover image ---- */
+function renderCover(ev) {
+  const image = ev.image_url;
+  if (!image) return;
+  let imageUrl = image;
+  if (imageUrl.startsWith('/')) imageUrl = `https://api.tixtee.xyz${imageUrl}`;
+  eventCover.innerHTML = `<img src="${escapeHTML(imageUrl)}" alt="${escapeHTML(ev.title || 'Event')}">`;
+}
 
 /* =========================
    TICKETS
 ========================= */
 
 function renderTickets(ev) {
-
-  const tickets =
-    ev.tickets ||
-    ev.ticket_types ||
-    ev.ticketTiers ||
-    [];
+  const tickets = ev.tickets || ev.ticket_types || ev.ticketTiers || [];
 
   if (!Array.isArray(tickets) || tickets.length === 0) {
-
     ticketList.innerHTML = `
       <div class="ticket-option">
         <div class="ticket-top">
-          <span class="ticket-name">
-            Tickets
-          </span>
-
-          <span class="ticket-price">
-            Available
-          </span>
+          <span class="ticket-name">Tickets</span>
+          <span class="ticket-price">Available</span>
         </div>
-
-        <div class="ticket-description">
-          Tickets are available for this event.
-        </div>
+        <div class="ticket-description">Tickets are available for this event.</div>
       </div>
     `;
-
     return;
   }
 
-
   ticketList.innerHTML = tickets.map(ticket => {
-
-    const name =
-      ticket.name ||
-      ticket.title ||
-      'General Admission';
-
-    const price =
-      ticket.price !== undefined
-        ? `₦${Number(ticket.price).toLocaleString()}`
-        : 'Free';
-
+    const name = ticket.name || ticket.tier_name || ticket.title || 'General Admission';
+    const price = ticket.price !== undefined
+      ? `₦${Number(ticket.price).toLocaleString()}`
+      : 'Free';
 
     return `
       <div class="ticket-option">
-
         <div class="ticket-top">
-
-          <span class="ticket-name">
-            ${escapeHTML(name)}
-          </span>
-
-          <span class="ticket-price">
-            ${escapeHTML(price)}
-          </span>
-
+          <span class="ticket-name">${escapeHTML(name)}</span>
+          <span class="ticket-price">${escapeHTML(price)}</span>
         </div>
-
-        ${
-          ticket.description
-            ? `
-              <div class="ticket-description">
-                ${escapeHTML(ticket.description)}
-              </div>
-            `
-            : ''
-        }
-
+        ${ticket.description ? `<div class="ticket-description">${escapeHTML(ticket.description)}</div>` : ''}
       </div>
     `;
-
   }).join('');
-
 }
-
 
 /* =========================
    TICKET BUTTON
 ========================= */
 
 function getTicket() {
-
-  /*
-    Put your ticket purchase route here.
-
-    Example:
-
-    window.location.href =
-      `/checkout/?slug=${encodeURIComponent(slug)}`;
-  */
-
   console.log('Get ticket:', slug);
-
 }
 
-
 ticketButton.addEventListener('click', getTicket);
-
 mobileTicketButton.addEventListener('click', getTicket);
 
+/* =========================
+   START
+========================= */
 
 loadEvent();
 
