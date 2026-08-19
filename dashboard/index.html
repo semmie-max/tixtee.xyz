@@ -2171,7 +2171,7 @@ groupchatCreated.addEventListener('change', () => {
       }
 
       document.getElementById('image_url').value = data.url;
-      imagePreview.src = `https://api.tixtee.xyz${data.url}`;
+      imagePreview.src = data.url;
       imagePreview.style.display = 'block';
       uploadStatus.style.color = '#1e7a3d';
       uploadStatus.textContent = 'Image uploaded ✓';
@@ -2230,7 +2230,7 @@ groupchatCreated.addEventListener('change', () => {
       }
 
       document.getElementById('blogImageUrl').value = data.url;
-      blogImagePreview.src = `https://api.tixtee.xyz${data.url}`;
+      blogImagePreview.src = data.url;
       blogImagePreview.style.display = 'block';
       blogUploadStatus.style.color = '#1e7a3d';
       blogUploadStatus.textContent = 'Image uploaded ✓';
