@@ -2563,7 +2563,7 @@ function renderEventCard(ev){
     renderDashboardSkeleton();
     const container = document.getElementById('eventsContainer');
     try{
-      const res = await fetch(`${API}/events`);
+      const res = await fetch(`${API}/events`, { credentials: 'include' });
       const events = await res.json();
       document.getElementById('statEvents').textContent = events.length;
       document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
