@@ -5,39 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Event — Tixtee</title>
-  <link rel="icon" type="image/png" href="/images/logo.jpg">
+<link rel="icon" type="image/png" href="/images/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/common.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
 :root {
-  --black: #0b0b0d;
-  --text: #17171a;
-  --muted: #77777f;
-  --line: #e9e9ec;
-  --soft: #f7f7f8;
-  --purple: #6d4aff;
-  --purple-dark: #5638df;
-  --white: #ffffff;
+  --bg-color: #f7f5f8;
+  --page-bg: #f7f5f8;
+  --card-color: #ffffff;
+  --text-color: #1a1a1a;
+  --muted-color: #9a9a9a;
+  --border-color: #e5e5e5;
+  --primary-color: #47034E;
+  --primary-hover: #5c0665;
+  --card-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  --hover-bg: #f5eef6;
+  --field-group-bg: #fbfafc;
+  --tag-bg: #f3e9f4;
+  --sidebar-dark: #150017;
 }
 
 body {
-  font-family: "DM Sans", sans-serif;
-  background: #fff;
-  color: var(--text);
+  background: var(--page-bg);
+  color: var(--text-color);
   min-height: 100vh;
 }
 
-button {
-  font-family: inherit;
-}
+button { font-family: inherit; }
 
 /* =========================
    NAVBAR
@@ -50,9 +53,7 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 0 5%;
-  border-bottom: 1px solid var(--line);
-  background: rgba(255,255,255,.92);
-  backdrop-filter: blur(12px);
+  background: var(--sidebar-dark);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -60,27 +61,26 @@ button {
 
 .logo {
   text-decoration: none;
-  color: var(--black);
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -1px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
-.logo span {
-  color: var(--purple);
-}
+.logo span { color: rgba(255,255,255,0.4); font-weight: 400; }
 
 .nav-link {
   text-decoration: none;
-  color: #55555d;
-  font-size: 14px;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 13px;
   font-weight: 600;
+  padding: 11px 20px;
+  border-radius: 10px;
+  transition: background .2s ease;
 }
 
-.nav-link:hover {
-  color: var(--black);
-}
+.nav-link:hover { background: var(--primary-hover); }
 
 /* =========================
    LOADING
@@ -91,8 +91,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
-  font-size: 15px;
+  color: var(--muted-color);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* =========================
@@ -102,7 +103,7 @@ button {
 .event-page {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 42px 24px 90px;
+  padding: 40px 24px 90px;
 }
 
 /* =========================
@@ -111,12 +112,13 @@ button {
 
 .event-cover {
   width: 100%;
-  height: min(58vw, 540px);
-  min-height: 280px;
-  border-radius: 24px;
+  height: min(56vw, 500px);
+  min-height: 260px;
+  border-radius: 20px;
   overflow: hidden;
-  background: #eeeeF1;
+  background: linear-gradient(135deg, #7a2f82, var(--primary-color) 55%, var(--sidebar-dark));
   position: relative;
+  box-shadow: var(--card-shadow);
 }
 
 .event-cover img {
@@ -132,8 +134,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #aaa;
-  font-size: 14px;
+  color: rgba(255,255,255,.5);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
 }
 
 /* =========================
@@ -142,29 +147,27 @@ button {
 
 .event-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 350px;
-  gap: 70px;
-  margin-top: 48px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 44px;
+  margin-top: 40px;
+  align-items: start;
 }
 
-.event-main {
-  min-width: 0;
-}
+.event-main { min-width: 0; }
 
 .event-title {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: clamp(34px, 5vw, 62px);
-  line-height: 1.03;
-  letter-spacing: -2.8px;
+  font-size: clamp(30px, 4.4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -1.2px;
   font-weight: 800;
-  color: var(--black);
-  margin-bottom: 30px;
+  color: var(--text-color);
+  margin-bottom: 26px;
 }
 
 .event-meta {
   display: grid;
-  gap: 18px;
-  margin-bottom: 42px;
+  gap: 14px;
+  margin-bottom: 36px;
 }
 
 .meta-item {
@@ -174,55 +177,88 @@ button {
 }
 
 .meta-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: #f2efff;
-  color: var(--purple);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--tag-bg);
+  color: var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 18px;
 }
 
-.meta-content {
-  padding-top: 2px;
-}
+.meta-icon svg { width: 17px; height: 17px; }
+
+.meta-content { padding-top: 3px; }
 
 .meta-label {
   display: block;
-  color: var(--muted);
-  font-size: 12px;
+  color: var(--muted-color);
+  font-size: 11px;
   font-weight: 600;
   margin-bottom: 3px;
   text-transform: uppercase;
-  letter-spacing: .5px;
+  letter-spacing: .06em;
 }
 
 .meta-value {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-color);
 }
 
-.section {
-  margin-top: 48px;
-}
+.section { margin-top: 40px; }
 
 .section-title {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: -.5px;
-  margin-bottom: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -.2px;
+  margin-bottom: 14px;
 }
 
 .description {
-  color: #5e5e66;
-  font-size: 16px;
+  color: #5a5a5f;
+  font-size: 14.5px;
   line-height: 1.8;
   white-space: pre-line;
+}
+
+.organizer {
+  border-top: 1px solid var(--border-color);
+  padding-top: 22px;
+  margin-top: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.organizer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.organizer-label {
+  color: var(--muted-color);
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.organizer-name {
+  font-weight: 700;
+  font-size: 14px;
 }
 
 /* =========================
@@ -231,60 +267,78 @@ button {
 
 .ticket-panel {
   position: sticky;
-  top: 100px;
+  top: 96px;
   align-self: start;
 }
 
 .ticket-card {
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  padding: 25px;
-  background: white;
-  box-shadow: 0 12px 40px rgba(0,0,0,.06);
+  position: relative;
+  background: var(--card-color);
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
 }
+
+/* subtle brand texture, same technique used on the dashboard's stat cards */
+.ticket-texture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.05;
+}
+.ticket-texture svg { width: 100%; height: 100%; display: block; }
+
+.ticket-card > * { position: relative; z-index: 1; }
 
 .ticket-card-title {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted-color);
+  margin-bottom: 16px;
 }
 
-.ticket-list {
-  display: grid;
-  gap: 12px;
-}
+.ticket-list { display: grid; gap: 10px; margin-bottom: 20px; }
 
 .ticket-option {
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  padding: 16px;
-  transition: .2s ease;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 15px;
+  background: var(--field-group-bg);
+  transition: border-color .15s ease;
 }
 
-.ticket-option:hover {
-  border-color: #c9bfff;
-}
+.ticket-option:hover { border-color: var(--primary-color); }
 
 .ticket-top {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 15px;
 }
 
 .ticket-name {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .ticket-price {
-  font-weight: 800;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 11px;
   white-space: nowrap;
+  color: var(--primary-color);
+  background: var(--tag-bg);
+  padding: 5px 10px;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: .02em;
 }
 
 .ticket-description {
-  color: var(--muted);
+  color: var(--muted-color);
   font-size: 12px;
   margin-top: 7px;
   line-height: 1.5;
@@ -292,45 +346,30 @@ button {
 
 .ticket-button {
   width: 100%;
-  border: 0;
-  border-radius: 13px;
-  background: var(--black);
-  color: white;
-  height: 52px;
-  margin-top: 20px;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s ease;
-}
-
-.ticket-button:hover {
-  background: var(--purple);
-  transform: translateY(-1px);
-}
-
-/* =========================
-   ORGANIZER
-========================= */
-
-.organizer {
-  border-top: 1px solid var(--line);
-  padding-top: 25px;
-  margin-top: 50px;
-}
-
-.organizer-label {
-  color: var(--muted);
-  font-size: 12px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary-color);
+  color: #fff;
+  height: 50px;
+  font-size: 13.5px;
   font-weight: 600;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: .5px;
+  cursor: pointer;
+  transition: background .2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.organizer-name {
-  font-weight: 700;
-  font-size: 15px;
+.ticket-button svg { width: 15px; height: 15px; }
+
+.ticket-button:hover { background: var(--primary-hover); }
+
+.ticket-fineprint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted-color);
+  margin-top: 12px;
 }
 
 /* =========================
@@ -338,21 +377,24 @@ button {
 ========================= */
 
 .footer {
-  border-top: 1px solid var(--line);
-  padding: 28px 5%;
+  background: var(--sidebar-dark);
+  padding: 30px 5%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  color: var(--muted);
+  color: rgba(255,255,255,.5);
   font-size: 12px;
 }
 
 .footer-logo {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  color: var(--black);
-  font-weight: 800;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+  font-size: 13px;
 }
+
+.footer-logo span { color: rgba(255,255,255,0.4); font-weight: 400; }
 
 /* =========================
    ERROR
@@ -367,71 +409,68 @@ button {
   text-align: center;
 }
 
-.error-box h1 {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  font-size: 32px;
-  margin-bottom: 10px;
+.error-box .error-badge {
+  display: inline-block;
+  background: var(--tag-bg);
+  color: var(--primary-color);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 16px;
 }
 
-.error-box p {
-  color: var(--muted);
+.error-box h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  margin-bottom: 8px;
 }
+
+.error-box p { color: var(--muted-color); font-size: 13px; }
 
 /* =========================
    MOBILE
 ========================= */
 
-.mobile-ticket {
-  display: none;
-}
+.mobile-ticket { display: none; }
 
 @media (max-width: 800px) {
 
-  .navbar {
-    height: 64px;
-    padding: 0 20px;
-  }
+  .navbar { height: 64px; padding: 0 20px; }
 
-  .nav-link {
-    display: none;
-  }
-
-  .event-page {
-    padding: 20px 16px 100px;
-  }
+  .event-page { padding: 20px 16px 106px; }
 
   .event-cover {
-    height: 58vw;
-    min-height: 210px;
-    border-radius: 17px;
+    height: 56vw;
+    min-height: 200px;
+    border-radius: 16px;
   }
 
   .event-layout {
     display: block;
-    margin-top: 32px;
+    margin-top: 28px;
   }
 
   .event-title {
-    font-size: clamp(34px, 11vw, 48px);
-    letter-spacing: -2px;
-    margin-bottom: 25px;
+    font-size: clamp(28px, 9vw, 38px);
+    letter-spacing: -.8px;
+    margin-bottom: 22px;
   }
 
-  .event-meta {
-    margin-bottom: 32px;
-  }
+  .event-meta { margin-bottom: 28px; }
 
-  .section {
-    margin-top: 36px;
-  }
+  .section { margin-top: 32px; }
 
-  .ticket-panel {
-    margin-top: 40px;
-    position: static;
-  }
+  .ticket-panel { margin-top: 36px; position: static; }
 
-  .ticket-card {
-    box-shadow: none;
+  .footer {
+    padding: 26px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
   .mobile-ticket {
@@ -446,19 +485,17 @@ button {
   .mobile-ticket button {
     width: 100%;
     height: 54px;
-    border: 0;
-    border-radius: 15px;
-    background: var(--black);
-    color: white;
-    font-size: 15px;
-    font-weight: 700;
-    box-shadow: 0 8px 30px rgba(0,0,0,.18);
-  }
-
-  .footer {
-    padding: 25px 20px;
-    flex-direction: column;
-    align-items: flex-start;
+    border: none;
+    border-radius: 12px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(21,0,23,.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 }
 
@@ -470,9 +507,7 @@ button {
     border-radius: 0;
   }
 
-  .event-title {
-    font-size: 35px;
-  }
+  .event-title { font-size: 30px; }
 }
 </style>
 </head>
@@ -484,7 +519,7 @@ button {
 ========================= -->
 
 <nav class="navbar">
-  <a href="/" class="logo">tix<span>tee</span></a>
+  <a href="/" class="logo">TIXTEE<span>.XYZ</span></a>
   <a href="/" class="nav-link">Create an event</a>
 </nav>
 
@@ -525,7 +560,9 @@ button {
       <div class="event-meta">
 
         <div class="meta-item">
-          <div class="meta-icon">◷</div>
+          <div class="meta-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
 
           <div class="meta-content">
             <span class="meta-label">Date & time</span>
@@ -535,7 +572,9 @@ button {
 
 
         <div class="meta-item">
-          <div class="meta-icon">⌖</div>
+          <div class="meta-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+          </div>
 
           <div class="meta-content">
             <span class="meta-label">Location</span>
@@ -561,12 +600,11 @@ button {
 
       <div class="organizer">
 
-        <div class="organizer-label">
-          Organized by
-        </div>
+        <div class="organizer-avatar" id="organizerAvatar">T</div>
 
-        <div id="organizerName" class="organizer-name">
-          —
+        <div>
+          <div class="organizer-label">Organized by</div>
+          <div id="organizerName" class="organizer-name">—</div>
         </div>
 
       </div>
@@ -580,29 +618,41 @@ button {
 
       <div class="ticket-card">
 
+        <div class="ticket-texture">
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <filter id="ticketSandTexture">
+                <feTurbulence result="sand" seed="20" numOctaves="4" baseFrequency="0.6" type="fractalNoise"></feTurbulence>
+                <feColorMatrix type="matrix" values="
+                  0.75 0 0 0 0.78
+                  0 0.65 0 0 0.68
+                  0 0 0.90 0 0.95
+                  0 0 0 0.18 0"></feColorMatrix>
+              </filter>
+            </defs>
+            <rect width="100%" height="100%" filter="url(#ticketSandTexture)"/>
+          </svg>
+        </div>
+
         <h2 class="ticket-card-title">
           Get your ticket
         </h2>
 
         <div id="ticketList" class="ticket-list">
           <div class="ticket-option">
-
             <div class="ticket-top">
-              <span class="ticket-name">
-                General Admission
-              </span>
-
-              <span class="ticket-price">
-                —
-              </span>
+              <span class="ticket-name">General Admission</span>
+              <span class="ticket-price">—</span>
             </div>
-
           </div>
         </div>
 
         <button id="ticketButton" class="ticket-button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3V9z"/></svg>
           Get Ticket
         </button>
+
+        <div class="ticket-fineprint">Instant confirmation · No hidden fees</div>
 
       </div>
 
@@ -620,13 +670,9 @@ button {
 <div id="errorPage" class="error-page" style="display:none;">
 
   <div class="error-box">
-
+    <div class="error-badge">404</div>
     <h1>Event not found</h1>
-
-    <p>
-      This event may have been removed or the link is incorrect.
-    </p>
-
+    <p>This event may have been removed or the link is incorrect.</p>
   </div>
 
 </div>
@@ -639,7 +685,7 @@ button {
 <footer class="footer">
 
   <div class="footer-logo">
-    tixtee
+    TIXTEE<span>.XYZ</span>
   </div>
 
   <div>
@@ -653,6 +699,7 @@ button {
 
 <div class="mobile-ticket">
   <button id="mobileTicketButton">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v1.5a1.5 1.5 0 0 0 0 3V15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1.5a1.5 1.5 0 0 0 0-3V9z"/></svg>
     Get Ticket
   </button>
 </div>
@@ -674,6 +721,7 @@ const eventDate = document.getElementById('eventDate');
 const eventVenue = document.getElementById('eventVenue');
 const eventDescription = document.getElementById('eventDescription');
 const organizerName = document.getElementById('organizerName');
+const organizerAvatar = document.getElementById('organizerAvatar');
 const eventCover = document.getElementById('eventCover');
 const ticketList = document.getElementById('ticketList');
 
@@ -818,11 +866,16 @@ function renderEvent(ev) {
 
   /* ORGANIZER */
 
-  organizerName.textContent =
+  const organizerText =
     ev.organizer_name ||
     ev.organizer ||
     ev.creator_name ||
     'Tixtee Organizer';
+
+  organizerName.textContent = organizerText;
+
+  organizerAvatar.textContent =
+    organizerText.trim().charAt(0).toUpperCase() || 'T';
 
 
   /* EVENT IMAGE */
