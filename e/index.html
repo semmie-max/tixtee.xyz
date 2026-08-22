@@ -614,6 +614,89 @@ a { color: inherit; }
 
 .mobile-ticket { display: none; }
 
+/* ---- ticket selection ---- */
+.ticket-option {
+  cursor: pointer;
+}
+.ticket-option.selected {
+  border-color: var(--primary-color);
+  background: var(--tag-bg);
+}
+.ticket-option.sold-out {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.qty-row {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-color);
+}
+.ticket-option.selected .qty-row { display: flex; }
+.qty-label { font-size: 12px; font-weight: 600; color: var(--muted-color); }
+.qty-controls { display: flex; align-items: center; gap: 10px; }
+.qty-btn {
+  width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--border-color);
+  background: #fff; color: var(--primary-color); font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 14px;
+}
+.qty-btn:hover { background: var(--hover-bg); }
+.qty-value { font-size: 13.5px; font-weight: 700; min-width: 18px; text-align: center; }
+
+.ticket-total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0; margin-bottom: 6px; font-size: 13.5px; font-weight: 700;
+}
+.ticket-total-row span:last-child { color: var(--primary-color); }
+
+/* ---- buyer details modal ---- */
+.buyer-modal-overlay {
+  position: fixed; inset: 0; background: rgba(21,0,23,0.5);
+  display: none; align-items: center; justify-content: center; z-index: 500; padding: 20px;
+}
+.buyer-modal-overlay.show { display: flex; }
+.buyer-modal {
+  background: #fff; border-radius: 20px; padding: 30px; width: 100%; max-width: 420px;
+}
+.buyer-modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.buyer-modal .sub { font-size: 12.5px; color: var(--muted-color); margin-bottom: 20px; }
+.buyer-modal label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--muted-color); margin-bottom: 6px;
+}
+.buyer-modal input {
+  width: 100%; padding: 11px 13px; margin-bottom: 14px;
+  border: 1px solid var(--border-color); border-radius: 10px; font-size: 13px;
+  outline: none; font-family: 'Inter', sans-serif;
+}
+.buyer-modal input:focus { border-color: var(--primary-color); }
+.buyer-modal-actions { display: flex; gap: 10px; margin-top: 6px; }
+.buyer-modal-actions button {
+  flex: 1; border: none; border-radius: 10px; padding: 12px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.buyer-modal-cancel { background: #eee; color: #1a1a1a; }
+.buyer-modal-submit { background: var(--primary-color); color: #fff; }
+.buyer-modal-submit:hover { background: var(--primary-hover); }
+.buyer-modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+.buyer-modal-error {
+  font-size: 12.5px; color: #b3261e; background: #fdecea; padding: 9px 12px;
+  border-radius: 8px; margin-bottom: 14px; display: none;
+}
+
+/* ---- order status banner (after returning from checkout) ---- */
+.order-status-banner {
+  display: none;
+  border-radius: 16px; padding: 18px 20px; margin-bottom: 28px;
+  font-size: 13.5px; font-weight: 600; align-items: center; gap: 12px;
+}
+.order-status-banner.show { display: flex; }
+.order-status-banner.pending { background: #fff8e6; color: #8a6d1f; }
+.order-status-banner.paid { background: #eafaf0; color: #1e7a3d; }
+.order-status-banner.failed { background: #fdecea; color: #b3261e; }
+.order-status-banner svg { width: 20px; height: 20px; flex-shrink: 0; }
+
 @media (max-width: 800px) {
 
   .navbar { height: 64px; padding: 0 20px; }
@@ -711,6 +794,8 @@ a { color: inherit; }
 ========================= -->
 
 <main id="eventPage" class="event-page" style="display:none;">
+
+  <div class="order-status-banner" id="orderStatusBanner"></div>
 
   <div class="event-cover" id="eventCover">
     <div class="event-cover-placeholder">
@@ -875,6 +960,23 @@ a { color: inherit; }
 
 </footer>
 
+
+<!-- BUYER DETAILS MODAL -->
+<div class="buyer-modal-overlay" id="buyerModalOverlay">
+  <div class="buyer-modal">
+    <h2>Almost there</h2>
+    <div class="sub" id="buyerModalSummary">Enter your details to continue to payment.</div>
+    <div class="buyer-modal-error" id="buyerModalError"></div>
+    <label>Full name</label>
+    <input type="text" id="buyerName" placeholder="Your name">
+    <label>Email address</label>
+    <input type="email" id="buyerEmail" placeholder="you@example.com">
+    <div class="buyer-modal-actions">
+      <button type="button" class="buyer-modal-cancel" id="buyerModalCancel">Cancel</button>
+      <button type="button" class="buyer-modal-submit" id="buyerModalSubmit">Continue to payment</button>
+    </div>
+  </div>
+</div>
 
 <!-- MOBILE TICKET BUTTON -->
 
@@ -1285,51 +1387,205 @@ function renderCover(ev) {
    TICKETS
 ========================= */
 
+let currentEventId = null;
+let selectedTicket = null; // { id, name, price, remaining }
+let selectedQty = 1;
+
 function renderTickets(ev) {
-  const tickets = ev.tickets || ev.ticket_types || ev.ticketTiers || [];
+  currentEventId = ev.id;
+  const tickets = ev.tickets || [];
 
   if (!Array.isArray(tickets) || tickets.length === 0) {
-    ticketList.innerHTML = `
-      <div class="ticket-option">
-        <div class="ticket-top">
-          <span class="ticket-name">Tickets</span>
-          <span class="ticket-price">Available</span>
-        </div>
-        <div class="ticket-description">Tickets are available for this event.</div>
-      </div>
-    `;
+    ticketList.innerHTML = `<div class="ticket-description">Tickets for this event haven't been added yet.</div>`;
+    updateTicketButtonState();
     return;
   }
 
   ticketList.innerHTML = tickets.map(ticket => {
-    const name = ticket.name || ticket.tier_name || ticket.title || 'General Admission';
-    const price = ticket.price !== undefined
-      ? `₦${Number(ticket.price).toLocaleString()}`
-      : 'Free';
+    const name = ticket.tier_name || 'General Admission';
+    const price = Number(ticket.price || 0);
+    const remaining = ticket.quantity != null ? ticket.quantity - (ticket.quantity_sold || 0) : null;
+    const soldOut = remaining !== null && remaining <= 0;
 
     return `
-      <div class="ticket-option">
+      <div class="ticket-option${soldOut ? ' sold-out' : ''}" data-id="${ticket.id}" data-name="${escapeHTML(name)}" data-price="${price}" data-remaining="${remaining === null ? '' : remaining}">
         <div class="ticket-top">
           <span class="ticket-name">${escapeHTML(name)}</span>
-          <span class="ticket-price">${escapeHTML(price)}</span>
+          <span class="ticket-price">${soldOut ? 'Sold out' : `₦${price.toLocaleString()}`}</span>
         </div>
-        ${ticket.description ? `<div class="ticket-description">${escapeHTML(ticket.description)}</div>` : ''}
+        ${remaining !== null && !soldOut ? `<div class="ticket-description">${remaining} left</div>` : ''}
+        <div class="qty-row">
+          <span class="qty-label">Quantity</span>
+          <div class="qty-controls">
+            <button type="button" class="qty-btn" data-action="dec">−</button>
+            <span class="qty-value">1</span>
+            <button type="button" class="qty-btn" data-action="inc">+</button>
+          </div>
+        </div>
       </div>
     `;
   }).join('');
+
+  ticketList.querySelectorAll('.ticket-option').forEach(el => {
+    if (el.classList.contains('sold-out')) return;
+    el.addEventListener('click', (e) => {
+      if (e.target.closest('.qty-btn')) return;
+      selectTicketOption(el);
+    });
+  });
+
+  ticketList.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const option = btn.closest('.ticket-option');
+      const remaining = option.dataset.remaining === '' ? null : Number(option.dataset.remaining);
+      if (btn.dataset.action === 'inc') {
+        if (remaining === null || selectedQty < remaining) selectedQty++;
+      } else {
+        if (selectedQty > 1) selectedQty--;
+      }
+      option.querySelector('.qty-value').textContent = selectedQty;
+      updateTicketButtonState();
+    });
+  });
+
+  updateTicketButtonState();
+}
+
+function selectTicketOption(el) {
+  ticketList.querySelectorAll('.ticket-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedQty = 1;
+  el.querySelector('.qty-value').textContent = '1';
+  selectedTicket = {
+    id: el.dataset.id,
+    name: el.dataset.name,
+    price: Number(el.dataset.price),
+    remaining: el.dataset.remaining === '' ? null : Number(el.dataset.remaining)
+  };
+  updateTicketButtonState();
+}
+
+function updateTicketButtonState() {
+  const label = selectedTicket
+    ? `Get Ticket · ₦${(selectedTicket.price * selectedQty).toLocaleString()}`
+    : 'Get Ticket';
+  ticketButton.lastChild.textContent = ` ${label}`;
+  mobileTicketButton.lastChild.textContent = ` ${label}`;
 }
 
 /* =========================
-   TICKET BUTTON
+   TICKET BUTTON → BUYER MODAL → CHECKOUT
 ========================= */
 
+const buyerModalOverlay = document.getElementById('buyerModalOverlay');
+const buyerModalSummary = document.getElementById('buyerModalSummary');
+const buyerModalError = document.getElementById('buyerModalError');
+const buyerName = document.getElementById('buyerName');
+const buyerEmail = document.getElementById('buyerEmail');
+const buyerModalSubmit = document.getElementById('buyerModalSubmit');
+const buyerModalCancel = document.getElementById('buyerModalCancel');
+
 function getTicket() {
-  console.log('Get ticket:', slug);
+  if (!selectedTicket) {
+    alert('Please choose a ticket tier first.');
+    return;
+  }
+  buyerModalError.style.display = 'none';
+  buyerModalSummary.textContent = `${selectedQty} × ${selectedTicket.name} — ₦${(selectedTicket.price * selectedQty).toLocaleString()}`;
+  buyerModalOverlay.classList.add('show');
 }
+
+buyerModalCancel.addEventListener('click', () => buyerModalOverlay.classList.remove('show'));
+buyerModalOverlay.addEventListener('click', (e) => {
+  if (e.target === buyerModalOverlay) buyerModalOverlay.classList.remove('show');
+});
+
+buyerModalSubmit.addEventListener('click', async () => {
+  const email = buyerEmail.value.trim();
+  const name = buyerName.value.trim();
+
+  if (!email || !email.includes('@')) {
+    buyerModalError.textContent = 'Please enter a valid email address.';
+    buyerModalError.style.display = 'block';
+    return;
+  }
+
+  buyerModalSubmit.disabled = true;
+  buyerModalSubmit.textContent = 'Starting checkout…';
+
+  try {
+    const currentUrl = window.location.href.split('?')[0] + window.location.search;
+    const res = await fetch(`${API}/orders/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_id: currentEventId,
+        ticket_id: selectedTicket.id,
+        quantity: selectedQty,
+        buyer_email: email,
+        buyer_name: name || undefined,
+        success_url: currentUrl,
+        cancel_url: currentUrl
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not start checkout');
+
+    window.location.href = data.checkout_url;
+  } catch (err) {
+    buyerModalError.textContent = err.message || 'Could not reach the server.';
+    buyerModalError.style.display = 'block';
+    buyerModalSubmit.disabled = false;
+    buyerModalSubmit.textContent = 'Continue to payment';
+  }
+});
 
 ticketButton.addEventListener('click', getTicket);
 mobileTicketButton.addEventListener('click', getTicket);
 
+/* =========================
+   ORDER STATUS (after returning from checkout)
+========================= */
+
+function showOrderBanner(status, text) {
+  const banner = document.getElementById('orderStatusBanner');
+  banner.className = `order-status-banner show ${status}`;
+  const icons = {
+    pending: ICONS.calendar,
+    paid: ICONS.check,
+    failed: ICONS.shield
+  };
+  banner.innerHTML = `${icons[status] || ''}<span>${escapeHTML(text)}</span>`;
+}
+
+async function pollOrderStatus(orderId, attempt = 0) {
+  try {
+    const res = await fetch(`${API}/orders/${orderId}/status`);
+    const order = await res.json();
+    if (!res.ok) throw new Error();
+
+    if (order.status === 'paid') {
+      showOrderBanner('paid', `You're in! ${order.quantity} ticket${order.quantity > 1 ? 's' : ''} confirmed for ${order.event_title}.`);
+      return;
+    }
+    if (order.status === 'failed' || order.status === 'expired') {
+      showOrderBanner('failed', 'This payment did not go through. Please try again.');
+      return;
+    }
+    if (attempt < 15) {
+      showOrderBanner('pending', 'Confirming your payment…');
+      setTimeout(() => pollOrderStatus(orderId, attempt + 1), 3000);
+    } else {
+      showOrderBanner('pending', "Still confirming — check your email shortly, or refresh this page.");
+    }
+  } catch (err) {
+    showOrderBanner('failed', 'Could not check payment status. Please refresh.');
+  }
+}
+
+const orderIdParam = params.get('order');
+if (orderIdParam) pollOrderStatus(orderIdParam);
 /* =========================
    START
 ========================= */
