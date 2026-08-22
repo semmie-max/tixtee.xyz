@@ -309,19 +309,19 @@ input, textarea{
       grid-template-columns:1fr;
     }
   }
-  @media (max-width:480px){
-  .step{ font-size: 10px; gap: 4px; }
-  .step .dot{ width: 20px; height: 20px; }
-}
+  
 @media (max-width:420px){
   .template-grid{ grid-template-columns: 1fr; }
 }
 /* ---------- Tighter mobile layout for the event wizard ---------- */
 @media (max-width:600px){
 
-  /* less wasted padding everywhere in the wizard */
+    /* remove the boxed container around the wizard on mobile */
   #createEventView .section-card{
-    padding:16px 14px;
+    background:none;
+    box-shadow:none;
+    border-radius:0;
+    padding:0 0 20px;
   }
   .accordion-header{
     padding:12px 14px;
@@ -333,19 +333,9 @@ input, textarea{
     padding:12px;
   }
 
-  /* step indicator: drop the connecting lines, shrink labels so it doesn't wrap messily */
+    /* hide the step indicator entirely on mobile */
   .step-indicator{
-    gap:4px;
-  }
-  .step-line{
-    margin:0 4px;
-  }
-  .step{
-    font-size:9px;
-    line-height:1.2;
-  }
-  .step .dot{
-    width:18px; height:18px; font-size:9px;
+    display:none;
   }
 
   /* category pills: smaller and tighter so they don't dominate the screen */
