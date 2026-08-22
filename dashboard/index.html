@@ -316,6 +316,85 @@ input, textarea{
 @media (max-width:420px){
   .template-grid{ grid-template-columns: 1fr; }
 }
+/* ---------- Tighter mobile layout for the event wizard ---------- */
+@media (max-width:600px){
+
+  /* less wasted padding everywhere in the wizard */
+  #createEventView .section-card{
+    padding:16px 14px;
+  }
+  .accordion-header{
+    padding:12px 14px;
+  }
+  .accordion-body{
+    padding:14px;
+  }
+  .field-group{
+    padding:12px;
+  }
+
+  /* step indicator: drop the connecting lines, shrink labels so it doesn't wrap messily */
+  .step-indicator{
+    gap:4px;
+  }
+  .step-line{
+    margin:0 4px;
+  }
+  .step{
+    font-size:9px;
+    line-height:1.2;
+  }
+  .step .dot{
+    width:18px; height:18px; font-size:9px;
+  }
+
+  /* category pills: smaller and tighter so they don't dominate the screen */
+  .category-pill{
+    padding:7px 12px;
+    font-size:11.5px;
+  }
+  .category-pills{
+    gap:6px;
+  }
+
+  /* date & time popover: fill the screen width instead of overflowing it */
+  .datetime-popover{
+    min-width:0;
+    width:calc(100vw - 56px);
+    left:50%;
+    transform:translateX(-50%);
+  }
+  .dtp-calendar{
+    min-width:0;
+    padding:12px;
+  }
+  .dtp-times{
+    min-width:0;
+  }
+
+  /* lineup / ticket / faq / sponsor rows: stack cleanly instead of squeezing side by side */
+  .lineup-row, .ticket-row{
+    flex-direction:column;
+    align-items:stretch;
+    gap:6px;
+  }
+  .lineup-row .remove-row,
+  .ticket-row .remove-row{
+    align-self:flex-end;
+    margin-top:-4px;
+  }
+
+  /* modal (delete confirmation etc) shouldn't hug the edges */
+  .modal{
+    padding:20px;
+  }
+
+  /* toggle groups (Physical/Virtual/Hybrid etc) - smaller text so 3 fit comfortably */
+  .toggle-btn{
+    font-size:11px;
+    padding:9px 4px;
+  }
+}
 
   .template-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:14px;
