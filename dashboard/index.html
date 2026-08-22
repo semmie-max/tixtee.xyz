@@ -347,19 +347,36 @@ input, textarea{
     gap:6px;
   }
 
-  /* date & time popover: fill the screen width instead of overflowing it */
-  .datetime-popover{
-    min-width:0;
-    width:calc(100vw - 56px);
+  /* date & time popover: fixed + centered on screen, always stacked, wins regardless of source order */
+  #datetimePopover{
+    position:fixed;
+    top:50%;
     left:50%;
-    transform:translateX(-50%);
+    transform:translate(-50%, -50%);
+    width:calc(100vw - 32px);
+    max-width:360px;
+    max-height:80vh;
+    min-width:0;
+    z-index:600;
   }
-  .dtp-calendar{
+  #datetimePopover.show{
+    display:flex;
+    flex-direction:column;
+  }
+  #datetimePopover .dtp-calendar{
     min-width:0;
     padding:12px;
+    max-height:45vh;
+    overflow-y:auto;
   }
-  .dtp-times{
+  #datetimePopover .dtp-times{
     min-width:0;
+    width:100%;
+    border-left:none;
+    border-top:1px solid var(--border-color);
+  }
+  #datetimePopover .dtp-time-list{
+    max-height:160px;
   }
 
   /* lineup / ticket / faq / sponsor rows: stack cleanly instead of squeezing side by side */
@@ -1981,7 +1998,7 @@ function to24Hour(t){
   }
   checkSession();
   document.getElementById('groupChatStatCard').addEventListener('click', () => {
-  window.location.href = '/group-chat.html';
+  window.location.href = '/group-chat';
 });
 
 
