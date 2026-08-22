@@ -887,6 +887,55 @@ input, textarea{
   .voice-fab-main{ width: 130px; height: 44px; }
   .voice-consent{ bottom: 18px; }
 }
+/* ---------- Events Calendar ---------- */
+.cal-header{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+}
+.cal-month-label{ font-size:16px; font-weight:700; color:var(--text-color); }
+.cal-nav-btn{
+  width:32px; height:32px; border-radius:9px; border:1px solid var(--border-color);
+  background:var(--field-group-bg); color:#47034E; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+}
+.cal-nav-btn:hover{ background:var(--hover-bg); }
+.cal-nav-btn svg{ width:14px; height:14px; }
+.cal-weekdays{ display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:6px; }
+.cal-weekdays span{
+  text-align:center; font-size:11px; font-weight:700; color:var(--muted-color);
+  text-transform:uppercase; padding:6px 0;
+}
+.cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-day{
+  position:relative; min-height:74px; border-radius:12px; border:1px solid var(--border-color);
+  background:var(--field-group-bg); padding:8px; cursor:default;
+  display:flex; flex-direction:column; gap:4px;
+}
+.cal-day.cal-day-empty{ visibility:hidden; }
+.cal-day .cal-day-num{ font-size:12px; font-weight:700; color:var(--text-color); }
+.cal-day.cal-day-today{ border-color:#47034E; box-shadow:inset 0 0 0 1px #47034E; }
+.cal-day.has-events{ cursor:pointer; }
+.cal-day.has-events:hover{ background:var(--hover-bg); }
+.cal-event-pill{
+  font-size:10px; font-weight:600; color:#47034E; background:#f3e9f4;
+  border-radius:6px; padding:2px 6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cal-event-more{ font-size:10px; font-weight:600; color:var(--muted-color); }
+.cal-day-list{ margin-top:24px; }
+.cal-day-list h3{ font-size:13px; font-weight:700; margin-bottom:12px; }
+.cal-list-event{
+  display:flex; align-items:center; gap:12px; padding:12px; border:1px solid var(--border-color);
+  border-radius:12px; margin-bottom:10px;
+}
+.cal-list-event img{ width:44px; height:44px; border-radius:8px; object-fit:cover; background:#eee; flex-shrink:0; }
+.cal-list-event .cal-list-title{ font-size:13px; font-weight:700; color:var(--text-color); }
+.cal-list-event .cal-list-meta{ font-size:11px; color:var(--muted-color); margin-top:2px; }
+@media (max-width:700px){
+  .cal-day{ min-height:56px; padding:6px; }
+  .cal-event-pill{ display:none; }
+  .cal-day.has-events .cal-day-num::after{
+    content:''; display:block; width:5px; height:5px; border-radius:50%; background:#47034E; margin-top:3px;
+  }
+}
 
 .capacity-option label {
   color: #000 !important;
@@ -929,6 +978,10 @@ input, textarea{
     <a href="#" class="nav-item" id="entryCheckNavBtn" style="text-decoration:none;">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
   Entry Check
+</a>
+<a href="#" class="nav-item" id="calendarNavBtn" style="text-decoration:none;">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+  Calendar
 </a>
     <div class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
@@ -1299,6 +1352,36 @@ input, textarea{
       <input type="text" id="entryCheckSearch" placeholder="Type to search…">
       <div id="entryCheckResults" class="empty-state">
         <h3>Start typing to look up a guest</h3>
+      </div>
+    </div>
+  </div>
+
+    <div id="calendarView" style="display:none;">
+    <div class="main-header">
+      <div>
+        <h1>Events Calendar</h1>
+        <div class="sub">See every event you've published, marked on its date.</div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="cal-header">
+        <div class="cal-nav-btn" id="calPrevMonth">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </div>
+        <div class="cal-month-label" id="calMonthLabel"></div>
+        <div class="cal-nav-btn" id="calNextMonth">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <div class="cal-weekdays">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="cal-day-list" id="calDayList" style="display:none;">
+        <h3 id="calDayListTitle"></h3>
+        <div id="calDayListEvents"></div>
       </div>
     </div>
   </div>
@@ -1891,7 +1974,7 @@ function to24Hour(t){
     }
   });
 
-  function hideAllViews(){
+    function hideAllViews(){
     document.getElementById('overviewView').style.display = 'none';
     document.getElementById('createEventView').style.display = 'none';
     document.getElementById('settingsView').style.display = 'none';
@@ -1899,7 +1982,9 @@ function to24Hour(t){
     document.getElementById('writeBlogView').style.display = 'none';
     document.getElementById('mailingListView').style.display = 'none';
     document.getElementById('entryCheckView').style.display = 'none';
+    document.getElementById('calendarView').style.display = 'none';
 }
+
 function showMailingListView(){
   hideAllViews();
   document.getElementById('mailingListView').style.display = 'block';
@@ -1911,6 +1996,118 @@ function showEntryCheckView(){
   document.getElementById('entryCheckView').style.display = 'block';
   document.getElementById('entryCheckNavBtn').classList.add('active');
 }
+function showCalendarView(){
+  hideAllViews();
+  document.getElementById('calendarView').style.display = 'block';
+  document.getElementById('calendarNavBtn').classList.add('active');
+  loadCalendarEvents();
+}
+
+let calViewMonth = new Date();
+calViewMonth.setDate(1);
+let calEventsByDate = {};
+
+const CAL_MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+async function loadCalendarEvents(){
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Loading your events…</div>`;
+  try{
+    const res = await fetch(`${API}/events`, { credentials:'include' });
+    const events = await res.json();
+    calEventsByDate = {};
+    events.forEach(ev => {
+      if(!ev.event_date) return;
+      const key = ev.event_date.slice(0,10);
+      if(!calEventsByDate[key]) calEventsByDate[key] = [];
+      calEventsByDate[key].push(ev);
+    });
+    renderCalendarMonth();
+  }catch(err){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Could not load events.</div>`;
+  }
+}
+
+function renderCalendarMonth(){
+  document.getElementById('calMonthLabel').textContent =
+    `${CAL_MONTH_NAMES[calViewMonth.getMonth()]} ${calViewMonth.getFullYear()}`;
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth(), 1);
+  const startOffset = firstDay.getDay();
+  const daysInMonth = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth() + 1, 0).getDate();
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  for(let i = 0; i < startOffset; i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-day cal-day-empty';
+    grid.appendChild(empty);
+  }
+
+  for(let d = 1; d <= daysInMonth; d++){
+    const cellDate = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth(), d);
+    const key = `${cellDate.getFullYear()}-${String(cellDate.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayEvents = calEventsByDate[key] || [];
+
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    if(cellDate.getTime() === today.getTime()) cell.classList.add('cal-day-today');
+    if(dayEvents.length) cell.classList.add('has-events');
+
+    let inner = `<div class="cal-day-num">${d}</div>`;
+    dayEvents.slice(0,2).forEach(ev => {
+      inner += `<div class="cal-event-pill">${ev.title}</div>`;
+    });
+    if(dayEvents.length > 2){
+      inner += `<div class="cal-event-more">+${dayEvents.length - 2} more</div>`;
+    }
+    cell.innerHTML = inner;
+
+    if(dayEvents.length){
+      cell.addEventListener('click', () => showCalDayList(key, dayEvents));
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+function showCalDayList(key, events){
+  const listWrap = document.getElementById('calDayList');
+  const title = document.getElementById('calDayListTitle');
+  const container = document.getElementById('calDayListEvents');
+
+  const [y,m,d] = key.split('-').map(Number);
+  const label = new Date(y, m-1, d).toLocaleDateString('en-GB', { day:'2-digit', month:'long', year:'numeric' });
+  title.textContent = `Events on ${label}`;
+
+  container.innerHTML = events.map(ev => {
+    const img = ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url) : '/images/tix.jpg';
+    return `
+      <div class="cal-list-event">
+        <img src="${img}" alt="">
+        <div>
+          <div class="cal-list-title">${ev.title}</div>
+          <div class="cal-list-meta">${ev.venue || 'Venue TBA'}${ev.start_time ? ' • ' + ev.start_time : ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  listWrap.style.display = 'block';
+}
+
+document.getElementById('calPrevMonth').addEventListener('click', () => {
+  calViewMonth.setMonth(calViewMonth.getMonth() - 1);
+  document.getElementById('calDayList').style.display = 'none';
+  renderCalendarMonth();
+});
+document.getElementById('calNextMonth').addEventListener('click', () => {
+  calViewMonth.setMonth(calViewMonth.getMonth() + 1);
+  document.getElementById('calDayList').style.display = 'none';
+  renderCalendarMonth();
+});
 
 async function loadMailingList(){
   const tbody = document.getElementById('mailingListBody');
@@ -1997,6 +2194,7 @@ async function loadMailingList(){
   document.getElementById('blogNavBtn').addEventListener('click', showBlogView);
   document.getElementById('mailingListNavBtn').addEventListener('click', showMailingListView);
   document.getElementById('entryCheckNavBtn').addEventListener('click', showEntryCheckView);
+    document.getElementById('calendarNavBtn').addEventListener('click', showCalendarView);
   document.getElementById('openBlogModalBtn').addEventListener('click', showWriteBlogView);
   document.getElementById('backToBlogBtn').addEventListener('click', showBlogView);
 
