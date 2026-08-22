@@ -1176,7 +1176,7 @@ input, textarea{
         <div class="label">Earnings</div>
         <div class="value">₦0 </div>
       </div>
-      <div class="stat-card">
+            <div class="stat-card" id="groupChatStatCard" style="cursor:pointer;">
         <div class="sandpaper-pattern">
     <svg class="sandpaper-svg" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -1203,7 +1203,7 @@ input, textarea{
         <rect width="100%" height="100%" filter="url(#sandTexture)"/>
     </svg>
 </div>
-        <div class="label">Active Group Chat(s)</div>
+                <div class="label">Active Group Chat(s)</div>
         <div class="value" id="statChats">0</div>
       </div>
     </div>
@@ -1980,6 +1980,9 @@ function to24Hour(t){
     }
   }
   checkSession();
+  document.getElementById('groupChatStatCard').addEventListener('click', () => {
+  window.location.href = '/group-chat.html';
+});
 
 
 
@@ -2833,7 +2836,7 @@ function renderEventCard(ev){
       const res = await fetch(`${API}/events`, { credentials: 'include' });
       const events = await res.json();
       document.getElementById('statEvents').textContent = events.length;
-      document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
+      document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat && e.groupchat_created).length;
 
       const draftCardHTML = eventDraft ? `
         <div class="event-card draft-card" id="draftCard">

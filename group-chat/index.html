@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group Chats — Tixtee</title>
+<link rel="icon" type="image/png" href="/images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  html,body{height:100%;overflow:hidden;}
+  body{
+    background:#101218;
+    color:#e8e9ec;
+    display:flex;
+  }
+
+  :root{
+    --panel:#181b23;
+    --panel-2:#1e222c;
+    --bubble-in:#262b37;
+    --bubble-out:#e34b42;
+    --border:#262a34;
+    --muted:#7d8290;
+    --text:#eceef2;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    position:fixed; top:0; left:0; right:0; height:56px;
+    display:flex; align-items:center; gap:14px;
+    padding:0 20px; background:#0d0f14; border-bottom:1px solid var(--border);
+    z-index:20;
+  }
+  .topbar .back-btn{
+    width:32px; height:32px; border-radius:9px; border:1px solid var(--border);
+    background:var(--panel); color:#e8e9ec; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0; text-decoration:none;
+  }
+  .topbar .back-btn svg{width:15px;height:15px;}
+  .topbar h1{font-size:15px; font-weight:700;}
+
+  /* ---------- layout ---------- */
+  .chat-app{
+    display:flex; width:100%; height:100%; padding-top:56px;
+  }
+
+  /* ---------- left: chat list ---------- */
+  .chat-list-pane{
+    width:340px; flex-shrink:0; background:var(--panel);
+    border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+  }
+  .chat-list-header{
+    padding:18px 18px 12px;
+  }
+  .chat-list-header h2{ font-size:19px; font-weight:700; margin-bottom:12px; }
+  .chat-search{
+    display:flex; align-items:center; gap:8px;
+    background:var(--panel-2); border:1px solid var(--border); border-radius:10px;
+    padding:9px 12px;
+  }
+  .chat-search svg{ width:15px; height:15px; color:var(--muted); flex-shrink:0; }
+  .chat-search input{
+    background:none; border:none; outline:none; color:var(--text); font-size:13px; width:100%;
+  }
+  .chat-search input::placeholder{ color:var(--muted); }
+
+  .chat-list{ flex:1; overflow-y:auto; padding:6px 8px; }
+  .chat-row{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 10px; border-radius:12px; cursor:pointer;
+    transition:background .15s ease;
+  }
+  .chat-row:hover{ background:var(--panel-2); }
+  .chat-row.active{ background:var(--panel-2); }
+  .chat-avatar{
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,#e34b42,#7a1f1a);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; font-weight:700; color:#fff; object-fit:cover;
+  }
+  .chat-row-body{ flex:1; min-width:0; }
+  .chat-row-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+  .chat-row-name{ font-size:13.5px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chat-row-time{ font-size:10.5px; color:var(--muted); flex-shrink:0; }
+  .chat-row-preview{
+    font-size:12px; color:var(--muted); margin-top:2px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+
+  .chat-list-empty{
+    padding:60px 24px; text-align:center; color:var(--muted);
+  }
+  .chat-list-empty .icon{ font-size:30px; margin-bottom:14px; opacity:.6; }
+  .chat-list-empty h3{ color:var(--text); font-size:14px; margin-bottom:6px; }
+  .chat-list-empty p{ font-size:12.5px; line-height:1.5; }
+
+  /* ---------- right: conversation ---------- */
+  .conversation-pane{
+    flex:1; display:flex; flex-direction:column; background:#14161d; min-width:0;
+  }
+  .conv-header{
+    display:flex; align-items:center; gap:12px;
+    padding:14px 22px; border-bottom:1px solid var(--border); background:var(--panel);
+    flex-shrink:0;
+  }
+  .conv-header .back-to-list{
+    display:none; width:30px; height:30px; border-radius:8px; border:1px solid var(--border);
+    background:var(--panel-2); color:#e8e9ec; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .conv-header .back-to-list svg{ width:14px; height:14px; }
+  .conv-title{ font-size:14px; font-weight:700; color:var(--text); }
+  .conv-sub{ font-size:11.5px; color:var(--muted); margin-top:2px; }
+
+  .conv-messages{
+    flex:1; overflow-y:auto; padding:22px; display:flex; flex-direction:column; gap:4px;
+  }
+  .msg-row{ display:flex; margin-bottom:10px; }
+  .msg-row.out{ justify-content:flex-end; }
+  .msg-bubble{
+    max-width:62%; padding:10px 14px; border-radius:16px; font-size:13px; line-height:1.45;
+    position:relative;
+  }
+  .msg-row.in .msg-bubble{
+    background:var(--bubble-in); color:var(--text); border-bottom-left-radius:4px;
+  }
+  .msg-row.out .msg-bubble{
+    background:var(--bubble-out); color:#fff; border-bottom-right-radius:4px;
+  }
+  .msg-sender{ font-size:10.5px; font-weight:700; color:var(--muted); margin:0 4px 4px; }
+  .msg-time{ font-size:9.5px; opacity:.7; margin-top:4px; display:block; text-align:right; }
+
+  .conv-empty, .conv-loading{
+    flex:1; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:13px;
+    text-align:center; padding:40px;
+  }
+
+  .conv-composer{
+    display:flex; align-items:center; gap:10px;
+    padding:14px 18px; border-top:1px solid var(--border); background:var(--panel); flex-shrink:0;
+  }
+  .composer-icon-btn{
+    width:34px; height:34px; border-radius:50%; border:none; background:var(--panel-2); color:var(--muted);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
+  .composer-icon-btn svg{ width:16px; height:16px; }
+  .conv-composer input{
+    flex:1; background:var(--panel-2); border:1px solid var(--border); border-radius:22px;
+    padding:11px 16px; color:var(--text); font-size:13px; outline:none;
+  }
+  .conv-composer input::placeholder{ color:var(--muted); }
+  .send-btn{
+    width:38px; height:38px; border-radius:50%; border:none; background:var(--bubble-out); color:#fff;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;
+  }
+  .send-btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .send-btn svg{ width:16px; height:16px; }
+
+  #gate{ display:flex; align-items:center; justify-content:center; width:100%; height:100%; color:var(--muted); font-size:13px; }
+
+  /* ---------- mobile: list/detail swap ---------- */
+  @media (max-width:760px){
+    .chat-app{ position:relative; }
+    .chat-list-pane{
+      position:absolute; inset:56px 0 0 0; width:100%; border-right:none; z-index:5;
+    }
+    .conversation-pane{
+      position:absolute; inset:56px 0 0 0; z-index:6;
+      transform:translateX(100%); transition:transform .2s ease;
+    }
+    .conversation-pane.show{ transform:translateX(0); }
+    .conv-header .back-to-list{ display:flex; }
+    .msg-bubble{ max-width:80%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/dashboard.html" class="back-btn" aria-label="Back to dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+  </a>
+  <h1>Group Chats</h1>
+</div>
+
+<div id="gate">Checking your session…</div>
+
+<div class="chat-app" id="chatApp" style="display:none;">
+
+  <div class="chat-list-pane">
+    <div class="chat-list-header">
+      <h2>Chats</h2>
+      <div class="chat-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="chatSearchInput" placeholder="Search event chats">
+      </div>
+    </div>
+    <div class="chat-list" id="chatList"></div>
+  </div>
+
+  <div class="conversation-pane" id="conversationPane">
+    <div class="conv-header">
+      <div class="back-to-list" id="backToListBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </div>
+      <div>
+        <div class="conv-title" id="convTitle">Select a chat</div>
+        <div class="conv-sub" id="convSub"></div>
+      </div>
+    </div>
+    <div class="conv-messages" id="convMessages">
+      <div class="conv-empty">Pick a chat on the left to start messaging.</div>
+    </div>
+    <div class="conv-composer" id="convComposer" style="display:none;">
+      <button type="button" class="composer-icon-btn" aria-label="Attach">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+      </button>
+      <input type="text" id="messageInput" placeholder="Type a message" maxlength="1000">
+      <button type="button" class="send-btn" id="sendBtn" disabled aria-label="Send">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+  let currentUserId = null;
+  let activeEventId = null;
+  let pollTimer = null;
+  let chats = [];
+
+  async function checkSession(){
+    try{
+      const res = await fetch(`${API}/auth/me`, { credentials:'include' });
+      if(!res.ok) return window.location.href = '/login';
+      const data = await res.json();
+      currentUserId = data.id;
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('chatApp').style.display = 'flex';
+      loadChatList();
+    }catch(err){
+      window.location.href = '/login';
+    }
+  }
+  checkSession();
+
+  function initials(name){
+    if(!name) return '?';
+    return name.trim().split(/\s+/).slice(0,2).map(w => w[0].toUpperCase()).join('');
+  }
+
+  function formatTime(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+  }
+
+  function relativeDay(iso){
+    if(!iso) return '';
+    const d = new Date(iso);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    if(isToday) return formatTime(iso);
+    return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+  }
+
+  async function loadChatList(){
+    const listEl = document.getElementById('chatList');
+    try{
+      const res = await fetch(`${API}/chat/active`, { credentials:'include' });
+      chats = await res.json();
+
+      if(!chats.length){
+        listEl.innerHTML = `
+          <div class="chat-list-empty">
+            <div class="icon">💬</div>
+            <h3>No active group chats yet</h3>
+            <p>Turn on the community chat when you create an event, and it'll show up here once it's set up.</p>
+          </div>`;
+        return;
+      }
+
+      renderChatList(chats);
+    }catch(err){
+      listEl.innerHTML = `<div class="chat-list-empty"><h3>Could not load chats</h3><p>Check that the backend is running.</p></div>`;
+    }
+  }
+
+  function renderChatList(list){
+    const listEl = document.getElementById('chatList');
+    listEl.innerHTML = list.map(c => `
+      <div class="chat-row${c.id === activeEventId ? ' active' : ''}" data-id="${c.id}">
+        <div class="chat-avatar">${c.image_url ? `<img src="${c.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + c.image_url : c.image_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">` : initials(c.groupchat_name || c.title)}</div>
+        <div class="chat-row-body">
+          <div class="chat-row-top">
+            <div class="chat-row-name">${c.groupchat_name || c.title}</div>
+            <div class="chat-row-time">${relativeDay(c.last_message_at)}</div>
+          </div>
+          <div class="chat-row-preview">${c.last_message ? c.last_message : 'No messages yet'}</div>
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.chat-row').forEach(row => {
+      row.addEventListener('click', () => openChat(Number(row.dataset.id)));
+    });
+  }
+
+  document.getElementById('chatSearchInput').addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    const filtered = chats.filter(c => (c.groupchat_name || c.title || '').toLowerCase().includes(q));
+    renderChatList(filtered);
+  });
+
+  async function openChat(eventId){
+    activeEventId = eventId;
+    const chat = chats.find(c => c.id === eventId);
+    if(!chat) return;
+
+    document.getElementById('convTitle').textContent = chat.groupchat_name || chat.title;
+    document.getElementById('convSub').textContent = chat.title;
+    document.getElementById('convComposer').style.display = 'flex';
+    document.getElementById('conversationPane').classList.add('show');
+
+    renderChatList(chats.filter(c =>
+      c.groupchat_name?.toLowerCase().includes(document.getElementById('chatSearchInput').value.trim().toLowerCase()) ||
+      c.title?.toLowerCase().includes(document.getElementById('chatSearchInput').value.trim().toLowerCase()) ||
+      !document.getElementById('chatSearchInput').value.trim()
+    ));
+
+    await loadMessages(eventId, true);
+
+    if(pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(() => loadMessages(eventId, false), 4000);
+  }
+
+  document.getElementById('backToListBtn').addEventListener('click', () => {
+    document.getElementById('conversationPane').classList.remove('show');
+    if(pollTimer) clearInterval(pollTimer);
+  });
+
+  let lastRenderedCount = 0;
+
+  async function loadMessages(eventId, showLoading){
+    const msgEl = document.getElementById('convMessages');
+    if(showLoading) msgEl.innerHTML = `<div class="conv-loading">Loading conversation…</div>`;
+
+    try{
+      const res = await fetch(`${API}/chat/${eventId}/messages`, { credentials:'include' });
+      const messages = await res.json();
+
+      if(messages.length === lastRenderedCount && !showLoading) return; // nothing new
+      lastRenderedCount = messages.length;
+
+      if(!messages.length){
+        msgEl.innerHTML = `<div class="conv-empty">No messages yet. Say hello 👋</div>`;
+        return;
+      }
+
+      msgEl.innerHTML = messages.map(m => `
+        <div class="msg-row ${m.sender_id === currentUserId ? 'out' : 'in'}">
+          <div class="msg-bubble">
+            ${m.sender_id === currentUserId ? '' : `<div class="msg-sender">${m.sender_name || 'Guest'}</div>`}
+            ${escapeHtml(m.message)}
+            <span class="msg-time">${formatTime(m.created_at)}</span>
+          </div>
+        </div>
+      `).join('');
+
+      msgEl.scrollTop = msgEl.scrollHeight;
+    }catch(err){
+      if(showLoading) msgEl.innerHTML = `<div class="conv-empty">Could not load messages.</div>`;
+    }
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  messageInput.addEventListener('input', () => {
+    sendBtn.disabled = !messageInput.value.trim();
+  });
+  messageInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !sendBtn.disabled) sendMessage();
+  });
+  sendBtn.addEventListener('click', sendMessage);
+
+  async function sendMessage(){
+    const text = messageInput.value.trim();
+    if(!text || !activeEventId) return;
+
+    sendBtn.disabled = true;
+    messageInput.value = '';
+
+    try{
+      const res = await fetch(`${API}/chat/${activeEventId}/messages`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ message: text })
+      });
+      if(!res.ok) throw new Error();
+      await loadMessages(activeEventId, false);
+
+      // refresh the list preview too
+      const idx = chats.findIndex(c => c.id === activeEventId);
+      if(idx !== -1){
+        chats[idx].last_message = text;
+        chats[idx].last_message_at = new Date().toISOString();
+      }
+    }catch(err){
+      messageInput.value = text;
+      alert('Could not send that message — is the backend running?');
+    }
+  }
+</script>
+</body>
+</html>
