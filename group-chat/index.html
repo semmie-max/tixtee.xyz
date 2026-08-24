@@ -205,10 +205,13 @@
       <div class="back-to-list" id="backToListBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </div>
-      <div>
+            <div style="flex:1; min-width:0;">
         <div class="conv-title" id="convTitle">Select a chat</div>
         <div class="conv-sub" id="convSub"></div>
       </div>
+      <button type="button" id="copyLinkBtn" style="display:none; background:var(--bubble-out); color:#fff; border:none; padding:8px 14px; border-radius:10px; font-size:12px; font-weight:700; cursor:pointer; flex-shrink:0;">
+        Copy link
+      </button>
     </div>
     <div class="conv-messages" id="convMessages">
       <div class="conv-empty">Pick a chat on the left to start messaging.</div>
@@ -316,7 +319,7 @@
     renderChatList(filtered);
   });
 
-  async function openChat(eventId){
+    async function openChat(eventId){
     activeEventId = eventId;
     const chat = chats.find(c => c.id === eventId);
     if(!chat) return;
@@ -325,6 +328,19 @@
     document.getElementById('convSub').textContent = chat.title;
     document.getElementById('convComposer').style.display = 'flex';
     document.getElementById('conversationPane').classList.add('show');
+
+    const copyBtn = document.getElementById('copyLinkBtn');
+    if(chat.groupchat_link){
+      copyBtn.style.display = 'block';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(chat.groupchat_link).then(() => {
+          copyBtn.textContent = 'Copied ✓';
+          setTimeout(() => { copyBtn.textContent = 'Copy link'; }, 2000);
+        });
+      };
+    } else {
+      copyBtn.style.display = 'none';
+    }
 
     renderChatList(chats.filter(c =>
       c.groupchat_name?.toLowerCase().includes(document.getElementById('chatSearchInput').value.trim().toLowerCase()) ||

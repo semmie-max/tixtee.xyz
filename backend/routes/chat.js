@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/active', requireAuth, requireAdmin, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT e.id, e.title, e.image_url, e.groupchat_name, e.event_date,
+            `SELECT e.id, e.title, e.image_url, e.groupchat_name, e.groupchat_link, e.event_date,
               (SELECT m.message FROM group_chat_messages m
                 WHERE m.event_id = e.id ORDER BY m.created_at DESC LIMIT 1) AS last_message,
               (SELECT m.created_at FROM group_chat_messages m
