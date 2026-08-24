@@ -2,10 +2,13 @@
 <html>
 <head><meta charset="utf-8">
 <script>
-  var path = window.location.pathname; // e.g. /e/my-cool-party
-  var match = path.match(/^\/e\/(.+)$/);
-  if (match) {
-    window.location.replace('/e/?slug=' + encodeURIComponent(match[1]));
+  var path = window.location.pathname; // e.g. /e/my-cool-party or /gc/my-chat-name
+  var eventMatch = path.match(/^\/e\/(.+)$/);
+  var gcMatch = path.match(/^\/gc\/(.+)$/);
+  if (eventMatch) {
+    window.location.replace('/e/?slug=' + encodeURIComponent(eventMatch[1]));
+  } else if (gcMatch) {
+    window.location.replace('/gc/?slug=' + encodeURIComponent(gcMatch[1]));
   } else {
     document.write('Page not found. <a href="/">Go home</a>');
   }
