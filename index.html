@@ -24,12 +24,10 @@
 <body>
   <script src="/common.js"></script>
 
-<section class="pr-hero-viewport" id="pr-hero37">
-  <div class="pr-z-blur-overlay h37-anim h37-bg">
-    <img src="https://assets.watermelon.sh/bg-hero-37.avif" alt="" class="pr-hero-bg-img">
-  </div>
+<section class="pr-hero-viewport">
+  <div class="pr-z-blur-overlay"></div>
 
-  <header class="pr-main-nav h37-anim h37-nav">
+  <header class="pr-main-nav">
     <div class="pr-nav-inner">
       <div class="pr-logo-box">
         <img src="images/logo.jpg" alt="tixtee Logo" class="pr-main-logo-img">
@@ -55,14 +53,14 @@
   </header>
 
   <div class="pr-hero-body">
-    <h1 class="pr-main-headline">
-      <span class="h37-anim h37-line1 pr-headline-line">Great events start with <span class="pr-text-highlighter pr-sliding-text" data-words="tixtee.,seamless access.,the best seats.,effortless ticketing">a single ticket.</span></span>
-      <span class="h37-anim h37-line2 pr-headline-line">before the show begins.</span>
-    </h1>
+    <h1 class="pr-main-headline">Great events start with <br>
+  <span class="pr-text-highlighter pr-sliding-text" data-words="tixtee.,seamless access.,the best seats.,effortless ticketing">a single ticket.</span> <br>
+  before the show begins.
+</h1>
+    
+    <p class="pr-main-subtext">Find, book, and enjoy unforgettable events with fast, secure, and seamless ticketing.</p>
 
-    <p class="pr-main-subtext h37-anim h37-subtitle">Find, book, and enjoy unforgettable events with fast, secure, and seamless ticketing.</p>
-
-    <a href="/signup" class="pr-body-cta-anchor h37-anim h37-cta">
+    <a href="/signup" class="pr-body-cta-anchor">
       Join the waitlist
       <span class="pr-btn-arrow-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -70,84 +68,6 @@
     </a>
   </div>
 </section>
-
-<style>
-  /* ---- Hero37-style redesign, scoped to #pr-hero37 ---- */
-  #pr-hero37 {
-    position: relative;
-    overflow: hidden;
-    min-height: 100vh;
-    background-color: #110d0a;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
-  #pr-hero37 * { box-sizing: border-box; }
-
-  #pr-hero37 .pr-z-blur-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  #pr-hero37 .pr-hero-bg-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  #pr-hero37 .pr-main-nav,
-  #pr-hero37 .pr-hero-body {
-    position: relative;
-    z-index: 1;
-  }
-
-  #pr-hero37 .pr-headline-line {
-    display: block;
-  }
-
-  /* entrance animation (replaces framer-motion) */
-  #pr-hero37 .h37-anim {
-    opacity: 0;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-    animation-play-state: paused;
-  }
-  #pr-hero37.play .h37-anim { animation-play-state: running; }
-
-  @keyframes h37-nav {
-    from { opacity: 0; transform: translateY(-20px); filter: blur(8px); }
-    to   { opacity: 1; transform: translateY(0);      filter: blur(0); }
-  }
-  @keyframes h37-bg {
-    from { opacity: 0; transform: scale(1.06); }
-    to   { opacity: 1; transform: scale(1); }
-  }
-  @keyframes h37-line {
-    from { opacity: 0; transform: translateY(52px); filter: blur(18px); }
-    to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
-  }
-  @keyframes h37-rise {
-    from { opacity: 0; transform: translateY(20px); filter: blur(6px); }
-    to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
-  }
-  @keyframes h37-pop {
-    from { opacity: 0; transform: translateY(16px) scale(0.93); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  #pr-hero37 .h37-bg       { animation: h37-bg 1.8s forwards; }
-  #pr-hero37 .h37-nav      { animation: h37-nav 0.6s forwards; animation-delay: .05s; }
-  #pr-hero37 .h37-line1    { animation: h37-line 0.9s forwards; animation-delay: .35s; }
-  #pr-hero37 .h37-line2    { animation: h37-line 0.9s forwards; animation-delay: .51s; }
-  #pr-hero37 .h37-subtitle { animation: h37-rise 0.7s forwards; animation-delay: .95s; }
-  #pr-hero37 .h37-cta      { animation: h37-pop 0.6s forwards; animation-delay: 1.18s; }
-
-  @media (prefers-reduced-motion: reduce) {
-    #pr-hero37 .h37-anim { animation: none !important; opacity: 1 !important; filter: none !important; transform: none !important; }
-  }
-</style>
 
 <script>
   (() => {
@@ -191,9 +111,6 @@
     
   }, 3500); // Changes the word every 3.5 seconds
 })();
-
-  // Kick off the Hero37-style entrance sequence on load
-  document.getElementById('pr-hero37').classList.add('play');
 </script>
 
   <section class="intro-section reveal">
