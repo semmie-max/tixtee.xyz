@@ -1281,10 +1281,12 @@ function renderCommunity(ev) {
   let html = `<div class="info-title">${escapeHTML(ev.groupchat_name || 'Event community chat')}</div>`;
   if (ev.groupchat_rules) html += `<p>${escapeHTML(ev.groupchat_rules)}</p>`;
 
-  if (ev.groupchat_created && ev.groupchat_link) {
-    html += `<a class="info-btn" href="${escapeHTML(ev.groupchat_link)}" target="_blank" rel="noopener">${ICONS.chat} Join the chat</a>`;
+  const joinLink = ev.groupchat_link || (ev.groupchat_slug ? `/gc/${encodeURIComponent(ev.groupchat_slug)}` : null);
+  if (joinLink) {
+    const isExternal = !!ev.groupchat_link;
+    html += `<a class="info-btn" href="${escapeHTML(joinLink)}"${isExternal ? ' target="_blank" rel="noopener"' : ''}>${ICONS.chat} Join the chat</a>`;
   } else {
-    html += `<p class="info-muted-note">The chat link will be shared once it's ready.</p>`;
+    html += `<p class="info-muted-note">The chat will be ready shortly.</p>`;
   }
 
   content.innerHTML = html;

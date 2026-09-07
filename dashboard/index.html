@@ -1873,19 +1873,12 @@ input, textarea{
               <input type="text" id="groupchat_name" placeholder="Enter group name">
               <label>Community Rules</label>
               <textarea id="groupchat_rules" placeholder="No spam. Stay relevant."></textarea>
-              <div class="checkbox-row">
-  <input type="checkbox" id="groupchat_created">
-  <label for="groupchat_created">Community created.</label>
-</div>
-
-<div id="groupchatLinkWrap" style="display:none;">
-  <label>Community chat link</label>
-  <input
+              <label>Community chat link (optional)</label>
+<input
     type="url"
     id="groupchat_link"
-    placeholder="Paste your community chat link"
-  >
-</div>
+    placeholder="Already have a chat elsewhere? Paste the link — otherwise we'll set one up for you"
+>
             </div>
 
             
@@ -2410,9 +2403,7 @@ async function loadMailingList(){
   const groupchatCreated = document.getElementById('groupchat_created');
 const groupchatLinkWrap = document.getElementById('groupchatLinkWrap');
 
-groupchatCreated.addEventListener('change', () => {
-  groupchatLinkWrap.style.display = groupchatCreated.checked ? 'block' : 'none';
-});
+
 
   dropzone.addEventListener('click', () => imageInput.click());
   dropzone.addEventListener('dragover', (e) => {
@@ -2853,7 +2844,7 @@ function renderEventCard(ev){
       const res = await fetch(`${API}/events`, { credentials: 'include' });
       const events = await res.json();
       document.getElementById('statEvents').textContent = events.length;
-      document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat && e.groupchat_created).length;
+      document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
 
       const draftCardHTML = eventDraft ? `
         <div class="event-card draft-card" id="draftCard">
