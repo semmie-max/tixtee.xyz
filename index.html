@@ -24,10 +24,12 @@
 <body>
   <script src="/common.js"></script>
 
-<section class="pr-hero-viewport">
-  <div class="pr-z-blur-overlay"></div>
+<section class="pr-hero-viewport" id="pr-hero37">
+  <div class="pr-z-blur-overlay h37-anim h37-bg">
+  <img src="https://assets.watermelon.sh/bg-hero-37.avif" alt="" class="pr-hero-bg-img">
+</div>
 
-  <header class="pr-main-nav">
+  <header class="pr-main-nav h37-anim h37-nav">
     <div class="pr-nav-inner">
       <div class="pr-logo-box">
         <img src="images/logo.jpg" alt="tixtee Logo" class="pr-main-logo-img">
@@ -53,14 +55,14 @@
   </header>
 
   <div class="pr-hero-body">
-    <h1 class="pr-main-headline">Great events start with <br>
-  <span class="pr-text-highlighter pr-sliding-text" data-words="tixtee.,seamless access.,the best seats.,effortless ticketing">a single ticket.</span> <br>
-  before the show begins.
-</h1>
-    
-    <p class="pr-main-subtext">Find, book, and enjoy unforgettable events with fast, secure, and seamless ticketing.</p>
+    <h1 class="pr-main-headline">
+      <span class="h37-anim h37-line1 pr-headline-line">Great events start with <span class="pr-text-highlighter pr-sliding-text" data-words="tixtee.,seamless access.,the best seats.,effortless ticketing">a single ticket.</span></span>
+      <span class="h37-anim h37-line2 pr-headline-line">before the show begins.</span>
+    </h1>
 
-    <a href="/signup" class="pr-body-cta-anchor">
+    <p class="pr-main-subtext h37-anim h37-subtitle">Find, book, and enjoy unforgettable events with fast, secure, and seamless ticketing.</p>
+
+    <a href="/signup" class="pr-body-cta-anchor h37-anim h37-cta">
       Join the waitlist
       <span class="pr-btn-arrow-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -905,5 +907,6 @@
     navToggle.classList.toggle('pr-nav-active');
     navMenu.classList.toggle('pr-nav-open');
   });
+  document.getElementById('pr-hero37').classList.add('play');
 </script>
 </html>
