@@ -254,19 +254,30 @@
   let activeEventId = null;
   let pollTimer = null;
   let chats = JSON.parse(localStorage.getItem('tixtee_chat_state') || '[]');
+  let lastSeenCounts = JSON.parse(localStorage.getItem('tixtee_last_seen_counts') || '{}');
 
     let unreadByEvent = {};
   let replyTarget = null;
 
+  let audioCtx = null;
+  function unlockAudio(){
+    if(!audioCtx){
+      try{ audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return; }
+    }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  document.addEventListener('touchstart', unlockAudio, { once:true });
+  document.addEventListener('click', unlockAudio, { once:true });
+
   function playPing(){
     try{
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = ctx.createOscillator(), g = ctx.createGain();
+      if(!audioCtx || audioCtx.state !== 'running') return;
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
       o.type = 'sine'; o.frequency.value = 880;
-      g.gain.setValueAtTime(0.15, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-      o.connect(g); g.connect(ctx.destination);
-      o.start(); o.stop(ctx.currentTime + 0.3);
+      g.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + 0.3);
     }catch(e){}
   }
   function attachSwipeToReply(rowEl, msg){
@@ -340,13 +351,20 @@
       const res = await fetch(`${API}/chat/active`, { credentials:'include' });
       const newChats = await res.json();
 
-      newChats.forEach(nc => {
+      for(const nc of newChats){
         const old = chats.find(c => c.id === nc.id);
         if(old && old.last_message_at !== nc.last_message_at && nc.id !== activeEventId){
-          unreadByEvent[nc.id] = (unreadByEvent[nc.id] || 0) + 1;
+          try{
+            const msgRes = await fetch(`${API}/chat/${nc.id}/messages`, { credentials:'include' });
+            const msgs = await msgRes.json();
+            const seen = lastSeenCounts[nc.id] || 0;
+            unreadByEvent[nc.id] = Math.max(msgs.length - seen, 1);
+          }catch(e){
+            unreadByEvent[nc.id] = (unreadByEvent[nc.id] || 0) + 1;
+          }
           playPing();
         }
-      });
+      }
       chats = newChats;
       localStorage.setItem('tixtee_chat_state', JSON.stringify(chats));
 
@@ -447,6 +465,8 @@
 
       if(messages.length === lastRenderedCount && !showLoading) return; // nothing new
       lastRenderedCount = messages.length;
+      lastSeenCounts[eventId] = messages.length;
+      localStorage.setItem('tixtee_last_seen_counts', JSON.stringify(lastSeenCounts));
 
       if(!messages.length){
         msgEl.innerHTML = `<div class="conv-empty">No messages yet. Say hello </div>`;
