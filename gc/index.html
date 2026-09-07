@@ -225,7 +225,9 @@
     };
     const end = () => {
       if(dragging && dx < -45){
-        replyTarget = { text: msg.message, sender: msg.guest_name || 'Guest' };
+        const quoteMatch = msg.message.match(/^↳ Reply to "([^"]*)":\s?(.*)$/s);
+        const cleanText = quoteMatch ? quoteMatch[2] : msg.message;
+        replyTarget = { text: cleanText, sender: msg.guest_name || 'Guest' };
         showReplyPreview();
       }
       wrap.style.transform = ''; rowEl.classList.remove('swiping');

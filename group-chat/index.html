@@ -280,7 +280,9 @@
     };
     const end = () => {
       if(dragging && dx < -45){
-        replyTarget = { text: msg.message, sender: msg.sender_name || 'Guest' };
+        const quoteMatch = msg.message.match(/^↳ Reply to "([^"]*)":\s?(.*)$/s);
+        const cleanText = quoteMatch ? quoteMatch[2] : msg.message;
+        replyTarget = { text: cleanText, sender: msg.sender_name || 'Guest' };
         const bar = document.getElementById('replyPreviewBar');
         bar.classList.add('show');
         bar.querySelector('.reply-preview-text').textContent = `Replying to ${replyTarget.sender}: ${replyTarget.text}`;
