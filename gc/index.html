@@ -140,7 +140,9 @@
   const COLORS = ['#e34b42','#47034E','#1e7a3d','#c9a227','#2f6fed','#8a4b90','#d9534f','#20c997','#e07a3f','#5c6ac4'];
 
   const params = new URLSearchParams(window.location.search);
-  const slug = params.get('slug');
+  const pathParts = window.location.pathname.split('/').filter(Boolean); // e.g. ['gc', 'rvm']
+  const pathSlug = pathParts[0] === 'gc' ? pathParts[1] : null;
+  const slug = pathSlug || params.get('slug');
   const appBody = document.getElementById('appBody');
   const topbarTitle = document.getElementById('topbarTitle');
 
