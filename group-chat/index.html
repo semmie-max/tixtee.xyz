@@ -253,7 +253,7 @@
   let currentUserId = null;
   let activeEventId = null;
   let pollTimer = null;
-  let chats = [];
+  let chats = JSON.parse(localStorage.getItem('tixtee_chat_state') || '[]');
 
     let unreadByEvent = {};
   let replyTarget = null;
@@ -348,6 +348,7 @@
         }
       });
       chats = newChats;
+      localStorage.setItem('tixtee_chat_state', JSON.stringify(chats));
 
       if(!chats.length){
         listEl.innerHTML = `
@@ -489,6 +490,9 @@
     if(e.key === 'Enter' && !sendBtn.disabled) sendMessage();
   });
   sendBtn.addEventListener('click', sendMessage);
+  sendBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+  }, { passive: false });
 
   document.getElementById('replyPreviewClose').addEventListener('click', () => {
     replyTarget = null;

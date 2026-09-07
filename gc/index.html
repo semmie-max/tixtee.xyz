@@ -342,6 +342,9 @@
     messageInput.addEventListener('input', () => { sendBtn.disabled = !messageInput.value.trim(); });
     messageInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !sendBtn.disabled) sendMessage(); });
     sendBtn.addEventListener('click', sendMessage);
+    sendBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+    }, { passive: false });
     document.getElementById('replyPreviewClose').addEventListener('click', clearReplyPreview);
 
     loadMessages(true);
