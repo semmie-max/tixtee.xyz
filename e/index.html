@@ -991,7 +991,9 @@ a { color: inherit; }
 const API = 'https://api.tixtee.xyz/api';
 
 const params = new URLSearchParams(window.location.search);
-const slug = params.get('slug');
+const pathParts = window.location.pathname.split('/').filter(Boolean); // e.g. ['e', 'event-name']
+const pathSlug = pathParts[0] === 'e' ? pathParts[1] : null;
+const slug = pathSlug || params.get('slug') || params.get('id');
 
 const loading = document.getElementById('loading');
 const eventPage = document.getElementById('eventPage');
