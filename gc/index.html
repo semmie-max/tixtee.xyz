@@ -63,7 +63,10 @@
   /* ---------- chat screen (matches document 6's conversation-pane) ---------- */
   .conversation-pane{
     flex:1; display:flex; flex-direction:column; background:#14161d; min-width:0;
-    width:100%; max-width:640px; height:100%;
+    width:100%; height:100%;
+  }
+  @media (min-width:1300px){
+    .conversation-pane{ max-width:1300px; margin:0 auto; }
   }
   .conv-header{
     display:flex; align-items:center; gap:12px;
@@ -158,6 +161,18 @@
     width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#e34b42,#7a1f1a);
     display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; color:#fff; flex-shrink:0;
   }
+  .mention-tag-me{ background:rgba(111,179,255,0.28); padding:1px 5px; border-radius:5px; }
+  .mention-banner{
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    background:#1f4a7a; color:#dbe9ff; padding:9px 16px; margin:0 18px; border-radius:10px 10px 0 0;
+    font-size:12.5px; font-weight:600; cursor:pointer;
+  }
+  .mention-banner.show{ display:flex; }
+  @keyframes flashHighlight{
+    0%{ box-shadow:0 0 0 3px rgba(111,179,255,0.9); }
+    100%{ box-shadow:0 0 0 0 rgba(111,179,255,0); }
+  }
+  .msg-row.flash .msg-bubble{ animation:flashHighlight 1.4s ease; }
 </style>
 </head>
 <body>
@@ -208,15 +223,23 @@
   const baseTitle = 'Group Chat — Tixtee';
   let replyTarget = null; // { text, sender }
   let knownMembers = new Set();
+  let pendingMentionIndex = null;
 
   function highlightMentions(text){
     let escaped = escapeHtml(text);
     if(!knownMembers.size) return escaped;
     Array.from(knownMembers).sort((a,b) => b.length - a.length).forEach(name => {
       const safe = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      escaped = escaped.replace(new RegExp(`@${safe}\\b`, 'g'), `<span class="mention-tag">@${escapeHtml(name)}</span>`);
+      const isMe = guest && name.toLowerCase() === guest.name.toLowerCase();
+      const cls = isMe ? 'mention-tag mention-tag-me' : 'mention-tag';
+      escaped = escaped.replace(new RegExp(`@${safe}\\b`, 'g'), `<span class="${cls}">@${escapeHtml(name)}</span>`);
     });
     return escaped;
+  }
+  function mentionsMe(text){
+    if(!guest) return false;
+    const safe = guest.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`@${safe}\\b`, 'i').test(text);
   }
 
   let audioCtx = null;
@@ -362,7 +385,11 @@
         <div class="conv-messages" id="convMessages">
           <div class="conv-loading">Loading conversation…</div>
         </div>
-                <div class="reply-preview" id="replyPreviewBar">
+                <div class="mention-banner" id="mentionBanner">
+          <span>@ You were mentioned — tap to view</span>
+          <span>↓</span>
+        </div>
+        <div class="reply-preview" id="replyPreviewBar">
           <div class="reply-preview-text"></div>
           <button type="button" class="reply-preview-close" id="replyPreviewClose">✕</button>
         </div>
@@ -448,6 +475,7 @@
       e.preventDefault();
     }, { passive: false });
     document.getElementById('replyPreviewClose').addEventListener('click', clearReplyPreview);
+    document.getElementById('mentionBanner').addEventListener('click', jumpToMention);
 
     loadMessages(true);
     if(pollTimer) clearInterval(pollTimer);
@@ -463,11 +491,23 @@
       const isNew = messages.length > lastCount;
       if(messages.length === lastCount && !showLoading) return;
 
+      const prevCount = lastCount;
       if(isNew && !showLoading){
         const newest = messages[messages.length - 1];
-        const isMine = newest.guest_name === guest.name && newest.guest_color === guest.color;
-        if(!isMine && document.hidden) bumpUnread();
-        if(!isMine && !document.hidden) playPing();
+        const isMineNewest = newest.guest_name === guest.name && newest.guest_color === guest.color;
+        if(!isMineNewest && document.hidden) bumpUnread();
+        if(!isMineNewest && !document.hidden) playPing();
+
+        for(let i = prevCount; i < messages.length; i++){
+          const m = messages[i];
+          const isMineMsg = m.guest_name === guest.name && m.guest_color === guest.color;
+          if(!isMineMsg && mentionsMe(m.message)){
+            pendingMentionIndex = i;
+            document.getElementById('mentionBanner').classList.add('show');
+            if(document.hidden) bumpUnread();
+            playPing();
+          }
+        }
       }
       lastCount = messages.length;
 
@@ -477,10 +517,11 @@
       }
 
       msgEl.innerHTML = '';
-      messages.forEach(m => {
+      messages.forEach((m, i) => {
         const isMe = m.guest_name === guest.name && m.guest_color === guest.color;
         const row = document.createElement('div');
         row.className = `msg-row ${isMe ? 'out' : 'in'}`;
+        row.id = `msg-idx-${i}`;
         const quoteMatch = m.message.match(/^↳ Reply to "([^"]*)":\s?(.*)$/s);
         const bodyText = quoteMatch ? quoteMatch[2] : m.message;
         const quoteText = quoteMatch ? quoteMatch[1] : null;
@@ -498,6 +539,17 @@
     }catch(err){
       if(showLoading) msgEl.innerHTML = `<div class="conv-empty">Could not load messages.</div>`;
     }
+  }
+
+  function jumpToMention(){
+    if(pendingMentionIndex === null) return;
+    const el = document.getElementById(`msg-idx-${pendingMentionIndex}`);
+    document.getElementById('mentionBanner').classList.remove('show');
+    if(!el){ pendingMentionIndex = null; return; }
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 1400);
+    pendingMentionIndex = null;
   }
 
     async function sendMessage(){
