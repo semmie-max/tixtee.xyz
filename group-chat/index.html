@@ -466,6 +466,10 @@
       }).join('');
       msgEl.scrollTop = msgEl.scrollHeight;
       msgEl.querySelectorAll('.msg-row').forEach((row, i) => attachSwipeToReply(row, messages[i]));
+    }catch(err){
+      msgEl.innerHTML = `<div class="conv-empty">Could not load messages.</div>`;
+    }
+  }
 
   function escapeHtml(str){
     const div = document.createElement('div');
@@ -484,7 +488,7 @@
   });
   sendBtn.addEventListener('click', sendMessage);
 
-    document.getElementById('replyPreviewClose').addEventListener('click', () => {
+  document.getElementById('replyPreviewClose').addEventListener('click', () => {
     replyTarget = null;
     document.getElementById('replyPreviewBar').classList.remove('show');
   });
@@ -522,7 +526,8 @@
       alert('Could not send that message — is the backend running?');
     }
   }
-</script>
+
   setInterval(loadChatList, 6000);
+</script>
 </body>
 </html>
