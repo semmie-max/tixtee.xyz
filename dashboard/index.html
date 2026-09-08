@@ -55,6 +55,47 @@
   .nav-spacer{flex:1;}
   .nav-item.logout{color:#e07a7a;}
   .nav-item.logout:hover{background:rgba(224,122,122,0.1); color:#ff9b9b;}
+    .sidebar-profile-wrap{ position:relative; }
+  .sidebar-profile-card{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px; cursor:pointer;
+    background:rgba(255,255,255,0.05);
+    transition:background 0.15s ease;
+  }
+  .sidebar-profile-card:hover{ background:rgba(255,255,255,0.1); }
+  .sidebar-profile-avatar{
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
+    background:#f3e9f4; color:#47034E; font-size:13px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sidebar-profile-avatar-img{
+    width:34px; height:34px; border-radius:50%; object-fit:cover; flex-shrink:0; display:none;
+  }
+  .sidebar-profile-info{ flex:1; min-width:0; }
+  .sidebar-profile-name{
+    font-size:12.5px; font-weight:700; color:#fff;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .sidebar-profile-email{
+    font-size:11px; color:rgba(255,255,255,0.5);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .sidebar-profile-arrow{
+    width:14px; height:14px; color:rgba(255,255,255,0.5); flex-shrink:0;
+  }
+  .sidebar-logout-dropdown{
+    display:none; position:absolute; bottom:calc(100% + 8px); left:0; right:0;
+    background:#26032a; border:1px solid rgba(255,255,255,0.1); border-radius:10px;
+    padding:6px; box-shadow:0 10px 30px rgba(0,0,0,0.35); z-index:20;
+  }
+  .sidebar-logout-dropdown.show{ display:block; }
+  .sidebar-logout-option{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 10px; border-radius:8px; font-size:13px; font-weight:600;
+    color:#e07a7a; cursor:pointer;
+  }
+  .sidebar-logout-option:hover{ background:rgba(224,122,122,0.1); color:#ff9b9b; }
+  .sidebar-logout-option svg{ width:15px; height:15px; }
   .main{margin-left:var(--sidebar-width, 240px); flex:1; padding:36px 44px; max-width:1200px;}
   .main-header{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:32px; flex-wrap:wrap; gap:16px;}
   .main-header h1{font-size:26px; font-weight:700; letter-spacing:-0.5px;}
@@ -1218,9 +1259,29 @@ input, textarea{
       Blog
     </div>
     <div class="nav-spacer"></div>
-    <div class="nav-item logout" id="logoutBtn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      Log out
+
+    <div class="nav-item" id="supportNavBtn" style="margin-bottom:14px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+      Support
+    </div>
+
+
+    <div class="sidebar-profile-wrap" id="sidebarProfileWrap">
+      <div class="sidebar-logout-dropdown" id="sidebarLogoutDropdown">
+        <div class="sidebar-logout-option" id="logoutBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Log out
+        </div>
+      </div>
+      <div class="sidebar-profile-card" id="sidebarProfileCard">
+        <div class="sidebar-profile-avatar" id="sidebarProfileAvatar">?</div>
+        <img class="sidebar-profile-avatar-img" id="sidebarProfileAvatarImg" src="" alt="">
+        <div class="sidebar-profile-info">
+          <div class="sidebar-profile-name" id="sidebarProfileName">There</div>
+          <div class="sidebar-profile-email" id="sidebarProfileEmail">—</div>
+        </div>
+        <svg class="sidebar-profile-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
     </div>
   </div>
 
@@ -2153,6 +2214,17 @@ function to24Hour(t){
       const data = await res.json();
       if(!data.isAdmin) return window.location.href = '/pending';
       document.getElementById('userName').textContent = data.name || 'there';
+
+      document.getElementById('sidebarProfileName').textContent = data.name || 'There';
+      document.getElementById('sidebarProfileEmail').textContent = data.email || '';
+      if(data.avatar_url){
+        document.getElementById('sidebarProfileAvatarImg').src = data.avatar_url;
+        document.getElementById('sidebarProfileAvatarImg').style.display = 'block';
+        document.getElementById('sidebarProfileAvatar').style.display = 'none';
+      } else {
+        document.getElementById('sidebarProfileAvatar').textContent = (data.name || '?').trim().charAt(0).toUpperCase();
+      }
+
       document.getElementById('gate').style.display = 'none';
       document.getElementById('dashboardContent').style.display = 'flex';
       loadEvents();
@@ -2205,10 +2277,27 @@ setInterval(checkGroupChatUnread, 15000);
 
 
 
+  document.getElementById('supportNavBtn').addEventListener('click', () => {
+    window.location.href = 'mailto:tixteedotxyz@gmail.com?subject=Support%20request';
+  });
+
   document.getElementById('logoutBtn').addEventListener('click', async ()=>{
     await fetch(`${API}/auth/logout`, { method:'POST', credentials:'include' });
     window.location.href = '/login';
   });
+    const sidebarProfileCard = document.getElementById('sidebarProfileCard');
+  const sidebarLogoutDropdown = document.getElementById('sidebarLogoutDropdown');
+
+  sidebarProfileCard.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebarLogoutDropdown.classList.toggle('show');
+  });
+
+  document.addEventListener('click', () => {
+    sidebarLogoutDropdown.classList.remove('show');
+  });
+
+  sidebarLogoutDropdown.addEventListener('click', (e) => e.stopPropagation());
 
   const sidebar = document.getElementById('sidebar');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -2552,6 +2641,10 @@ async function handleAvatarFile(file){
     settingsAvatarInitial.style.display = 'none';
     settingsAvatarStatus.style.color = '#1e7a3d';
     settingsAvatarStatus.textContent = 'Photo updated ✓';
+
+    document.getElementById('sidebarProfileAvatarImg').src = data.url;
+    document.getElementById('sidebarProfileAvatarImg').style.display = 'block';
+    document.getElementById('sidebarProfileAvatar').style.display = 'none';
   }catch(err){
     settingsAvatarStatus.style.color = '#b3261e';
     settingsAvatarStatus.textContent = 'Could not reach the server.';
@@ -3608,6 +3701,10 @@ function addFaqRow(){
       const data = await res.json();
       if(!res.ok){ showSettingsMsg(data.error || 'Could not update name', 'error'); return; }
       document.getElementById('userName').textContent = name;
+      document.getElementById('sidebarProfileName').textContent = name;
+      if(document.getElementById('sidebarProfileAvatarImg').style.display !== 'block'){
+        document.getElementById('sidebarProfileAvatar').textContent = name.charAt(0).toUpperCase();
+      }
       showSettingsMsg('Name updated.', 'success');
     }catch(err){
       showSettingsMsg('Could not reach the server.', 'error');
