@@ -1529,8 +1529,11 @@ buyerModalSubmit.addEventListener('click', async () => {
         cancel_url: currentUrl
       })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Could not start checkout');
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch { data = null; }
+    console.log('Checkout response:', res.status, raw);
+    if (!res.ok) throw new Error((data && data.error) || `Server error (${res.status}): ${raw.slice(0,200)}`);
 
     window.location.href = data.checkout_url;
   } catch (err) {
