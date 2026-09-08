@@ -1131,6 +1131,27 @@ input, textarea{
 .settings-avatar-edit svg{ width:16px; height:16px; color:#fff; }
 .settings-avatar-wrap:hover .settings-avatar-edit{ opacity:1; }
 
+.tag-input-wrap{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  padding:10px 12px; border:1px solid var(--border-color); border-radius:10px;
+  background:var(--input-bg); margin-bottom:10px; cursor:text;
+}
+.tag-input-wrap:focus-within{ border-color:#47034E; }
+.tag-chip{
+  display:inline-flex; align-items:center; gap:6px;
+  background:#f3e9f4; color:#47034E; font-size:12.5px; font-weight:600;
+  padding:6px 10px; border-radius:100px; white-space:nowrap;
+}
+.tag-chip-remove{
+  cursor:pointer; font-size:13px; line-height:1; color:#47034E; opacity:0.6;
+}
+.tag-chip-remove:hover{ opacity:1; }
+.tag-input-field{
+  flex:1; min-width:120px; border:none; outline:none; font-size:13px;
+  padding:4px 0; margin:0; background:transparent; font-family:'Inter',sans-serif;
+  color:var(--text-color);
+}
+
 @media (max-width:700px){
   .settings-row{ flex-direction:column; gap:10px; padding:18px 0; }
   .settings-row-label{ width:100%; }
@@ -1345,6 +1366,19 @@ input, textarea{
             <button type="button" class="btn-primary" id="changePasswordBtn">Update password</button>
           </div>
         </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Your tags</label>
+            <div class="settings-row-desc">Short tags describing who you are — role, vibe, location, whatever fits. Press Enter or comma to add one.</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="tag-input-wrap" id="tagInputWrap">
+              <input type="text" class="tag-input-field" id="tagInputField" placeholder="Type a tag and press Enter">
+            </div>
+            <button type="button" class="btn-primary" id="saveTagsBtn">Save tags</button>
+          </div>
+        </div>
       </div>
 
       <div class="settings-panel" id="settingsPanelPlatform">
@@ -1354,7 +1388,7 @@ input, textarea{
             <div class="settings-row-desc">The cut Tixtee takes from every ticket sold.</div>
           </div>
           <div class="settings-row-control">
-            <input type="number" id="settingsCommission" min="0" max="100" step="0.1" placeholder="e.g. 5">
+            <input type="number" id="settingsCommission" min="0" max="100" step="0.1" placeholder="e.g. 7">
           </div>
         </div>
 
@@ -2523,6 +2557,70 @@ async function handleAvatarFile(file){
     settingsAvatarStatus.textContent = 'Could not reach the server.';
   }
 }
+let currentTags = [];
+
+function renderTags(){
+  const wrap = document.getElementById('tagInputWrap');
+  const input = document.getElementById('tagInputField');
+  wrap.querySelectorAll('.tag-chip').forEach(chip => chip.remove());
+
+  currentTags.forEach((tag, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'tag-chip';
+    chip.innerHTML = `${tag} <span class="tag-chip-remove" data-index="${i}">✕</span>`;
+    wrap.insertBefore(chip, input);
+  });
+
+  wrap.querySelectorAll('.tag-chip-remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentTags.splice(parseInt(btn.dataset.index), 1);
+      renderTags();
+    });
+  });
+}
+
+function addTagFromInput(){
+  const input = document.getElementById('tagInputField');
+  const val = input.value.trim();
+  if(val && !currentTags.includes(val) && currentTags.length < 20){
+    currentTags.push(val);
+    renderTags();
+  }
+  input.value = '';
+}
+
+const tagInputField = document.getElementById('tagInputField');
+const tagInputWrap = document.getElementById('tagInputWrap');
+
+tagInputField.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ','){
+    e.preventDefault();
+    addTagFromInput();
+  } else if(e.key === 'Backspace' && !tagInputField.value && currentTags.length){
+    currentTags.pop();
+    renderTags();
+  }
+});
+
+tagInputWrap.addEventListener('click', () => tagInputField.focus());
+
+document.getElementById('saveTagsBtn').addEventListener('click', async () => {
+  if(tagInputField.value.trim()) addTagFromInput();
+
+  try{
+    const res = await fetch(`${API}/auth/profile`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({ tags: currentTags })
+    });
+    const data = await res.json();
+    if(!res.ok){ showSettingsMsg(data.error || 'Could not save tags', 'error'); return; }
+    showSettingsMsg('Tags updated.', 'success');
+  }catch(err){
+    showSettingsMsg('Could not reach the server.', 'error');
+  }
+});
   function showBlogView(){
     hideAllViews();
     document.getElementById('blogView').style.display = 'block';
@@ -3486,6 +3584,9 @@ function addFaqRow(){
         document.getElementById('settingsAvatarInitial').textContent = (me.name || '?').trim().charAt(0).toUpperCase();
         document.getElementById('settingsAvatarImg').style.display = 'none';
       }
+
+      currentTags = Array.isArray(me.tags) ? me.tags : [];
+      renderTags();
 
       const settingsRes = await fetch(`${API}/settings`, { credentials:'include' });
       const settings = await settingsRes.json();
