@@ -1922,8 +1922,39 @@ function to24Hour(t){
   }
   checkSession();
   document.getElementById('groupChatStatCard').addEventListener('click', () => {
+  localStorage.setItem('tixtee_last_seen_chat_time', String(latestChatMessageTime || 0));
+  document.getElementById('groupChatBadge').setAttribute('data-open', 'false');
   window.location.href = '/group-chat';
 });
+
+let latestChatMessageTime = 0;
+
+async function checkGroupChatUnread(){
+  try{
+    const res = await fetch(`${API}/chat/active`, { credentials:'include' });
+    const raw = await res.text();
+    let chats;
+    try { chats = JSON.parse(raw); } catch { chats = []; }
+
+    let latest = 0;
+    chats.forEach(c => {
+      if(c.last_message_at){
+        const t = new Date(c.last_message_at).getTime();
+        if(t > latest) latest = t;
+      }
+    });
+    latestChatMessageTime = latest;
+    const lastSeen = Number(localStorage.getItem('tixtee_last_seen_chat_time') || 0);
+    const badge = document.getElementById('groupChatBadge');
+    if(latest > lastSeen){
+      badge.setAttribute('data-open', 'true');
+    } else {
+      badge.setAttribute('data-open', 'false');
+    }
+  }catch(err){}
+}
+checkGroupChatUnread();
+setInterval(checkGroupChatUnread, 15000);
 
 
 
