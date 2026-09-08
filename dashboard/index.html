@@ -23,7 +23,7 @@
   --border-color: #e5e5e5;
   --input-bg: #ffffff;
   --primary-color: #47034E;
-  --card-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  --card-shadow: 0 4px 20px rgba(32, 31, 31, 0.03);
   --hover-bg: #f5eef6;
   --field-group-bg: #fbfafc;
 }
@@ -255,9 +255,28 @@ input, textarea{
       transition:transform 0.25s ease;
       z-index:100;
       width:260px;
+      padding:18px 16px;
+      overflow-y:auto;
     }
     .sidebar.open{
       transform:translateX(0);
+    }
+    .sidebar .logo{
+      margin-bottom:18px;
+      font-size:14px;
+    }
+    .sidebar .nav-item{
+      padding:9px 12px;
+      font-size:12.5px;
+      margin-bottom:2px;
+      gap:10px;
+    }
+    .sidebar .nav-item svg{
+      width:15px;
+      height:15px;
+    }
+    .sidebar .nav-spacer{
+      min-height:6px;
     }
 
     .main{
@@ -1063,6 +1082,48 @@ input, textarea{
 @media (prefers-reduced-motion: reduce) {
   .t-badge, .t-badge-dot { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Settings page (tabbed, Untitled-UI style) ---------- */
+.settings-tabs{
+  display:flex; gap:24px; border-bottom:1px solid var(--border-color);
+  margin-bottom:28px; overflow-x:auto; scrollbar-width:none;
+}
+.settings-tabs::-webkit-scrollbar{ display:none; }
+.settings-tab{
+  font-size:13px; font-weight:600; color:var(--muted-color);
+  padding-bottom:14px; cursor:pointer; border-bottom:2px solid transparent;
+  white-space:nowrap; flex-shrink:0;
+}
+.settings-tab.active{ color:#47034E; border-color:#47034E; }
+.settings-tab.danger-tab.active{ color:#e5484d; border-color:#e5484d; }
+
+.settings-panel{ display:none; }
+.settings-panel.active{ display:block; }
+
+.settings-row{
+  display:flex; gap:32px; padding:24px 0; border-bottom:1px solid var(--border-color);
+}
+.settings-row:last-child{ border-bottom:none; }
+.settings-row-label{ width:240px; flex-shrink:0; }
+.settings-row-label label{ font-size:13px; font-weight:600; color:var(--text-color); margin-bottom:4px; }
+.settings-row-desc{ font-size:12.5px; color:var(--muted-color); line-height:1.5; }
+.settings-row-control{ flex:1; max-width:420px; }
+.settings-row-control input,
+.settings-row-control select,
+.settings-row-control textarea{ margin-bottom:10px; }
+.settings-row-control .btn-primary{ margin-top:4px; }
+
+.settings-avatar-row{ display:flex; align-items:center; gap:16px; }
+.settings-avatar{
+  width:56px; height:56px; border-radius:50%; background:#f3e9f4; color:#47034E;
+  display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; flex-shrink:0;
+}
+
+@media (max-width:700px){
+  .settings-row{ flex-direction:column; gap:10px; padding:18px 0; }
+  .settings-row-label{ width:100%; }
+  .settings-row-control{ max-width:100%; }
+}
 </style>
 </head>
 <body>
@@ -1208,141 +1269,237 @@ input, textarea{
 
     <div class="msg" id="settingsMsg"></div>
 
-    <div class="accordion-section open">
-      <div class="accordion-header">
-        <h3>Account</h3>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="accordion-body">
-        <label>Full name</label>
-        <input type="text" id="settingsName" placeholder="Your name">
-        <label>Email</label>
-        <input type="text" id="settingsEmail" disabled style="background:#f4f4f4; color:#8c8c8c;">
-        <button type="button" class="btn-primary" id="saveNameBtn">Save name</button>
-
-        <div style="height:1px; background:#eee; margin:26px 0;"></div>
-
-        <div class="field-group-title" style="margin-bottom:12px;">Change password</div>
-        <label>Current password</label>
-        <input type="password" id="currentPassword">
-        <label>New password</label>
-        <input type="password" id="newPassword">
-        <label>Confirm new password</label>
-        <input type="password" id="confirmNewPassword">
-        <button type="button" class="btn-primary" id="changePasswordBtn">Update password</button>
-      </div>
+    <div class="settings-tabs">
+      <div class="settings-tab active" data-panel="settingsPanelAccount">Account</div>
+      <div class="settings-tab" data-panel="settingsPanelPlatform">Platform</div>
+      <div class="settings-tab" data-panel="settingsPanelPayout">Payout</div>
+      <div class="settings-tab" data-panel="settingsPanelPreferences">Preferences</div>
+      <div class="settings-tab danger-tab" data-panel="settingsPanelDanger">Danger Zone</div>
     </div>
 
-        <div class="accordion-section">
-      <div class="accordion-header">
-        <h3>Platform</h3>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="accordion-body">
-        <label>Commission (%)</label>
-        <input type="number" id="settingsCommission" min="0" max="100" step="0.1" placeholder="e.g. 5">
+    <div class="section-card">
 
-        <label>Currency</label>
-        <select id="settingsCurrency">
-          <option value="NGN">NGN (₦)</option>
-          <option value="USD">USD ($)</option>
-        </select>
-
-        <label>Support Email</label>
-        <input type="email" id="settingsSupportEmail" placeholder="support@tixtee.xyz">
-
-        <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
-      </div>
-    </div>
-
-  <div class="accordion-section">
-      <div class="accordion-header">
-        <h3>Payout</h3>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="accordion-body">
-        <label>Account Name</label>
-        <input type="text" id="payoutAccountName" placeholder="e.g. John Doe">
-
-        <label>Bank Name</label>
-        <input type="text" id="payoutBankName" placeholder="e.g. Access Bank">
-
-        <label>Account Number</label>
-        <input type="text" id="payoutAccountNumber" maxlength="10" placeholder="Enter 10-digit account number">
-
-        <label>Currency</label>
-        <select id="payoutCurrency">
-          <option value="NGN">NGN (₦)</option>
-          <option value="USD">USD ($)</option>
-        </select>
-
-        <label>Payout Email</label>
-        <input type="email" id="payoutEmail" placeholder="payments@tixtee.xyz">
-
-        <label>Payout Schedule</label>
-        <select id="payoutSchedule">
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="manual">Manual Withdrawal</option>
-        </select>
-
-        <button type="button" class="btn-primary" id="savePayoutBtn">Save payout details</button>
-      </div>
-    </div>
-
-    <div class="accordion-section">
-      <div class="accordion-header">
-        <h3>Preferences</h3>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-      </div>
-      <div class="accordion-body">
-
-        <label>Language</label>
-        <select id="settingsLanguage">
-          <option value="en">English</option>
-          <option value="fr">French</option>
-        </select>
-
-        <label>Date Format</label>
-        <select id="settingsDateFormat">
-          <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-          <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-          <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-        </select>
-
-        <label>Time Format</label>
-        <select id="settingsTimeFormat">
-          <option value="12">12-hour (AM/PM)</option>
-          <option value="24">24-hour</option>
-        </select>
-
-        <button type="button" class="btn-primary" id="savePreferencesBtn">Save preferences</button>
-      </div>
-    </div>
-
-    <div class="danger-zone">
-      <div class="danger-header">
-        <h3>Danger Zone</h3>
-        <p>These actions are permanent and cannot be undone.</p>
-      </div>
-
-      <div class="danger-item">
-        <div>
-          <h4>Sign Out Everywhere</h4>
-          <p>Sign out of your Tixtee account on all devices and active sessions.</p>
+      <div class="settings-panel active" id="settingsPanelAccount">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Your photo</label>
+            <div class="settings-row-desc">This will be displayed on your profile.</div>
+          </div>
+          <div class="settings-row-control">
+            <div class="settings-avatar-row">
+              <div class="settings-avatar" id="settingsAvatarInitial">?</div>
+            </div>
+          </div>
         </div>
-        <button type="button" class="btn-danger-outline" id="signOutAllBtn">Sign Out Everywhere</button>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Full name</label>
+            <div class="settings-row-desc">Your name as it appears across Tixtee.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="text" id="settingsName" placeholder="Your name">
+            <button type="button" class="btn-primary" id="saveNameBtn">Save name</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Email</label>
+            <div class="settings-row-desc">Used to sign in and receive notifications.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="text" id="settingsEmail" disabled style="background:#f4f4f4; color:#8c8c8c;">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Change password</label>
+            <div class="settings-row-desc">Update the password you use to sign in.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="password" id="currentPassword" placeholder="Current password">
+            <input type="password" id="newPassword" placeholder="New password">
+            <input type="password" id="confirmNewPassword" placeholder="Confirm new password">
+            <button type="button" class="btn-primary" id="changePasswordBtn">Update password</button>
+          </div>
+        </div>
       </div>
 
-      <div class="danger-item">
-        <div>
-          <h4>Delete Account</h4>
-          <p>Permanently delete your account, events, tickets, and account data.</p>
+      <div class="settings-panel" id="settingsPanelPlatform">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Commission (%)</label>
+            <div class="settings-row-desc">The cut Tixtee takes from every ticket sold.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="number" id="settingsCommission" min="0" max="100" step="0.1" placeholder="e.g. 5">
+          </div>
         </div>
-        <button type="button" class="btn-danger" id="deleteAccountBtn">Delete Account</button>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Currency</label>
+            <div class="settings-row-desc">Default currency shown across the platform.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="settingsCurrency">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Support email</label>
+            <div class="settings-row-desc">Where customer questions get sent.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="email" id="settingsSupportEmail" placeholder="support@tixtee.xyz">
+            <button type="button" class="btn-primary" id="savePlatformBtn">Save platform settings</button>
+          </div>
+        </div>
       </div>
+
+      <div class="settings-panel" id="settingsPanelPayout">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Account name</label>
+            <div class="settings-row-desc">Name on the bank account you're paid into.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="text" id="payoutAccountName" placeholder="e.g. John Doe">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Bank name</label>
+            <div class="settings-row-desc">The bank that holds this account.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="text" id="payoutBankName" placeholder="e.g. Access Bank">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Account number</label>
+            <div class="settings-row-desc">Your 10-digit account number.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="text" id="payoutAccountNumber" maxlength="10" placeholder="Enter 10-digit account number">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Currency</label>
+            <div class="settings-row-desc">Currency your payouts are sent in.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="payoutCurrency">
+              <option value="NGN">NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Payout email</label>
+            <div class="settings-row-desc">Where payout confirmations are sent.</div>
+          </div>
+          <div class="settings-row-control">
+            <input type="email" id="payoutEmail" placeholder="payments@tixtee.xyz">
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Payout schedule</label>
+            <div class="settings-row-desc">How often you'd like to be paid out.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="payoutSchedule">
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="manual">Manual Withdrawal</option>
+            </select>
+            <button type="button" class="btn-primary" id="savePayoutBtn">Save payout details</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" id="settingsPanelPreferences">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Language</label>
+            <div class="settings-row-desc">Language used across your dashboard.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="settingsLanguage">
+              <option value="en">English</option>
+              <option value="fr">French</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Date format</label>
+            <div class="settings-row-desc">How dates are displayed throughout Tixtee.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="settingsDateFormat">
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Time format</label>
+            <div class="settings-row-desc">12-hour or 24-hour clock.</div>
+          </div>
+          <div class="settings-row-control">
+            <select id="settingsTimeFormat">
+              <option value="12">12-hour (AM/PM)</option>
+              <option value="24">24-hour</option>
+            </select>
+            <button type="button" class="btn-primary" id="savePreferencesBtn">Save preferences</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-panel" id="settingsPanelDanger">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Sign out everywhere</label>
+            <div class="settings-row-desc">Sign out of Tixtee on all devices and active sessions.</div>
+          </div>
+          <div class="settings-row-control">
+            <button type="button" class="btn-danger-outline" id="signOutAllBtn">Sign Out Everywhere</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Delete account</label>
+            <div class="settings-row-desc">Permanently delete your account, events, tickets, and account data. This can't be undone.</div>
+          </div>
+          <div class="settings-row-control">
+            <button type="button" class="btn-danger" id="deleteAccountBtn">Delete Account</button>
+          </div>
+        </div>
+      </div>
+
     </div>
-  </div><!-- closes #settingsView -->
+  </div>
 
     <div id="mailingListView" style="display:none;">
   <div class="main-header">
@@ -2275,6 +2432,14 @@ async function loadMailingList(){
     document.getElementById('settingsNavBtn').classList.add('active');
     loadSettings();
   }
+  document.querySelectorAll('.settings-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.panel).classList.add('active');
+  });
+});
   function showBlogView(){
     hideAllViews();
     document.getElementById('blogView').style.display = 'block';
@@ -3229,6 +3394,7 @@ function addFaqRow(){
       const me = await meRes.json();
       document.getElementById('settingsName').value = me.name || '';
       document.getElementById('settingsEmail').value = me.email || '';
+      document.getElementById('settingsAvatarInitial').textContent = (me.name || '?').trim().charAt(0).toUpperCase();
 
       const settingsRes = await fetch(`${API}/settings`, { credentials:'include' });
       const settings = await settingsRes.json();
