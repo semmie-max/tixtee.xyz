@@ -1427,6 +1427,34 @@ input, textarea{
 @media (max-width:480px){
   .tx-sheet{ max-width:100%; }
 }
+
+/* ---------- Onboarding dialog ---------- */
+.tx-onboard-img{
+  width:100%; border-radius:12px; display:block; margin-bottom:18px;
+  height:160px; object-fit:cover; background:linear-gradient(135deg,#7a2f82,#47034E 55%,#150017);
+}
+.tx-onboard-title{ font-size:18px; font-weight:700; color:var(--text-color); margin-bottom:6px; }
+.tx-onboard-desc{ font-size:13.5px; color:var(--muted-color); line-height:1.6; margin-bottom:22px; }
+.tx-onboard-footer{
+  display:flex; flex-direction:column; gap:16px;
+}
+@media (min-width:480px){
+  .tx-onboard-footer{ flex-direction:row; align-items:center; justify-content:space-between; }
+}
+.tx-onboard-dots{ display:flex; gap:6px; justify-content:center; order:2; }
+@media (min-width:480px){ .tx-onboard-dots{ order:1; } }
+.tx-onboard-dot{ width:6px; height:6px; border-radius:50%; background:#47034E; opacity:0.2; }
+.tx-onboard-dot.active{ opacity:1; }
+.tx-onboard-actions{ display:flex; gap:10px; justify-content:flex-end; order:1; }
+@media (min-width:480px){ .tx-onboard-actions{ order:2; } }
+.tx-onboard-actions button{
+  border:none; border-radius:10px; padding:11px 20px; font-size:13px; font-weight:600; cursor:pointer;
+}
+.tx-onboard-skip{ background:none; color:var(--muted-color); }
+.tx-onboard-skip:hover{ background:var(--hover-bg); color:var(--text-color); }
+.tx-onboard-next{ background:#47034E; color:#fff; display:inline-flex; align-items:center; gap:8px; }
+.tx-onboard-next:hover{ background:#5c0665; }
+.tx-onboard-next svg{ width:15px; height:15px; }
 </style>
 </head>
 <body>
@@ -2025,6 +2053,24 @@ input, textarea{
     </div>
   </div>
 
+  <!-- Onboarding -->
+  <div class="modal-overlay" id="onboardingModal">
+    <div class="modal" style="max-width:420px; padding:8px;">
+      <img class="tx-onboard-img" id="onboardStepImg" src="" alt="">
+      <div style="padding:0 18px 18px;">
+        <div class="tx-onboard-title" id="onboardStepTitle"></div>
+        <div class="tx-onboard-desc" id="onboardStepDesc"></div>
+        <div class="tx-onboard-footer">
+          <div class="tx-onboard-dots" id="onboardDots"></div>
+          <div class="tx-onboard-actions">
+            <button type="button" class="tx-onboard-skip" id="onboardSkipBtn">Skip</button>
+            <button type="button" class="tx-onboard-next" id="onboardNextBtn">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Delete Account Confirmation Modal -->
   <div class="modal-overlay" id="deleteAccountModal">
     <div class="modal modal-small">
@@ -2503,6 +2549,87 @@ input, textarea{
 <script>
   const API = 'https://api.tixtee.xyz/api';
 
+/* ── Onboarding ── */
+const ONBOARD_STEPS = [
+  {
+    img: 'linear-gradient(135deg,#7a2f82,#47034E 55%,#150017)',
+    title: 'Welcome to Tixtee',
+    desc: "This is your dashboard — everything you need to create, sell, and manage events lives here. Let's take a quick look around."
+  },
+  {
+    img: 'linear-gradient(135deg,#c9a8cd,#47034E)',
+    title: 'Create and manage events',
+    desc: '"Add new event" walks you through setup, tickets, and promotion in a few steps. Your published, draft, and ended events all show up under "Your events" and "Events".'
+  },
+  {
+    img: 'linear-gradient(135deg,#47034E,#7a2f82,#150017)',
+    title: 'Check guests in at the door',
+    desc: '"Confirm Tickets" validates a ticket code on the spot, and "Entry Check" shows everyone who\'s already been scanned in — live, as it happens.'
+  },
+  {
+    img: 'linear-gradient(160deg,#150017,#47034E,#c9a8cd)',
+    title: 'Stay on top of your schedule',
+    desc: '"Calendar" marks every event you\'ve published on its date, and "Mailing List" holds everyone who\'s joined your waitlist or signed up.'
+  },
+  {
+    img: 'linear-gradient(135deg,#8a4b90,#150017)',
+    title: 'Bring your team in',
+    desc: 'In Settings → Team, add people who can check ticket validity at the door — each one gets their own password and link. You can also update your profile, payout details, and platform preferences from Settings.'
+  },
+  {
+    img: 'linear-gradient(135deg,#47034E,#c9a8cd)',
+    title: "You're all set",
+    desc: "That's the tour. You can always find Support in the sidebar if you get stuck. Let's get your first event live!"
+  }
+];
+let onboardStep = 0;
+
+function renderOnboardStep(){
+  const s = ONBOARD_STEPS[onboardStep];
+  document.getElementById('onboardStepImg').style.background = s.img;
+  document.getElementById('onboardStepTitle').textContent = s.title;
+  document.getElementById('onboardStepDesc').textContent = s.desc;
+
+  const dots = document.getElementById('onboardDots');
+  dots.innerHTML = ONBOARD_STEPS.map((_, i) =>
+    `<div class="tx-onboard-dot${i === onboardStep ? ' active' : ''}"></div>`
+  ).join('');
+
+  const nextBtn = document.getElementById('onboardNextBtn');
+  const isLast = onboardStep === ONBOARD_STEPS.length - 1;
+  nextBtn.innerHTML = isLast
+    ? 'Okay'
+    : `Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+}
+
+function openOnboarding(){
+  onboardStep = 0;
+  renderOnboardStep();
+  document.getElementById('onboardingModal').classList.add('show');
+}
+function closeOnboarding(){
+  document.getElementById('onboardingModal').classList.remove('show');
+  localStorage.setItem('tixtee_onboarding_seen', 'true');
+}
+
+document.getElementById('onboardSkipBtn').addEventListener('click', closeOnboarding);
+document.getElementById('onboardNextBtn').addEventListener('click', () => {
+  if(onboardStep < ONBOARD_STEPS.length - 1){
+    onboardStep++;
+    renderOnboardStep();
+  } else {
+    closeOnboarding();
+  }
+});
+document.getElementById('onboardingModal').addEventListener('click', (e) => {
+  if(e.target.id === 'onboardingModal') closeOnboarding();
+});
+
+function maybeShowOnboarding(){
+  if(localStorage.getItem('tixtee_onboarding_seen') === 'true') return;
+  setTimeout(openOnboarding, 600);
+}
+
   function showAlert(message, title, isError){
     document.getElementById('txAlertTitle').textContent = title || 'Heads up!';
     document.getElementById('txAlertDesc').textContent = message;
@@ -2556,6 +2683,7 @@ function to24Hour(t){
     }
   }
   checkSession();
+  maybeShowOnboarding();
   document.getElementById('groupChatStatCard').addEventListener('click', () => {
   localStorage.setItem('tixtee_last_seen_chat_time', String(latestChatMessageTime || 0));
   document.getElementById('groupChatBadge').setAttribute('data-open', 'false');
