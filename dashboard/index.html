@@ -1393,6 +1393,34 @@ input, textarea{
   .settings-row-label{ width:100%; }
   .settings-row-control{ max-width:100%; }
 }
+
+/* ---------- Sheet (slide-in panel) ---------- */
+.tx-sheet-overlay{
+  position:fixed; inset:0; background:rgba(21,0,23,0.5);
+  display:none; z-index:900;
+}
+.tx-sheet-overlay.show{ display:block; }
+.tx-sheet{
+  position:fixed; top:0; right:0; bottom:0;
+  width:100%; max-width:420px;
+  background:var(--card-color); box-shadow:-16px 0 44px rgba(21,0,23,0.16);
+  padding:28px; display:flex; flex-direction:column;
+  transform:translateX(100%); transition:transform 0.25s ease;
+  overflow-y:auto;
+}
+.tx-sheet-overlay.show .tx-sheet{ transform:translateX(0); }
+.tx-sheet-header{ margin-bottom:20px; }
+.tx-sheet-title{ font-size:17px; font-weight:700; color:var(--text-color); margin-bottom:6px; }
+.tx-sheet-desc{ font-size:12.5px; color:var(--muted-color); line-height:1.6; }
+.tx-sheet-body{ flex:1; display:flex; flex-direction:column; }
+.tx-sheet-footer{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid var(--border-color); }
+.tx-sheet-link-box{
+  background:var(--field-group-bg); border:1px solid var(--border-color); border-radius:10px;
+  padding:11px 13px; font-size:12.5px; color:var(--text-color); word-break:break-all; margin-bottom:16px; display:none;
+}
+@media (max-width:480px){
+  .tx-sheet{ max-width:100%; }
+}
 </style>
 </head>
 <body>
@@ -1565,7 +1593,7 @@ input, textarea{
       <div class="settings-tab active" data-panel="settingsPanelAccount">Account</div>
       <div class="settings-tab" data-panel="settingsPanelPlatform">Platform</div>
       <div class="settings-tab" data-panel="settingsPanelPayout">Payout</div>
-      <div class="settings-tab" data-panel="settingsPanelPayout">Team</div>
+      <div class="settings-tab" data-panel="settingsPanelTeam">Team</div>
       <div class="settings-tab" data-panel="settingsPanelPreferences">Preferences</div>
       <div class="settings-tab danger-tab" data-panel="settingsPanelDanger">Danger Zone</div>
     </div>
@@ -1747,6 +1775,30 @@ input, textarea{
         </div>
       </div>
 
+      <div class="settings-panel" id="settingsPanelTeam">
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Ticket check team</label>
+            <div class="settings-row-desc">Add people who can check ticket validity at the door. Each member gets their own password and a link to the check-in page.</div>
+          </div>
+          <div class="settings-row-control">
+            <button type="button" class="btn-primary" id="openTeamSheetBtn">Add Team Member</button>
+          </div>
+        </div>
+
+        <div class="settings-row">
+          <div class="settings-row-label">
+            <label>Current members</label>
+            <div class="settings-row-desc">Everyone with access to check tickets for your events.</div>
+          </div>
+          <div class="settings-row-control">
+            <div id="teamMembersList">
+              <p class="sub">Loading team members…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="settings-panel" id="settingsPanelPreferences">
         <div class="settings-row">
           <div class="settings-row-label">
@@ -1886,6 +1938,29 @@ input, textarea{
     <div id="ticketFlashText"></div>
     <div class="flash-sub" id="ticketFlashSub"></div>
   </div>
+  <!-- TEAM SHEET -->
+  <div class="tx-sheet-overlay" id="teamSheetOverlay">
+    <div class="tx-sheet">
+      <div class="tx-sheet-header">
+        <div class="tx-sheet-title">Add team member</div>
+        <div class="tx-sheet-desc">They'll be able to check ticket validity for your events using the password and link below.</div>
+      </div>
+      <div class="tx-sheet-body">
+        <label>Name</label>
+        <input type="text" id="teamMemberName" placeholder="e.g. Chidi">
+
+        <label>Set a password</label>
+        <input type="text" id="teamMemberPassword" placeholder="Set a fixed password for them">
+
+        <div class="tx-sheet-link-box" id="teamMemberLinkBox"></div>
+      </div>
+      <div class="tx-sheet-footer">
+        <button type="button" class="btn-secondary" id="cancelTeamSheetBtn">Cancel</button>
+        <button type="button" class="btn-primary" id="saveTeamMemberBtn">Save</button>
+      </div>
+    </div>
+  </div>
+
     <div class="tx-alert-overlay" id="txAlertOverlay">
     <div class="tx-alert">
       <div class="tx-alert-icon" id="txAlertIcon">
@@ -2167,7 +2242,7 @@ input, textarea{
         <div class="accordion-section locked" id="organizerSection">
           <div class="accordion-header">
             <div class="accordion-header-left">
-              <h3>Organizer & Branding</h3>
+              <h3>Branding</h3>
               <span class="accordion-hint" id="organizerHint"></span>
             </div>
             <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
@@ -2636,7 +2711,7 @@ setInterval(checkGroupChatUnread, 15000);
       pendingDeleteId = null;
       loadEvents();
     }catch(err){
-      alert('Could not delete this event. Is the backend running?');
+      showAlert('Could not delete this event. Is the backend running?', 'Error', true);
     }finally{
       btn.disabled = false;
       btn.textContent = 'Delete event';
@@ -3056,6 +3131,7 @@ async function loadMailingList(){
     document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.getElementById(tab.dataset.panel).classList.add('active');
+    if(tab.dataset.panel === 'settingsPanelTeam') loadTeamMembers();
   });
 });
 const settingsAvatarWrap = document.getElementById('settingsAvatarWrap');
@@ -3189,6 +3265,100 @@ document.getElementById('saveTagsBtn').addEventListener('click', async () => {
     showSettingsMsg('Could not reach the server.', 'error');
   }
 });
+/* ── Team (ticket-check access) ── */
+const teamSheetOverlay = document.getElementById('teamSheetOverlay');
+
+function openTeamSheet(){
+  document.getElementById('teamMemberName').value = '';
+  document.getElementById('teamMemberPassword').value = '';
+  document.getElementById('teamMemberLinkBox').style.display = 'none';
+  document.getElementById('teamMemberLinkBox').textContent = '';
+  teamSheetOverlay.classList.add('show');
+}
+function closeTeamSheet(){
+  teamSheetOverlay.classList.remove('show');
+}
+document.getElementById('openTeamSheetBtn').addEventListener('click', openTeamSheet);
+document.getElementById('cancelTeamSheetBtn').addEventListener('click', closeTeamSheet);
+teamSheetOverlay.addEventListener('click', (e) => {
+  if(e.target === teamSheetOverlay) closeTeamSheet();
+});
+
+document.getElementById('saveTeamMemberBtn').addEventListener('click', async () => {
+  const name = document.getElementById('teamMemberName').value.trim();
+  const password = document.getElementById('teamMemberPassword').value.trim();
+  if(!name || !password){
+    showAlert('Please add a name and a password.', 'Missing info', true);
+    return;
+  }
+
+  const btn = document.getElementById('saveTeamMemberBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  try{
+    const res = await fetch(`${API}/team`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({ name, password })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      showAlert(data.error || 'Could not add team member.', 'Error', true);
+      return;
+    }
+
+    const linkBox = document.getElementById('teamMemberLinkBox');
+    linkBox.textContent = data.link;
+    linkBox.style.display = 'block';
+
+    loadTeamMembers();
+  }catch(err){
+    showAlert('Could not reach the server.', 'Error', true);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Save';
+  }
+});
+
+async function loadTeamMembers(){
+  const list = document.getElementById('teamMembersList');
+  try{
+    const res = await fetch(`${API}/team`, { credentials:'include' });
+    const members = await res.json();
+    renderTeamMembers(members);
+  }catch(err){
+    list.innerHTML = `<p class="sub">Could not load team members.</p>`;
+  }
+}
+
+function renderTeamMembers(members){
+  const list = document.getElementById('teamMembersList');
+  if(!members.length){
+    list.innerHTML = `<p class="sub">No team members yet.</p>`;
+    return;
+  }
+  list.innerHTML = members.map(m => `
+    <div class="entry-check-item">
+      <div>
+        <div class="entry-check-name">${m.name}</div>
+        <div class="entry-check-meta">${m.link}</div>
+      </div>
+      <button type="button" class="tx-alert-btn-ghost" data-id="${m.id}" style="color:#b3261e;">Remove</button>
+    </div>
+  `).join('');
+  list.querySelectorAll('button[data-id]').forEach(btn => {
+    btn.addEventListener('click', () => deleteTeamMember(btn.dataset.id));
+  });
+}
+
+async function deleteTeamMember(id){
+  try{
+    const res = await fetch(`${API}/team/${id}`, { method:'DELETE', credentials:'include' });
+    if(res.ok) loadTeamMembers();
+  }catch(err){}
+}
   function showBlogView(){
     hideAllViews();
     document.getElementById('blogView').style.display = 'block';
