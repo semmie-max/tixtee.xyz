@@ -1056,6 +1056,60 @@ input, textarea{
   .voice-fab-main{ width: 130px; height: 44px; }
   .voice-consent{ bottom: 18px; }
 }
+.ticket-flash{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  padding: 24px;
+}
+.ticket-flash.show{ display: flex; }
+.ticket-flash.success{ background: rgba(30, 122, 61, 0.96); }
+.ticket-flash.error{ background: rgba(179, 38, 30, 0.96); }
+.ticket-flash svg{ width: 64px; height: 64px; }
+.ticket-flash .flash-sub{ font-size: 14px; font-weight: 500; opacity: 0.85; }
+
+.ticket-keypad{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+.ticket-keypad-key{
+  padding: 16px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--field-group-bg);
+  color: var(--text-color);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s ease;
+}
+.ticket-keypad-key:active{
+  background: #47034E;
+  color: #fff;
+}
+.ticket-keypad-key.wide{
+  grid-column: span 2;
+  background: #f3e9f4;
+  color: #47034E;
+}
+
+@media (max-width: 480px){
+  .ticket-keypad-key{ padding: 14px 0; font-size: 14px; }
+}
+
 /* ---------- Events Calendar ---------- */
 .cal-header{
   display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
@@ -1713,7 +1767,7 @@ input, textarea{
     <div class="main-header">
       <div>
         <h1>Validate Ticket</h1>
-        <div class="sub">Type in the 6-digit ticket code to confirm it.</div>
+        <div class="sub">Type the ticket code to confirm it instantly.</div>
       </div>
     </div>
 
@@ -1721,17 +1775,23 @@ input, textarea{
       <label>Enter ticket code</label>
       <div class="ticket-code-boxes" id="ticketCodeBoxes">
         <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
-        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
-        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
-        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
-        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
-        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="1" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="2" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="3" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="4" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="5" style="text-transform:uppercase;">
       </div>
 
-      <button type="button" class="btn-primary" id="confirmTicketBtn" style="width:100%; justify-content:center; margin-top:16px;">Confirm ticket</button>
+      <div class="ticket-keypad" id="ticketKeypad"></div>
 
       <div class="ticket-confirm-msg" id="ticketConfirmMsg"></div>
     </div>
+  </div>
+
+  <div class="ticket-flash" id="ticketFlash">
+    <svg id="ticketFlashIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"></svg>
+    <div id="ticketFlashText"></div>
+    <div class="flash-sub" id="ticketFlashSub"></div>
   </div>
 
     <div id="calendarView" style="display:none;">
@@ -2490,9 +2550,65 @@ function showConfirmTicketsView(){
   document.getElementById('confirmTicketsNavBtn').classList.add('active');
 }
 /* ── Ticket code boxes (Confirm Tickets page) ── */
+const TICKET_CODE_CHARS = 'ABCDEFGHJKLMNPQRTUVWXYZ234679';
 const ticketCodeBoxes = document.querySelectorAll('.ticket-code-box');
-const confirmTicketBtn = document.getElementById('confirmTicketBtn');
 const ticketConfirmMsg = document.getElementById('ticketConfirmMsg');
+const ticketFlash = document.getElementById('ticketFlash');
+const ticketFlashIcon = document.getElementById('ticketFlashIcon');
+const ticketFlashText = document.getElementById('ticketFlashText');
+const ticketFlashSub = document.getElementById('ticketFlashSub');
+
+let ticketCheckInFlight = false;
+
+function getTicketCode(){
+  return Array.from(ticketCodeBoxes).map(b => b.value).join('');
+}
+
+function clearTicketBoxes(){
+  ticketCodeBoxes.forEach(b => b.value = '');
+  ticketCodeBoxes[0].focus();
+}
+
+let ticketAudioCtx = null;
+function playTone(freq, duration, type = 'sine'){
+  try{
+    if(!ticketAudioCtx) ticketAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ticketAudioCtx.createOscillator();
+    const gain = ticketAudioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.2, ticketAudioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ticketAudioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(ticketAudioCtx.destination);
+    osc.start();
+    osc.stop(ticketAudioCtx.currentTime + duration);
+  }catch(err){}
+}
+function playSuccessSound(){
+  playTone(880, 0.12);
+  setTimeout(() => playTone(1175, 0.15), 100);
+}
+function playErrorSound(){
+  playTone(220, 0.25, 'square');
+}
+
+const CHECK_ICON = '<polyline points="20 6 9 17 4 12"></polyline>';
+const X_ICON = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+
+function showTicketFlash(type, text, sub){
+  ticketFlash.className = `ticket-flash show ${type}`;
+  ticketFlashIcon.innerHTML = type === 'success' ? CHECK_ICON : X_ICON;
+  ticketFlashText.textContent = text;
+  ticketFlashSub.textContent = sub || '';
+
+  if(type === 'success') playSuccessSound(); else playErrorSound();
+
+  setTimeout(() => {
+    ticketFlash.className = 'ticket-flash';
+    clearTicketBoxes();
+  }, 1100);
+}
 
 ticketCodeBoxes.forEach((box, i) => {
   box.addEventListener('input', () => {
@@ -2500,6 +2616,7 @@ ticketCodeBoxes.forEach((box, i) => {
     if(box.value && i < ticketCodeBoxes.length - 1){
       ticketCodeBoxes[i + 1].focus();
     }
+    maybeAutoSubmit();
   });
 
   box.addEventListener('keydown', (e) => {
@@ -2512,42 +2629,54 @@ ticketCodeBoxes.forEach((box, i) => {
     e.preventDefault();
     const pasted = (e.clipboardData || window.clipboardData).getData('text').toUpperCase().replace(/[^ABCDEFGHJKLMNPQRTUVWXYZ234679]/g, '');
     if(!pasted) return;
-    pasted.split('').slice(0, ticketCodeBoxes.length - i).forEach((digit, j) => {
-      if(ticketCodeBoxes[i + j]) ticketCodeBoxes[i + j].value = digit;
+    pasted.split('').slice(0, ticketCodeBoxes.length - i).forEach((ch, j) => {
+      if(ticketCodeBoxes[i + j]) ticketCodeBoxes[i + j].value = ch;
     });
     const next = ticketCodeBoxes[Math.min(i + pasted.length, ticketCodeBoxes.length - 1)];
     if(next) next.focus();
+    maybeAutoSubmit();
   });
 });
 
-function getTicketCode(){
-  return Array.from(ticketCodeBoxes).map(b => b.value).join('');
-}
-
-function clearTicketBoxes(){
-  ticketCodeBoxes.forEach(b => b.value = '');
-  ticketCodeBoxes[0].focus();
-}
-
-function showTicketConfirmMsg(text, type){
-  ticketConfirmMsg.textContent = text;
-  ticketConfirmMsg.className = `ticket-confirm-msg show ${type}`;
-
-  setTimeout(() => {
-    ticketConfirmMsg.className = 'ticket-confirm-msg';
-    clearTicketBoxes();
-  }, 5000);
-}
-
-confirmTicketBtn.addEventListener('click', async () => {
+function maybeAutoSubmit(){
   const code = getTicketCode();
-  if(code.length !== 6){
-    showTicketConfirmMsg('Enter all 6 characters of the ticket code.', 'error');
-    return;
+  if(code.length === 6 && !ticketCheckInFlight){
+    submitTicketCode(code);
   }
+}
 
-  confirmTicketBtn.disabled = true;
-  confirmTicketBtn.textContent = 'Checking…';
+const ticketKeypad = document.getElementById('ticketKeypad');
+const KEYPAD_KEYS = TICKET_CODE_CHARS.split('');
+
+function buildKeypad(){
+  ticketKeypad.innerHTML = '';
+  KEYPAD_KEYS.forEach(ch => {
+    const key = document.createElement('div');
+    key.className = 'ticket-keypad-key';
+    key.textContent = ch;
+    key.addEventListener('click', () => typeIntoBoxes(ch));
+    ticketKeypad.appendChild(key);
+  });
+  const clearKey = document.createElement('div');
+  clearKey.className = 'ticket-keypad-key wide';
+  clearKey.textContent = 'Clear';
+  clearKey.addEventListener('click', clearTicketBoxes);
+  ticketKeypad.appendChild(clearKey);
+}
+buildKeypad();
+
+function typeIntoBoxes(ch){
+  if(ticketCheckInFlight) return;
+  const emptyBox = Array.from(ticketCodeBoxes).find(b => !b.value);
+  if(!emptyBox) return;
+  emptyBox.value = ch;
+  const idx = parseInt(emptyBox.dataset.index, 10);
+  if(idx < ticketCodeBoxes.length - 1) ticketCodeBoxes[idx + 1].focus();
+  maybeAutoSubmit();
+}
+
+async function submitTicketCode(code){
+  ticketCheckInFlight = true;
 
   try{
     const res = await fetch(`${API}/tickets/confirm`, {
@@ -2559,20 +2688,18 @@ confirmTicketBtn.addEventListener('click', async () => {
     const data = await res.json();
 
     if(!res.ok){
-      showTicketConfirmMsg(data.error || 'That ticket code is not valid.', 'error');
+      showTicketFlash('error', 'Invalid Ticket', data.error || 'Could not confirm this ticket.');
       return;
     }
 
-    const holderInfo = data.holder_name ? ` — ${data.holder_name}` : '';
-    const scanInfo = ` (scan ${data.scans_used}/2)`;
-    showTicketConfirmMsg(`Ticket confirmed${holderInfo}${scanInfo} ✓`, 'success');
+    const holderInfo = data.holder_name || '';
+    showTicketFlash('success', 'Ticket Confirmed', `${holderInfo} — scan ${data.scans_used}/2`);
   }catch(err){
-    showTicketConfirmMsg('Could not reach the server.', 'error');
+    showTicketFlash('error', 'Connection Error', 'Could not reach the server.');
   }finally{
-    confirmTicketBtn.disabled = false;
-    confirmTicketBtn.textContent = 'Confirm ticket';
+    ticketCheckInFlight = false;
   }
-});
+}
 function showCalendarView(){
   hideAllViews();
   document.getElementById('calendarView').style.display = 'block';
