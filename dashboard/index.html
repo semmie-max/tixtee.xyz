@@ -1105,6 +1105,18 @@ input, textarea{
   background: #f3e9f4;
   color: #47034E;
 }
+.entry-check-list{ margin-top: 16px; }
+.entry-check-item{
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; border: 1px solid var(--border-color); border-radius: 12px;
+  margin-bottom: 10px;
+}
+.entry-check-name{ font-size: 13.5px; font-weight: 700; color: var(--text-color); }
+.entry-check-meta{ font-size: 11.5px; color: var(--muted-color); margin-top: 2px; }
+.entry-check-scans{
+  font-size: 11px; font-weight: 700; color: #47034E; background: #f3e9f4;
+  padding: 4px 10px; border-radius: 100px; white-space: nowrap; flex-shrink: 0;
+}
 
 @media (max-width: 480px){
   .ticket-keypad-key{ padding: 14px 0; font-size: 14px; }
@@ -1750,7 +1762,7 @@ input, textarea{
     <div class="main-header">
       <div>
         <h1>Entry Check</h1>
-        <div class="sub">Verify ticket holders as they arrive.</div>
+        <div class="sub">Guests appear here automatically once their ticket is confirmed.</div>
       </div>
     </div>
 
@@ -1758,7 +1770,7 @@ input, textarea{
       <label>Search by name, email, or ticket ID</label>
       <input type="text" id="entryCheckSearch" placeholder="Type to search…">
       <div id="entryCheckResults" class="empty-state">
-        <h3>Start typing to look up a guest</h3>
+        <h3>Loading checked-in guests…</h3>
       </div>
     </div>
   </div>
@@ -2543,6 +2555,7 @@ function showEntryCheckView(){
   hideAllViews();
   document.getElementById('entryCheckView').style.display = 'block';
   document.getElementById('entryCheckNavBtn').classList.add('active');
+  loadEntryCheckList();
 }
 function showConfirmTicketsView(){
   hideAllViews();
@@ -2694,12 +2707,63 @@ async function submitTicketCode(code){
 
     const holderInfo = data.holder_name || '';
     showTicketFlash('success', 'Ticket Confirmed', `${holderInfo} — scan ${data.scans_used}/2`);
+    loadEntryCheckList();
   }catch(err){
     showTicketFlash('error', 'Connection Error', 'Could not reach the server.');
   }finally{
     ticketCheckInFlight = false;
   }
 }
+/* ── Entry Check: live guest list ── */
+let entryCheckGuests = [];
+
+async function loadEntryCheckList(){
+  const container = document.getElementById('entryCheckResults');
+  try{
+    const res = await fetch(`${API}/tickets/checked-in`, { credentials: 'include' });
+    const data = await res.json();
+    entryCheckGuests = data;
+    renderEntryCheckList(entryCheckGuests);
+  }catch(err){
+    container.className = 'empty-state';
+    container.innerHTML = `<h3>Could not load guest list</h3><p>Check that the backend is running.</p>`;
+  }
+}
+
+function renderEntryCheckList(guests){
+  const container = document.getElementById('entryCheckResults');
+
+  if(!guests.length){
+    container.className = 'empty-state';
+    container.innerHTML = `<h3>No guests checked in yet</h3><p>Confirmed tickets will appear here automatically.</p>`;
+    return;
+  }
+
+  container.className = '';
+  container.innerHTML = `<div class="entry-check-list">${guests.map(g => `
+    <div class="entry-check-item">
+      <div>
+        <div class="entry-check-name">${g.holder_name}</div>
+        <div class="entry-check-meta">${g.event_title || ''}</div>
+      </div>
+      <div class="entry-check-scans">${g.scan_count}/2 scans</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+document.getElementById('entryCheckSearch').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){
+    renderEntryCheckList(entryCheckGuests);
+    return;
+  }
+  const filtered = entryCheckGuests.filter(g =>
+    (g.holder_name || '').toLowerCase().includes(q) ||
+    (g.buyer_email || '').toLowerCase().includes(q) ||
+    String(g.id).includes(q)
+  );
+  renderEntryCheckList(filtered);
+});
 function showCalendarView(){
   hideAllViews();
   document.getElementById('calendarView').style.display = 'block';
