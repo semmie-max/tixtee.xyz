@@ -681,6 +681,18 @@ input, textarea{
     .datetime-popover.show{ flex-direction:row; }
   }
   .dtp-calendar{ padding:16px; flex:1; min-width:260px; }
+  .dtp-shortcuts{
+    padding:16px 8px 16px 16px; display:flex; flex-direction:column; gap:2px;
+    border-bottom:1px solid var(--border-color); min-width:120px;
+  }
+  @media (min-width:520px){
+    .dtp-shortcuts{ border-bottom:none; border-right:1px solid var(--border-color); }
+  }
+  .dtp-shortcut-btn{
+    text-align:left; padding:9px 10px; border-radius:8px; font-size:12.5px; font-weight:600;
+    color:var(--text-color); cursor:pointer;
+  }
+  .dtp-shortcut-btn:hover{ background:var(--hover-bg); color:#47034E; }
   .dtp-cal-header{
     display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;
   }
@@ -2004,6 +2016,12 @@ input, textarea{
                 <span class="datetime-text datetime-placeholder" id="datetimeDisplay">Select event date &amp; time</span>
               </div>
               <div class="datetime-popover" id="datetimePopover">
+                <div class="dtp-shortcuts" id="dtpShortcuts">
+                  <div class="dtp-shortcut-btn" data-shortcut="today">Today</div>
+                  <div class="dtp-shortcut-btn" data-shortcut="tomorrow">Tomorrow</div>
+                  <div class="dtp-shortcut-btn" data-shortcut="3days">In 3 days</div>
+                  <div class="dtp-shortcut-btn" data-shortcut="week">In a week</div>
+                </div>
                 <div class="dtp-calendar">
                   <div class="dtp-cal-header">
                     <div class="dtp-cal-nav" id="dtpPrevMonth">
@@ -3770,6 +3788,13 @@ function renderEventCard(ev){
   ['title', 'description'].forEach(id => {
     document.getElementById(id).addEventListener('input', updateAccordionLocks);
   });
+
+  const descriptionField = document.getElementById('description');
+  const descriptionCount = document.getElementById('descriptionCount');
+  descriptionField.addEventListener('input', () => {
+    const remaining = 500 - descriptionField.value.length;
+    descriptionCount.textContent = `${remaining} characters remaining`;
+  });
   document.getElementById('venue').addEventListener('input', updateAccordionLocks);
   document.getElementById('virtual_link').addEventListener('input', updateAccordionLocks);
   document.getElementById('virtualToggle').addEventListener('click', () => setTimeout(updateAccordionLocks, 0));
@@ -3907,6 +3932,23 @@ function renderEventCard(ev){
   dtpNextMonth.addEventListener('click', () => {
     dtpViewMonth.setMonth(dtpViewMonth.getMonth() + 1);
     renderCalendar();
+  });
+
+  document.querySelectorAll('.dtp-shortcut-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      let target = new Date(today);
+
+      if(btn.dataset.shortcut === 'tomorrow') target.setDate(target.getDate() + 1);
+      if(btn.dataset.shortcut === '3days') target.setDate(target.getDate() + 3);
+      if(btn.dataset.shortcut === 'week') target.setDate(target.getDate() + 7);
+
+      dtpSelectedDate = target;
+      dtpViewMonth = new Date(target.getFullYear(), target.getMonth(), 1);
+      renderCalendar();
+      updateApplyState();
+    });
   });
 
   function openDtp(){
