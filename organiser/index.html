@@ -21,6 +21,20 @@
 
   .profile-wrap{ max-width:650px; margin:40px auto 80px; padding:0 16px; }
 
+.layout-grid{ display:block; }
+
+@media (min-width:1024px){
+  .profile-wrap{ max-width:1100px; }
+  .layout-grid{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  .events-panel .section-title{ margin-top:0; }
+  .events-panel .events-grid{ grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); }
+}
+
   .profile-card{
     background:#fff; border-radius:20px; overflow:hidden;
     box-shadow:0 4px 30px rgba(0,0,0,0.06);
@@ -142,6 +156,7 @@
 <body>
 
 <div class="profile-wrap">
+  <div class="layout-grid">
   <div class="profile-card">
 
     <div class="cover no-image" id="cover">
@@ -183,9 +198,13 @@
     </div>
   </div>
 
-  <div class="section-title">Events by this organizer</div>
-  <div class="events-grid" id="orgEventsGrid">
-    <div class="empty-note">Loading events…</div>
+  <div class="events-panel">
+    <div class="section-title">Events by this organizer</div>
+    <div class="events-grid" id="orgEventsGrid">
+      <div class="empty-note">Loading events…</div>
+    </div>
+  </div>
+
   </div>
 
   <div class="section-title">Comments</div>
