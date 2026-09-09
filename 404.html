@@ -6,6 +6,7 @@
   var path = window.location.pathname;
   var eventMatch = path.match(/^\/e\/(.+)$/);
   var gcMatch = path.match(/^\/gc\/(.+)$/);
+  var organiserMatch = path.match(/^\/organiser\/(.+)$/);
 
   if (eventMatch) {
     fetch('/e/index.html')
@@ -17,6 +18,14 @@
       });
   } else if (gcMatch) {
     fetch('/gc/index.html')
+      .then(r => r.text())
+      .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      });
+  } else if (organiserMatch) {
+    fetch('/organiser/index.html')
       .then(r => r.text())
       .then(html => {
         document.open();

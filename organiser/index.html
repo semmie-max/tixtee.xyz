@@ -201,7 +201,8 @@
 <script>
   const API = 'https://api.tixtee.xyz/api';
 
-  const organizerId = new URLSearchParams(window.location.search).get('id');
+  const pathParts = window.location.pathname.split('/').filter(Boolean); // ['organiser', ':id']
+  const organizerId = pathParts[1] || new URLSearchParams(window.location.search).get('id');
 
   const ICONS = {
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
