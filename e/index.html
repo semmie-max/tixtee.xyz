@@ -771,6 +771,34 @@ a { color: inherit; }
   }
   .event-title { font-size: 30px; }
 }
+
+/* ---------- Alert dialog (replaces native alert()) ---------- */
+.tx-alert-overlay{
+  position:fixed; inset:0; background:rgba(21,0,23,0.5);
+  display:none; align-items:center; justify-content:center; z-index:800; padding:20px;
+}
+.tx-alert-overlay.show{ display:flex; }
+.tx-alert{
+  background:var(--card-color); border:1px solid var(--border-color); border-radius:16px;
+  padding:20px; width:100%; max-width:380px;
+  box-shadow:0 16px 44px rgba(21,0,23,0.16);
+}
+.tx-alert-icon{
+  width:36px; height:36px; border-radius:10px; background:var(--tag-bg); color:var(--primary-color);
+  display:flex; align-items:center; justify-content:center; margin-bottom:12px;
+}
+.tx-alert-icon svg{ width:18px; height:18px; }
+.tx-alert-icon.tx-alert-error{ background:#fdecea; color:#b3261e; }
+.tx-alert-title{ font-size:14.5px; font-weight:700; color:var(--text-color); margin-bottom:6px; }
+.tx-alert-desc{ font-size:13px; color:var(--muted-color); line-height:1.6; margin-bottom:18px; }
+.tx-alert-actions{ display:flex; justify-content:flex-end; gap:8px; }
+.tx-alert-actions button{
+  border:none; border-radius:8px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+}
+.tx-alert-btn-ghost{ background:none; color:var(--muted-color); }
+.tx-alert-btn-ghost:hover{ background:var(--hover-bg); color:var(--text-color); }
+.tx-alert-btn-primary{ background:var(--primary-color); color:#fff; }
+.tx-alert-btn-primary:hover{ background:var(--primary-hover); }
 </style>
 </head>
 
@@ -983,6 +1011,21 @@ a { color: inherit; }
   </div>
 </div>
 
+<!-- ALERT DIALOG -->
+<div class="tx-alert-overlay" id="txAlertOverlay">
+  <div class="tx-alert">
+    <div class="tx-alert-icon" id="txAlertIcon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    </div>
+    <div class="tx-alert-title" id="txAlertTitle">Heads up!</div>
+    <div class="tx-alert-desc" id="txAlertDesc">Describe what can be done about it here.</div>
+    <div class="tx-alert-actions" id="txAlertActions">
+      <button type="button" class="tx-alert-btn-ghost" id="txAlertDismiss">Dismiss</button>
+      <button type="button" class="tx-alert-btn-primary" id="txAlertOk">Ok</button>
+    </div>
+  </div>
+</div>
+
 <!-- MOBILE TICKET BUTTON -->
 
 <div class="mobile-ticket">
@@ -996,6 +1039,22 @@ a { color: inherit; }
 <script>
 
 const API = 'https://api.tixtee.xyz/api';
+
+function showAlert(message, title, isError){
+  document.getElementById('txAlertTitle').textContent = title || 'Heads up!';
+  document.getElementById('txAlertDesc').textContent = message;
+  document.getElementById('txAlertIcon').classList.toggle('tx-alert-error', !!isError);
+  document.getElementById('txAlertOverlay').classList.add('show');
+}
+document.getElementById('txAlertDismiss').addEventListener('click', () => {
+  document.getElementById('txAlertOverlay').classList.remove('show');
+});
+document.getElementById('txAlertOk').addEventListener('click', () => {
+  document.getElementById('txAlertOverlay').classList.remove('show');
+});
+document.getElementById('txAlertOverlay').addEventListener('click', (e) => {
+  if(e.target.id === 'txAlertOverlay') document.getElementById('txAlertOverlay').classList.remove('show');
+});
 
 const params = new URLSearchParams(window.location.search);
 const pathParts = window.location.pathname.split('/').filter(Boolean); // e.g. ['e', 'event-name']
@@ -1492,7 +1551,7 @@ const buyerModalCancel = document.getElementById('buyerModalCancel');
 
 function getTicket() {
   if (!selectedTicket) {
-    alert('Please choose a ticket tier first.');
+    showAlert('Please choose a ticket tier first.', 'Pick a ticket');
     return;
   }
   buyerModalError.style.display = 'none';

@@ -914,52 +914,7 @@ input, textarea{
 
 /* Modal */
 
-.delete-modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.65);
-  justify-content: center;
-  align-items: center;
-}
 
-
-.delete-modal-content {
-  background: white;
-  width: 420px;
-  padding: 30px;
-  border-radius: 18px;
-}
-
-
-.delete-modal-content h3 {
-  color: #ff3b3b;
-}
-
-
-.delete-modal-content input {
-  width: 100%;
-  padding: 14px;
-  margin-top: 12px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-}
-
-
-.delete-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 25px;
-}
-
-
-.delete-actions button:first-child {
-  background: #eee;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-}
 
 
 
@@ -1130,7 +1085,7 @@ input, textarea{
 /* ---------- Success toast ---------- */
 .tx-toast{
   position: fixed;
-  top: 24px;
+  bottom: 24px;
   right: 24px;
   z-index: 9999;
   display: flex;
@@ -1168,8 +1123,39 @@ input, textarea{
 .tx-toast-close svg{ width: 14px; height: 14px; }
 
 @media (max-width: 480px){
-  .tx-toast{ left: 16px; right: 16px; top: 16px; min-width: 0; max-width: none; }
+  .tx-toast{ left: 16px; right: 16px; bottom: 16px; min-width: 0; max-width: none; }
 }
+@media (max-width: 480px){
+  .tx-toast{ left: 16px; right: 16px; bottom: 16px; min-width: 0; max-width: none; }
+}
+
+/* ---------- Alert dialog (replaces native alert()) ---------- */
+.tx-alert-overlay{
+  position:fixed; inset:0; background:rgba(21,0,23,0.5);
+  display:none; align-items:center; justify-content:center; z-index:800; padding:20px;
+}
+.tx-alert-overlay.show{ display:flex; }
+.tx-alert{
+  background:var(--card-color); border:1px solid var(--border-color); border-radius:16px;
+  padding:20px; width:100%; max-width:380px;
+  box-shadow:0 16px 44px rgba(21,0,23,0.16);
+}
+.tx-alert-icon{
+  width:36px; height:36px; border-radius:10px; background:var(--tag-bg, #f3e9f4); color:#47034E;
+  display:flex; align-items:center; justify-content:center; margin-bottom:12px;
+}
+.tx-alert-icon svg{ width:18px; height:18px; }
+.tx-alert-icon.tx-alert-error{ background:#fdecea; color:#b3261e; }
+.tx-alert-title{ font-size:14.5px; font-weight:700; color:var(--text-color); margin-bottom:6px; }
+.tx-alert-desc{ font-size:13px; color:var(--muted-color); line-height:1.6; margin-bottom:18px; }
+.tx-alert-actions{ display:flex; justify-content:flex-end; gap:8px; }
+.tx-alert-actions button{
+  border:none; border-radius:8px; padding:8px 14px; font-size:12.5px; font-weight:600; cursor:pointer;
+}
+.tx-alert-btn-ghost{ background:none; color:var(--muted-color); }
+.tx-alert-btn-ghost:hover{ background:var(--hover-bg); color:var(--text-color); }
+.tx-alert-btn-primary{ background:#47034E; color:#fff; }
+.tx-alert-btn-primary:hover{ background:#5c0665; }
 
 .ticket-keypad{
   display: grid;
@@ -1900,6 +1886,20 @@ input, textarea{
     <div id="ticketFlashText"></div>
     <div class="flash-sub" id="ticketFlashSub"></div>
   </div>
+    <div class="tx-alert-overlay" id="txAlertOverlay">
+    <div class="tx-alert">
+      <div class="tx-alert-icon" id="txAlertIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      </div>
+      <div class="tx-alert-title" id="txAlertTitle">Heads up!</div>
+      <div class="tx-alert-desc" id="txAlertDesc">Describe what can be done about it here.</div>
+      <div class="tx-alert-actions" id="txAlertActions">
+        <button type="button" class="tx-alert-btn-ghost" id="txAlertDismiss">Dismiss</button>
+        <button type="button" class="tx-alert-btn-primary" id="txAlertOk">Ok</button>
+      </div>
+    </div>
+  </div>
+
 
   <div class="tx-toast" id="txToast">
     <div class="tx-toast-icon">
@@ -1945,17 +1945,13 @@ input, textarea{
   </div>
 
   <!-- Delete Account Confirmation Modal -->
-  <div class="delete-modal" id="deleteAccountModal">
-    <div class="delete-modal-content">
-      <h3>Delete your account?</h3>
-      <p>
-        This action is permanent and cannot be reversed. Deleting your account will permanently remove all associated events, tickets, account information, and data. <br> Please ensure that you have exported any important information and withdrawn all available funds before proceeding.
-      </p>
-      <label>Type <strong>DELETE</strong> to confirm</label>
-      <input type="text" id="deleteConfirmInput" placeholder="Type DELETE">
-      <div class="delete-actions">
-        <button type="button" id="cancelDeleteAccountBtn">Cancel</button>
-        <button type="button" class="btn-danger" id="confirmDeleteAccountBtn" disabled>Delete Account</button>
+  <div class="modal-overlay" id="deleteAccountModal">
+    <div class="modal modal-small">
+      <h2>Are you absolutely sure?</h2>
+      <p class="sub">This action cannot be undone. This will permanently delete your account and remove all your events, tickets, and data from our servers.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" style="flex:1;" id="cancelDeleteAccountBtn">Cancel</button>
+        <button type="button" class="btn-danger" style="flex:1;" id="confirmDeleteAccountBtn">Delete Account</button>
       </div>
     </div>
   </div>
@@ -2425,6 +2421,22 @@ input, textarea{
 
 <script>
   const API = 'https://api.tixtee.xyz/api';
+
+  function showAlert(message, title, isError){
+    document.getElementById('txAlertTitle').textContent = title || 'Heads up!';
+    document.getElementById('txAlertDesc').textContent = message;
+    document.getElementById('txAlertIcon').classList.toggle('tx-alert-error', !!isError);
+    document.getElementById('txAlertOverlay').classList.add('show');
+  }
+  document.getElementById('txAlertDismiss').addEventListener('click', () => {
+    document.getElementById('txAlertOverlay').classList.remove('show');
+  });
+  document.getElementById('txAlertOk').addEventListener('click', () => {
+    document.getElementById('txAlertOverlay').classList.remove('show');
+  });
+  document.getElementById('txAlertOverlay').addEventListener('click', (e) => {
+    if(e.target.id === 'txAlertOverlay') document.getElementById('txAlertOverlay').classList.remove('show');
+  });
 
 function to24Hour(t){
   if(!t) return null;
@@ -3197,15 +3209,15 @@ document.getElementById('saveTagsBtn').addEventListener('click', async () => {
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error || "Failed to delete blog.");
+      showAlert(data.error || "Failed to delete blog.", "Couldn't delete", true);
       return;
     }
 
-    alert("Blog deleted successfully.");
+    showAlert("Blog deleted successfully.", "Deleted");
     loadBlogs(); // Refresh the list
   } catch (err) {
     console.error(err);
-    alert("Something went wrong.");
+    showAlert("Something went wrong.", "Error", true);
   }
 }
   function showWriteBlogView(){
@@ -4297,24 +4309,20 @@ unlimitedCapacity.addEventListener("change", function () {
 const deleteBtn = document.getElementById("deleteAccountBtn");
 const deleteModal = document.getElementById("deleteAccountModal");
 const cancelDelete = document.getElementById("cancelDeleteAccountBtn");
-const confirmInput = document.getElementById("deleteConfirmInput");
 const confirmDelete = document.getElementById("confirmDeleteAccountBtn");
 
 
 deleteBtn.onclick = () => {
-  deleteModal.style.display = "flex";
+  deleteModal.classList.add("show");
 };
 
 
 cancelDelete.onclick = () => {
-  deleteModal.style.display = "none";
-  confirmInput.value = "";
-  confirmDelete.disabled = true;
+  deleteModal.classList.remove("show");
 };
 
-
-confirmInput.addEventListener("input", () => {
-  confirmDelete.disabled = confirmInput.value !== "DELETE";
+deleteModal.addEventListener("click", (e) => {
+  if(e.target === deleteModal) deleteModal.classList.remove("show");
 });
 
 
@@ -4322,7 +4330,7 @@ confirmDelete.onclick = () => {
 
   // call your backend delete account API here
 
-  alert("Account deleted");
+  showAlert("Account deleted", "Done");
 
 };
 
@@ -4339,7 +4347,7 @@ document.getElementById("savePreferencesBtn").addEventListener("click", () => {
 
   console.log(preferences);
 
-  alert("Preferences saved successfully");
+  showAlert("Preferences saved successfully", "Saved");
 
 });
 document.getElementById('exportMailingListBtn').addEventListener('click', async () => {
