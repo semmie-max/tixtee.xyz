@@ -123,6 +123,21 @@
   .stat-card .value span{font-size:13px; color:#47034E; font-weight:600; margin-left:6px;}
  .section-card{background:var(--card-color); border-radius:20px; padding:28px; box-shadow:var(--card-shadow);}
   .section-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:22px;}
+  .all-events-pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 14px; border-radius:100px;
+  border:1px solid var(--border-color);
+  background:var(--card-color); color:var(--text-color);
+  font-size:12.5px; font-weight:600; text-decoration:none;
+  transition:border-color 0.15s ease, background 0.15s ease;
+}
+.all-events-pill:hover{
+  border-color:#c9a8cd;
+  background:var(--hover-bg);
+}
+.all-events-pill svg{
+  width:14px; height:14px; color:var(--muted-color); flex-shrink:0;
+}
   .section-head h2{font-size:17px; font-weight:700;}
   .tabs{display:flex; gap:22px; border-bottom:1px solid #eee; margin-bottom:22px;}
   .tab{font-size:13px; font-weight:600; color:#9a9a9a; padding-bottom:12px; cursor:pointer; border-bottom:2px solid transparent;}
@@ -142,6 +157,7 @@
     display:inline-block; margin-top:10px; font-size:10px; font-weight:700;
     background:#f3e9f4; color:#47034E; padding:4px 9px; border-radius:100px; text-transform:uppercase;
   }
+  
   .delete-btn{
     position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px;
     background:rgba(255,255,255,0.95); border:1px solid #eee; color:#b3261e; cursor:pointer;
@@ -286,6 +302,11 @@ input, textarea{
     position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:99;
   }
   .sidebar-overlay.show{ display:block; }
+  body.no-scroll{
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
 
   @media (max-width:900px){
     .mobile-topbar{ display:flex; }
@@ -373,7 +394,7 @@ input, textarea{
 
   @media (max-width:420px){
     .stats-grid{
-      grid-template-columns:1fr;
+      grid-template-columns:repeat(2,1fr);
     }
   }
   
@@ -1326,7 +1347,10 @@ input, textarea{
     <div class="section-card">
       <div class="section-head">
         <h2>Your events</h2>
-        <a href="/all-events" target="_blank" style="font-size:12px; font-weight:600; color:#47034E; text-decoration:none;">Preview all events →</a>
+        <a href="/all-events" target="_blank" class="all-events-pill">
+  All events
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+</a>
       </div>
       <div class="tabs">
         <div class="tab active">All Events</div>
@@ -1660,7 +1684,7 @@ input, textarea{
   <div id="confirmTicketsView" style="display:none;">
     <div class="main-header">
       <div>
-        <h1>Confirm Tickets</h1>
+        <h1>Validate Ticket</h1>
         <div class="sub">Scan or look up a ticket to confirm it's valid.</div>
       </div>
     </div>
@@ -2304,13 +2328,23 @@ setInterval(checkGroupChatUnread, 15000);
   const hamburgerBtn = document.getElementById('hamburgerBtn');
   const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
 
+  let scrollYBeforeMenu = 0;
+
   function openSidebar(){
     sidebar.classList.add('open');
     sidebarOverlay.classList.add('show');
+
+    scrollYBeforeMenu = window.scrollY;
+    document.body.style.top = `-${scrollYBeforeMenu}px`;
+    document.body.classList.add('no-scroll');
   }
   function closeSidebar(){
     sidebar.classList.remove('open');
     sidebarOverlay.classList.remove('show');
+
+    document.body.classList.remove('no-scroll');
+    document.body.style.top = '';
+    window.scrollTo(0, scrollYBeforeMenu);
   }
 
   hamburgerBtn.addEventListener('click', openSidebar);
