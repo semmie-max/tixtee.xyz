@@ -135,6 +135,34 @@
   border-color:#c9a8cd;
   background:var(--hover-bg);
 }
+.ticket-code-boxes{
+  display:flex; gap:10px; margin-top:8px;
+}
+.ticket-code-box{
+  width:100%; max-width:56px; height:56px;
+  text-align:center; font-size:22px; font-weight:700;
+  border:1px solid var(--border-color); border-radius:12px;
+  background:var(--input-bg); color:var(--text-color);
+  margin-bottom:0;
+}
+.ticket-code-box:focus{ border-color:#47034E; }
+
+.ticket-confirm-msg{
+  display:none;
+  margin-top:18px;
+  padding:14px 16px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:600;
+}
+.ticket-confirm-msg.show{ display:block; }
+.ticket-confirm-msg.success{ background:#eafaf0; color:#1e7a3d; }
+.ticket-confirm-msg.error{ background:#fdecea; color:#b3261e; }
+
+@media (max-width:480px){
+  .ticket-code-box{ height:48px; font-size:18px; }
+  .ticket-code-boxes{ gap:6px; }
+}
 .all-events-pill svg{
   width:14px; height:14px; color:var(--muted-color); flex-shrink:0;
 }
@@ -1685,16 +1713,24 @@ input, textarea{
     <div class="main-header">
       <div>
         <h1>Validate Ticket</h1>
-        <div class="sub">Scan or look up a ticket to confirm it's valid.</div>
+        <div class="sub">Type in the 6-digit ticket code to confirm it.</div>
       </div>
     </div>
 
     <div class="section-card">
-      <label>Scan QR code or enter ticket ID</label>
-      <input type="text" id="confirmTicketSearch" placeholder="Scan a ticket or type its ID…">
-      <div id="confirmTicketResults" class="empty-state">
-        <h3>Scan or type a ticket ID to confirm it</h3>
+      <label>Enter ticket code</label>
+      <div class="ticket-code-boxes" id="ticketCodeBoxes">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="0">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="1">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="2">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="3">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="4">
+        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="5">
       </div>
+
+      <button type="button" class="btn-primary" id="confirmTicketBtn" style="width:100%; justify-content:center; margin-top:16px;">Confirm ticket</button>
+
+      <div class="ticket-confirm-msg" id="ticketConfirmMsg"></div>
     </div>
   </div>
 
@@ -2453,6 +2489,94 @@ function showConfirmTicketsView(){
   document.getElementById('confirmTicketsView').style.display = 'block';
   document.getElementById('confirmTicketsNavBtn').classList.add('active');
 }
+/* ── Ticket code boxes (Confirm Tickets page) ── */
+const ticketCodeBoxes = document.querySelectorAll('.ticket-code-box');
+const confirmTicketBtn = document.getElementById('confirmTicketBtn');
+const ticketConfirmMsg = document.getElementById('ticketConfirmMsg');
+
+ticketCodeBoxes.forEach((box, i) => {
+  box.addEventListener('input', () => {
+    box.value = box.value.replace(/[^0-9]/g, '').slice(0, 1);
+    if(box.value && i < ticketCodeBoxes.length - 1){
+      ticketCodeBoxes[i + 1].focus();
+    }
+  });
+
+  box.addEventListener('keydown', (e) => {
+    if(e.key === 'Backspace' && !box.value && i > 0){
+      ticketCodeBoxes[i - 1].focus();
+    }
+  });
+
+  box.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+    if(!pasted) return;
+    pasted.split('').slice(0, ticketCodeBoxes.length - i).forEach((digit, j) => {
+      if(ticketCodeBoxes[i + j]) ticketCodeBoxes[i + j].value = digit;
+    });
+    const next = ticketCodeBoxes[Math.min(i + pasted.length, ticketCodeBoxes.length - 1)];
+    if(next) next.focus();
+  });
+});
+
+function getTicketCode(){
+  return Array.from(ticketCodeBoxes).map(b => b.value).join('');
+}
+
+function clearTicketBoxes(){
+  ticketCodeBoxes.forEach(b => b.value = '');
+  ticketCodeBoxes[0].focus();
+}
+
+function showTicketConfirmMsg(text, type){
+  ticketConfirmMsg.textContent = text;
+  ticketConfirmMsg.className = `ticket-confirm-msg show ${type}`;
+
+  setTimeout(() => {
+    ticketConfirmMsg.className = 'ticket-confirm-msg';
+    clearTicketBoxes();
+  }, 5000);
+}
+
+confirmTicketBtn.addEventListener('click', async () => {
+  const code = getTicketCode();
+  if(code.length !== 6){
+    showTicketConfirmMsg('Enter all 6 digits of the ticket code.', 'error');
+    return;
+  }
+
+  confirmTicketBtn.disabled = true;
+  confirmTicketBtn.textContent = 'Checking…';
+
+  try{
+    const res = await fetch(`${API}/tickets/confirm`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({ code })
+    });
+    const data = await res.json();
+
+    if(!res.ok){
+      showTicketConfirmMsg(data.error || 'That ticket code is not valid.', 'error');
+      return;
+    }
+
+    if(data.already_used){
+      showTicketConfirmMsg('This ticket has already been confirmed.', 'error');
+      return;
+    }
+
+    const holderInfo = data.holder_name ? ` — ${data.holder_name}` : '';
+    showTicketConfirmMsg(`Ticket confirmed${holderInfo} ✓`, 'success');
+  }catch(err){
+    showTicketConfirmMsg('Could not reach the server.', 'error');
+  }finally{
+    confirmTicketBtn.disabled = false;
+    confirmTicketBtn.textContent = 'Confirm ticket';
+  }
+});
 function showCalendarView(){
   hideAllViews();
   document.getElementById('calendarView').style.display = 'block';
