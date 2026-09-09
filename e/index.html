@@ -431,6 +431,13 @@ a { color: inherit; }
 .organizer-name {
   font-weight: 700;
   font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.organizer-name:hover {
+  text-decoration: underline;
+  color: var(--primary-color);
 }
 
 .organizer-contact {
@@ -866,7 +873,7 @@ a { color: inherit; }
           <div class="organizer-avatar" id="organizerAvatar">T</div>
           <div>
             <div class="organizer-label">Organized by</div>
-            <div id="organizerName" class="organizer-name">—</div>
+            <a id="organizerName" class="organizer-name" href="#">—</a>
             <div class="organizer-contact" id="organizerContact"></div>
           </div>
         </div>
@@ -1336,10 +1343,6 @@ function renderPolicies(ev) {
   if (ev.event_rules) {
     rows.push(`<div class="policy-row">${ICONS.check}<span>${escapeHTML(ev.event_rules)}</span></div>`);
   }
-  if (ev.refund_policy) {
-    rows.push(`<div class="policy-row">${ICONS.check}<span>${escapeHTML(REFUND_LABELS[ev.refund_policy] || ev.refund_policy)}</span></div>`);
-  }
-  rows.push(`<div class="policy-row">${ICONS.check}<span>Tickets are ${ev.allow_transfers === false ? 'non-transferable' : 'transferable'}.</span></div>`);
 
   const salesStart = formatShortDate(ev.sales_start_date);
   const salesEnd = formatShortDate(ev.sales_end_date);
@@ -1361,6 +1364,7 @@ function renderPolicies(ev) {
 function renderOrganizer(ev) {
   const organizerText = ev.organizer_name || ev.organizer || ev.creator_name || 'Tixtee Organizer';
   organizerName.textContent = organizerText;
+  organizerName.href = `/organizer/${encodeURIComponent(ev.creator_id || '')}`;
   organizerAvatar.textContent = organizerText.trim().charAt(0).toUpperCase() || 'T';
   organizerContact.textContent = ev.organizer_contact || '';
 

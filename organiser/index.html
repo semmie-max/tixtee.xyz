@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organizer — Tixtee</title>
+<link rel="icon" type="image/png" href="/images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
+  :root{
+    --primary-color:#47034E;
+    --text-color:#1a1a1a;
+    --muted-color:#9a9a9a;
+    --border-color:#eee;
+    --page-bg:#f7f5f8;
+    --tag-bg:#f3e9f4;
+  }
+  body{background:var(--page-bg); color:var(--text-color); min-height:100vh;}
+
+  .profile-wrap{ max-width:650px; margin:40px auto 80px; padding:0 16px; }
+
+  .profile-card{
+    background:#fff; border-radius:20px; overflow:hidden;
+    box-shadow:0 4px 30px rgba(0,0,0,0.06);
+  }
+
+  .cover{
+    position:relative; width:100%; height:190px;
+    background:#111 center/cover no-repeat;
+  }
+  .cover.no-image{ background:linear-gradient(135deg,#2a2a2a,#000); }
+
+  .cover-socials{
+    position:absolute; top:16px; right:16px; display:flex; gap:14px;
+  }
+  .cover-socials a{
+    color:#fff; opacity:0.9; display:flex; align-items:center; justify-content:center;
+  }
+  .cover-socials a:hover{ opacity:1; }
+  .cover-socials svg{ width:18px; height:18px; }
+
+  .profile-body{ padding:0 28px 28px; position:relative; }
+
+  .avatar{
+    width:96px; height:96px; border-radius:50%;
+    background:#111; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:32px; font-weight:800;
+    border:5px solid #fff;
+    margin-top:-48px;
+    object-fit:cover;
+  }
+
+  .rate-row{
+    display:flex; justify-content:flex-end; margin-top:-42px; margin-bottom:12px;
+  }
+
+  .name-row{ display:flex; align-items:center; gap:6px; margin-top:14px; }
+  .org-name{ font-size:20px; font-weight:800; }
+  .verified-badge{ width:18px; height:18px; color:#3897f0; flex-shrink:0; }
+
+  .org-handle{ color:var(--muted-color); font-size:13.5px; margin-top:2px; }
+
+  .org-bio{
+    font-size:13.5px; line-height:1.6; color:#4a4a4a; margin-top:14px; max-width:480px;
+  }
+
+  .stats-row{ display:flex; gap:22px; margin-top:20px; }
+  .stat{ font-size:13.5px; color:var(--text-color); }
+  .stat b{ font-weight:800; }
+
+  /* ---- Star rating ---- */
+  .star-rating{ display:flex; gap:4px; }
+  .star-btn{
+    width:22px; height:22px; cursor:pointer; color:#d5d5d5; transition:color .12s ease, transform .1s ease;
+  }
+  .star-btn.filled{ color:#f5a623; }
+  .star-btn:hover{ transform:scale(1.12); }
+  .star-btn svg{ width:100%; height:100%; }
+  .rating-summary{
+    font-size:12px; color:var(--muted-color); margin-top:4px; text-align:right;
+  }
+
+  /* ---- Sections ---- */
+  .section-title{ font-size:15px; font-weight:700; margin:32px 0 14px; }
+
+  .events-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px;
+  }
+  .org-event-card{
+    border:1px solid var(--border-color); border-radius:14px; overflow:hidden;
+    text-decoration:none; color:inherit; transition:transform .15s ease;
+  }
+  .org-event-card:hover{ transform:translateY(-3px); }
+  .org-event-card img{ width:100%; height:100px; object-fit:cover; background:#eee; display:block; }
+  .org-event-card .oe-body{ padding:10px 12px; }
+  .org-event-card .oe-title{ font-size:12.5px; font-weight:700; margin-bottom:3px; }
+  .org-event-card .oe-date{ font-size:11px; color:var(--muted-color); }
+
+  /* ---- Comments ---- */
+  .comment-box{
+    display:flex; gap:10px; margin-bottom:22px;
+  }
+  .comment-box textarea{
+    flex:1; resize:none; min-height:44px; padding:11px 13px;
+    border:1px solid var(--border-color); border-radius:10px; font-size:13px;
+    outline:none; font-family:'Inter',sans-serif;
+  }
+  .comment-box textarea:focus{ border-color:var(--primary-color); }
+  .comment-submit{
+    background:var(--primary-color); color:#fff; border:none; padding:0 18px;
+    border-radius:10px; font-size:12.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+  }
+  .comment-submit:hover{ background:#5c0665; }
+  .comment-submit:disabled{ opacity:0.6; cursor:not-allowed; }
+
+  .comment-item{
+    padding:14px 0; border-bottom:1px solid var(--border-color);
+  }
+  .comment-item:last-child{ border-bottom:none; }
+  .comment-head{ display:flex; align-items:center; gap:8px; margin-bottom:5px; }
+  .comment-avatar{
+    width:26px; height:26px; border-radius:50%; background:var(--tag-bg); color:var(--primary-color);
+    font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .comment-author{ font-size:12.5px; font-weight:700; }
+  .comment-date{ font-size:11px; color:var(--muted-color); }
+  .comment-text{ font-size:13px; color:#4a4a4a; line-height:1.6; margin-left:34px; }
+
+  .empty-note{ font-size:12.5px; color:var(--muted-color); padding:10px 0; }
+
+  @media (max-width:600px){
+    .profile-body{ padding:0 18px 22px; }
+    .cover{ height:150px; }
+    .avatar{ width:80px; height:80px; margin-top:-40px; }
+    .rate-row{ margin-top:-34px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="profile-wrap">
+  <div class="profile-card">
+
+    <div class="cover no-image" id="cover">
+      <div class="cover-socials" id="coverSocials"></div>
+    </div>
+
+    <div class="profile-body">
+      <img class="avatar" id="avatarImg" src="" alt="" style="display:none;">
+      <div class="avatar" id="avatarInitial">?</div>
+
+      <div class="rate-row">
+        <div>
+          <div class="star-rating" id="starRating">
+            <span class="star-btn" data-value="1"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg></span>
+            <span class="star-btn" data-value="2"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg></span>
+            <span class="star-btn" data-value="3"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg></span>
+            <span class="star-btn" data-value="4"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg></span>
+            <span class="star-btn" data-value="5"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.1 8.6 22 9.6 17 14.6 18.2 21.5 12 18.1 5.8 21.5 7 14.6 2 9.6 8.9 8.6"/></svg></span>
+          </div>
+          <div class="rating-summary" id="ratingSummary">No ratings yet</div>
+        </div>
+      </div>
+
+      <div class="name-row">
+        <div class="org-name" id="orgName">—</div>
+        <svg class="verified-badge" id="verifiedBadge" viewBox="0 0 24 24" fill="#3897f0" style="display:none;">
+          <path d="M12 2l2.4 2.2 3.2-.6 1 3.1 3.1 1-.6 3.2L23 12l-2.2 2.4.6 3.2-3.1 1-1 3.1-3.2-.6L12 23l-2.4-2.2-3.2.6-1-3.1-3.1-1 .6-3.2L1 12l2.2-2.4-.6-3.2 3.1-1 1-3.1 3.2.6z"/>
+          <path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="org-handle" id="orgHandle">@—</div>
+
+      <div class="org-bio" id="orgBio"></div>
+
+      <div class="stats-row">
+        <div class="stat"><b id="statEvents">0</b> Events</div>
+        <div class="stat"><b id="statAvgRating">—</b> Avg rating</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Events by this organizer</div>
+  <div class="events-grid" id="orgEventsGrid">
+    <div class="empty-note">Loading events…</div>
+  </div>
+
+  <div class="section-title">Comments</div>
+  <div class="comment-box">
+    <textarea id="commentInput" placeholder="Leave a comment about this organizer…"></textarea>
+    <button class="comment-submit" id="commentSubmitBtn">Post</button>
+  </div>
+  <div id="commentsList">
+    <div class="empty-note">Loading comments…</div>
+  </div>
+</div>
+
+<script>
+  const API = 'https://api.tixtee.xyz/api';
+
+  const pathParts = window.location.pathname.split('/').filter(Boolean); // ['organizer', ':id']
+  const organizerId = pathParts[1] || new URLSearchParams(window.location.search).get('id');
+
+  const ICONS = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+    twitter: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M18.9 3H21l-6.7 7.7L22.3 21h-6.9l-5.4-6.8L3.7 21H1.6l7.2-8.2L1 3h7l4.9 6.2L18.9 3zM17.7 19h1.9L7.4 5H5.4l12.3 14z"/></svg>',
+    facebook: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M13.5 21v-7.5h2.5l.4-3H13.5V8.4c0-.87.24-1.46 1.5-1.46h1.6V4.3C16.3 4.2 15.3 4 14.2 4c-2.4 0-4 1.45-4 4.1v2.4H7.7v3h2.5V21h3.3z"/></svg>'
+  };
+
+  let selectedRating = 0;
+  let userRating = 0;
+
+  function escapeHTML(v){
+    if(v === null || v === undefined) return '';
+    const d = document.createElement('div');
+    d.textContent = v;
+    return d.innerHTML;
+  }
+
+  function renderStars(activeValue, hoverValue){
+    document.querySelectorAll('.star-btn').forEach(btn => {
+      const v = Number(btn.dataset.value);
+      btn.classList.toggle('filled', v <= (hoverValue || activeValue));
+    });
+  }
+
+  async function loadOrganizer(){
+    try{
+      const res = await fetch(`${API}/organizers/${encodeURIComponent(organizerId)}`, { credentials:'include' });
+      const org = await res.json();
+      if(!res.ok) throw new Error();
+
+      document.getElementById('orgName').textContent = org.name || 'Organizer';
+      document.getElementById('orgHandle').textContent = org.handle ? `@${org.handle}` : '';
+      document.getElementById('orgBio').textContent = org.bio || '';
+      document.getElementById('statEvents').textContent = org.event_count ?? 0;
+      document.getElementById('statAvgRating').textContent = org.avg_rating ? Number(org.avg_rating).toFixed(1) : '—';
+
+      if(org.is_verified){
+        document.getElementById('verifiedBadge').style.display = 'inline-block';
+      }
+
+      if(org.cover_image_url){
+        const cover = document.getElementById('cover');
+        cover.classList.remove('no-image');
+        cover.style.backgroundImage = `url('${org.cover_image_url}')`;
+      }
+
+      if(org.avatar_url){
+        const img = document.getElementById('avatarImg');
+        img.src = org.avatar_url;
+        img.style.display = 'block';
+        document.getElementById('avatarInitial').style.display = 'none';
+      } else {
+        document.getElementById('avatarInitial').textContent = (org.name || '?').trim().charAt(0).toUpperCase();
+      }
+
+
+
+      selectedRating = org.user_rating || 0;
+      userRating = selectedRating;
+      renderStars(selectedRating);
+      document.getElementById('ratingSummary').textContent = org.rating_count
+        ? `${Number(org.avg_rating || 0).toFixed(1)} · ${org.rating_count} rating${org.rating_count === 1 ? '' : 's'}`
+        : 'No ratings yet';
+
+    }catch(err){
+      document.getElementById('orgName').textContent = 'Organizer not found';
+    }
+  }
+
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    const v = Number(btn.dataset.value);
+    btn.addEventListener('mouseenter', () => renderStars(userRating, v));
+    btn.addEventListener('mouseleave', () => renderStars(userRating));
+    btn.addEventListener('click', async () => {
+      userRating = v;
+      renderStars(v);
+      try{
+        const res = await fetch(`${API}/organizers/${encodeURIComponent(organizerId)}/rate`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'include',
+          body: JSON.stringify({ rating: v })
+        });
+        const data = await res.json();
+        if(res.ok){
+          document.getElementById('statAvgRating').textContent = data.avg_rating ? Number(data.avg_rating).toFixed(1) : '—';
+          document.getElementById('ratingSummary').textContent = `${Number(data.avg_rating || 0).toFixed(1)} · ${data.rating_count} rating${data.rating_count === 1 ? '' : 's'}`;
+        }
+      }catch(err){}
+    });
+  });
+
+  async function loadOrgEvents(){
+    const grid = document.getElementById('orgEventsGrid');
+    try{
+      const res = await fetch(`${API}/organizers/${encodeURIComponent(organizerId)}/events`);
+      const events = await res.json();
+      if(!events.length){ grid.innerHTML = `<div class="empty-note">No events yet.</div>`; return; }
+
+      grid.innerHTML = events.map(ev => {
+        const img = ev.image_url ? (ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url) : '/images/tix.jpg';
+        const dateLabel = ev.event_date ? new Date(ev.event_date).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+        return `
+          <a class="org-event-card" href="/e/${ev.custom_url || ev.id}">
+            <img src="${img}" alt="">
+            <div class="oe-body">
+              <div class="oe-title">${escapeHTML(ev.title)}</div>
+              <div class="oe-date">${dateLabel}</div>
+            </div>
+          </a>`;
+      }).join('');
+    }catch(err){
+      grid.innerHTML = `<div class="empty-note">Could not load events.</div>`;
+    }
+  }
+
+  async function loadComments(){
+    const list = document.getElementById('commentsList');
+    try{
+      const res = await fetch(`${API}/organizers/${encodeURIComponent(organizerId)}/comments`);
+      const comments = await res.json();
+      if(!comments.length){ list.innerHTML = `<div class="empty-note">No comments yet — be the first.</div>`; return; }
+
+      list.innerHTML = comments.map(c => `
+        <div class="comment-item">
+          <div class="comment-head">
+            <div class="comment-avatar">${(c.author_name || '?').trim().charAt(0).toUpperCase()}</div>
+            <div class="comment-author">${escapeHTML(c.author_name || 'Anonymous')}</div>
+            <div class="comment-date">${new Date(c.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short' })}</div>
+          </div>
+          <div class="comment-text">${escapeHTML(c.text)}</div>
+        </div>
+      `).join('');
+    }catch(err){
+      list.innerHTML = `<div class="empty-note">Could not load comments.</div>`;
+    }
+  }
+
+  document.getElementById('commentSubmitBtn').addEventListener('click', async () => {
+    const input = document.getElementById('commentInput');
+    const text = input.value.trim();
+    if(!text) return;
+
+    const btn = document.getElementById('commentSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Posting…';
+
+    try{
+      const res = await fetch(`${API}/organizers/${encodeURIComponent(organizerId)}/comments`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify({ text })
+      });
+      if(res.ok){
+        input.value = '';
+        loadComments();
+      }
+    }catch(err){}
+    finally{
+      btn.disabled = false;
+      btn.textContent = 'Post';
+    }
+  });
+
+  loadOrganizer();
+  loadOrgEvents();
+  loadComments();
+</script>
+
+</body>
+</html>
