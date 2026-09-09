@@ -797,7 +797,7 @@ input, textarea{
   .combobox-trigger.open svg{ transform:rotate(180deg); }
   .combobox-popup{
     display:none;
-    position:absolute; top:calc(100% + 6px); left:0; right:0; z-index:60;
+    position:fixed; z-index:600;
     background:var(--card-color); border:1px solid var(--border-color); border-radius:14px;
     box-shadow:0 16px 40px rgba(21,0,23,0.16);
     overflow:hidden;
@@ -4144,8 +4144,20 @@ function addFaqRow(){
     });
   }
 
+  function positionCategoryPopup(){
+    const rect = categoryTrigger.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const popupWidth = Math.min(rect.width, viewportWidth - 32);
+
+    categoryPopup.style.width = popupWidth + 'px';
+    categoryPopup.style.left = Math.min(rect.left, viewportWidth - popupWidth - 16) + 'px';
+    categoryPopup.style.top = (rect.bottom + 6) + 'px';
+    categoryPopup.style.maxHeight = Math.min(340, window.innerHeight - rect.bottom - 20) + 'px';
+  }
+
   function openCategoryPopup(){
     categoryTrigger.classList.add('open');
+    positionCategoryPopup();
     categoryPopup.classList.add('show');
     categorySearchInput.value = '';
     renderCategoryList('');
@@ -4162,6 +4174,12 @@ function addFaqRow(){
   });
   categoryPopup.addEventListener('click', (e) => e.stopPropagation());
   document.addEventListener('click', () => closeCategoryPopup());
+  window.addEventListener('resize', () => {
+    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
+  });
+  window.addEventListener('scroll', () => {
+    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
+  }, true);
 
   categorySearchInput.addEventListener('input', () => {
     renderCategoryList(categorySearchInput.value);

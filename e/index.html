@@ -1364,7 +1364,7 @@ function renderPolicies(ev) {
 function renderOrganizer(ev) {
   const organizerText = ev.organizer_name || ev.organizer || ev.creator_name || 'Tixtee Organizer';
   organizerName.textContent = organizerText;
-  organizerName.href = `/organizer/${encodeURIComponent(ev.creator_id || '')}`;
+  organizerName.href = `/organiser/?id=${encodeURIComponent(ev.creator_id || '')}`;
   organizerAvatar.textContent = organizerText.trim().charAt(0).toUpperCase() || 'T';
   organizerContact.textContent = ev.organizer_contact || '';
 
