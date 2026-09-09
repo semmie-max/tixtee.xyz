@@ -289,7 +289,13 @@ input, textarea{
   .dropzone input[type="file"]{display:none;}
   .image-preview{width:100%; max-height:180px; object-fit:cover; border-radius:12px; margin-bottom:16px; display:none;}
   .upload-status{font-size:12px; color:#47034E; margin-bottom:12px; display:none;}
-  #gate{display:flex; align-items:center; justify-content:center; min-height:100vh; font-size:13px; color:#9a9a9a; width:100%;}
+  #gate{display:flex; align-items:center; justify-content:center; min-height:100vh; width:100%;}
+  .tx-spinner{
+    width:32px; height:32px; border-radius:50%;
+    border:3px solid #e5d0e7; border-top-color:#47034E;
+    animation:tx-spin 0.7s linear infinite;
+  }
+  @keyframes tx-spin{ to{ transform:rotate(360deg); } }
   .back-link{
   display:inline-flex; align-items:center; gap:8px;
   background:none; border:none; cursor:pointer;
@@ -1426,7 +1432,7 @@ input, textarea{
 <body>
   <script src="/common.js"></script>
 
-<div id="gate">Checking your session…</div>
+<div id="gate"><div class="tx-spinner"></div></div>
 
 <div id="dashboardContent" style="display:none; width:100%;">
   <div class="mobile-topbar">
@@ -1530,12 +1536,12 @@ input, textarea{
 </div>
       <div class="stat-card">
         <div class="label">Tickets Issued</div>
-        <div class="value">0 </div>
+        <div class="value" id="statTickets">0</div>
       </div>
       <div class="stat-card">
 
         <div class="label">Earnings</div>
-        <div class="value">₦0 </div>
+        <div class="value" id="statEarnings">₦0</div>
       </div>
             <div class="stat-card" id="groupChatStatCard" style="cursor:pointer; position:relative;">
         <span class="t-badge" id="groupChatBadge" data-open="false">
@@ -3947,6 +3953,8 @@ function renderEventCard(ev){
       const events = await res.json();
       document.getElementById('statEvents').textContent = events.length;
       document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
+      document.getElementById('statTickets').textContent = '0';
+      document.getElementById('statEarnings').textContent = '₦0';
 
       const draftCardHTML = eventDraft ? `
         <div class="event-card draft-card" id="draftCard">
