@@ -1720,12 +1720,12 @@ input, textarea{
     <div class="section-card">
       <label>Enter ticket code</label>
       <div class="ticket-code-boxes" id="ticketCodeBoxes">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="0">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="1">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="2">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="3">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="4">
-        <input type="text" inputmode="numeric" maxlength="1" class="ticket-code-box" data-index="5">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
+        <input type="text" maxlength="1" class="ticket-code-box" data-index="0" style="text-transform:uppercase;">
       </div>
 
       <button type="button" class="btn-primary" id="confirmTicketBtn" style="width:100%; justify-content:center; margin-top:16px;">Confirm ticket</button>
@@ -2496,7 +2496,7 @@ const ticketConfirmMsg = document.getElementById('ticketConfirmMsg');
 
 ticketCodeBoxes.forEach((box, i) => {
   box.addEventListener('input', () => {
-    box.value = box.value.replace(/[^0-9]/g, '').slice(0, 1);
+    box.value = box.value.toUpperCase().replace(/[^ABCDEFGHJKLMNPQRTUVWXYZ234679]/g, '').slice(0, 1);
     if(box.value && i < ticketCodeBoxes.length - 1){
       ticketCodeBoxes[i + 1].focus();
     }
@@ -2510,7 +2510,7 @@ ticketCodeBoxes.forEach((box, i) => {
 
   box.addEventListener('paste', (e) => {
     e.preventDefault();
-    const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+    const pasted = (e.clipboardData || window.clipboardData).getData('text').toUpperCase().replace(/[^ABCDEFGHJKLMNPQRTUVWXYZ234679]/g, '');
     if(!pasted) return;
     pasted.split('').slice(0, ticketCodeBoxes.length - i).forEach((digit, j) => {
       if(ticketCodeBoxes[i + j]) ticketCodeBoxes[i + j].value = digit;
@@ -2542,7 +2542,7 @@ function showTicketConfirmMsg(text, type){
 confirmTicketBtn.addEventListener('click', async () => {
   const code = getTicketCode();
   if(code.length !== 6){
-    showTicketConfirmMsg('Enter all 6 digits of the ticket code.', 'error');
+    showTicketConfirmMsg('Enter all 6 characters of the ticket code.', 'error');
     return;
   }
 
@@ -2563,13 +2563,9 @@ confirmTicketBtn.addEventListener('click', async () => {
       return;
     }
 
-    if(data.already_used){
-      showTicketConfirmMsg('This ticket has already been confirmed.', 'error');
-      return;
-    }
-
     const holderInfo = data.holder_name ? ` — ${data.holder_name}` : '';
-    showTicketConfirmMsg(`Ticket confirmed${holderInfo} ✓`, 'success');
+    const scanInfo = ` (scan ${data.scans_used}/2)`;
+    showTicketConfirmMsg(`Ticket confirmed${holderInfo}${scanInfo} ✓`, 'success');
   }catch(err){
     showTicketConfirmMsg('Could not reach the server.', 'error');
   }finally{
