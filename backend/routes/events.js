@@ -2,6 +2,7 @@
 const pool = require('../config/db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { checkTicketSalesStatus } = require('../utils/ticketSalesCheck');
+const { sendEventLiveEmail } = require('../utils/eventLiveEmail');
 const { sendEventCancelledEmail } = require('../utils/eventCancelledEmail');
 
 const BACHS_API_KEY = process.env.BACHS_API_KEY;
@@ -255,6 +256,29 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       }
     }
 
+    try {
+      await pool.query(
+        `INSERT INTO notifications (user_id, event_id, type, title, message)
+         VALUES (?, ?, 'event_live', ?, ?)`,
+        [req.user.id, eventId, 'Your event is live', `"${title}" has been published and is ready to sell tickets.`]
+      );
+    } catch (notifErr) {
+      console.error('Could not create event-live notification:', notifErr.message);
+    }
+
+    try {
+      const [[organizer]] = await pool.query('SELECT name, email FROM users WHERE id = ?', [req.user.id]);
+      const eventLink = `https://tixtee.xyz/e/${custom_url || eventId}`;
+      await sendEventLiveEmail({
+        toEmail: organizer.email,
+        organizerName: organizer.name,
+        eventTitle: title,
+        eventLink,
+      });
+    } catch (emailErr) {
+      console.error('Could not send event-live email:', emailErr.message);
+    }
+
     res.json({ id: eventId, message: 'Event created' });
   } catch (err) {
     console.error(err);
@@ -262,6 +286,33 @@ router.post('/', requireAuth, requireAdmin, async (req, res) => {
       return res.status(409).json({ error: 'That custom URL is already taken — try another one' });
     }
     res.status(500).json({ error: 'Could not create event' });
+  }
+});
+
+router.put('/:id', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { title, description, event_date, start_time, end_time, venue, capacity, image_url } = req.body;
+
+    if (!title || !event_date) {
+      return res.status(400).json({ error: 'Title and date are required' });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE events
+       SET title = ?, description = ?, event_date = ?, start_time = ?, end_time = ?,
+           venue = ?, capacity = ?, image_url = ?
+       WHERE id = ? AND creator_id = ?`,
+      [title, description, event_date, start_time, end_time, venue, capacity || null, image_url, req.params.id, req.user.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    res.json({ message: 'Event updated' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not update event' });
   }
 });
 

@@ -187,11 +187,18 @@
   }
   
   .delete-btn{
-    position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px;
-    background:rgba(255,255,255,0.95); border:1px solid #eee; color:#b3261e; cursor:pointer;
-    display:flex; align-items:center; justify-content:center; font-size:13px; z-index:2;
-  }
-  .delete-btn:hover{background:#fdecea;}
+  position:absolute; top:10px; right:10px; width:28px; height:28px; border-radius:8px;
+  background:rgba(255,255,255,0.95); border:1px solid #eee; color:#b3261e; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; font-size:13px; z-index:2;
+}
+.delete-btn:hover{background:#fdecea;}
+.edit-btn{
+  position:absolute; top:10px; right:44px; width:28px; height:28px; border-radius:8px;
+  background:rgba(255,255,255,0.95); border:1px solid #eee; color:#47034E; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; z-index:2;
+}
+.edit-btn svg{ width:14px; height:14px; }
+.edit-btn:hover{background:#f3e9f4;}
   .empty-state{text-align:center; padding:60px 20px; color:#9a9a9a;}
   .empty-state .icon{font-size:40px; margin-bottom:16px;}
   .empty-state h3{font-size:16px; color:#1a1a1a; margin-bottom:6px;}
@@ -2658,6 +2665,67 @@ input, textarea{
     </div>
   </div>
 
+  <div class="modal-overlay" id="editEventModal">
+    <div class="modal">
+      <h2>Edit event</h2>
+      <p class="sub">Update the basics — for tickets, lineup, or FAQs, contact support.</p>
+
+      <div class="msg" id="editEventMsg"></div>
+
+      <label>Event name</label>
+      <input type="text" id="editTitle">
+
+      <label>Description</label>
+      <textarea id="editDescription"></textarea>
+
+      <div class="grid2">
+        <div>
+          <label>Event date</label>
+          <input type="date" id="editEventDate">
+        </div>
+        <div>
+          <label>Start time</label>
+          <input type="time" id="editStartTime">
+        </div>
+      </div>
+
+      <label>End time</label>
+      <input type="time" id="editEndTime">
+
+      <label>Venue</label>
+      <input type="text" id="editVenue" placeholder="Enter address or Google Maps link">
+
+      <div class="capacity-option">
+        <input type="checkbox" id="editUnlimitedCapacity">
+        <label for="editUnlimitedCapacity">No Limit</label>
+      </div>
+      <label>Maximum attendees</label>
+      <input type="number" id="editCapacity" min="1" step="1" placeholder="e.g. 250">
+
+      <label>Cover image</label>
+      <img class="image-preview" id="editImagePreview" src="" alt="">
+      <div class="upload-status" id="editUploadStatus"></div>
+      <div class="dropzone" id="editDropzone">
+        <div class="icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p>Drag & drop a new cover image</p>
+        <div class="hint">or choose from your device</div>
+        <input type="file" id="editImageInput" accept="image/*">
+      </div>
+      <input type="hidden" id="editImageUrl">
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" style="flex:1;" id="cancelEditEventBtn">Cancel</button>
+        <button type="button" class="btn-primary" style="flex:1; justify-content:center;" id="saveEditEventBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="deleteModalOverlay">
     <div class="modal modal-small">
       <div class="modal-warning-icon">
@@ -3068,6 +3136,174 @@ document.getElementById('notifSheetOverlay').addEventListener('click', (e) => {
 
   let eventDraft = null;
   let pendingDeleteId = null;
+  let lastLoadedEvents = [];
+  let currentEditId = null;
+
+  const editEventModal = document.getElementById('editEventModal');
+  const editUnlimitedCapacity = document.getElementById('editUnlimitedCapacity');
+  const editCapacityInput = document.getElementById('editCapacity');
+
+  function showEditEventMsg(text, type){
+    const el = document.getElementById('editEventMsg');
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  function openEditModal(id){
+    const ev = lastLoadedEvents.find(e => e.id === id);
+    if(!ev) return;
+
+    currentEditId = id;
+    document.getElementById('editEventMsg').className = 'msg';
+
+    document.getElementById('editTitle').value = ev.title || '';
+    document.getElementById('editDescription').value = ev.description || '';
+
+    const d = new Date(ev.event_date);
+    document.getElementById('editEventDate').value = d.toISOString().slice(0, 10);
+    document.getElementById('editStartTime').value = (ev.start_time || '').slice(0, 5);
+    document.getElementById('editEndTime').value = (ev.end_time || '').slice(0, 5);
+
+    document.getElementById('editVenue').value = ev.venue || '';
+
+    if(ev.capacity === null || ev.capacity === undefined){
+      editUnlimitedCapacity.checked = true;
+      editCapacityInput.disabled = true;
+      editCapacityInput.value = '';
+    } else {
+      editUnlimitedCapacity.checked = false;
+      editCapacityInput.disabled = false;
+      editCapacityInput.value = ev.capacity;
+    }
+
+    document.getElementById('editImageUrl').value = ev.image_url || '';
+    const editPreview = document.getElementById('editImagePreview');
+    if(ev.image_url){
+      editPreview.src = ev.image_url.startsWith('/uploads') ? 'https://api.tixtee.xyz' + ev.image_url : ev.image_url;
+      editPreview.style.display = 'block';
+    } else {
+      editPreview.style.display = 'none';
+    }
+
+    editEventModal.classList.add('show');
+  }
+
+  function closeEditModal(){
+    editEventModal.classList.remove('show');
+    currentEditId = null;
+  }
+
+  document.getElementById('cancelEditEventBtn').addEventListener('click', closeEditModal);
+  editEventModal.addEventListener('click', (e) => {
+    if(e.target === editEventModal) closeEditModal();
+  });
+
+  editUnlimitedCapacity.addEventListener('change', function(){
+    editCapacityInput.disabled = this.checked;
+    if(this.checked) editCapacityInput.value = '';
+  });
+
+  const editDropzone = document.getElementById('editDropzone');
+  const editImageInput = document.getElementById('editImageInput');
+  const editImagePreview = document.getElementById('editImagePreview');
+  const editUploadStatus = document.getElementById('editUploadStatus');
+
+  editDropzone.addEventListener('click', () => editImageInput.click());
+  editDropzone.addEventListener('dragover', (e) => { e.preventDefault(); editDropzone.classList.add('dragover'); });
+  editDropzone.addEventListener('dragleave', () => editDropzone.classList.remove('dragover'));
+  editDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    editDropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleEditImageFile(e.dataTransfer.files[0]);
+  });
+  editImageInput.addEventListener('change', (e) => {
+    if(e.target.files.length) handleEditImageFile(e.target.files[0]);
+  });
+
+  async function handleEditImageFile(file){
+    if(!file.type.startsWith('image/')){
+      editUploadStatus.style.display = 'block';
+      editUploadStatus.style.color = '#b3261e';
+      editUploadStatus.textContent = 'Please choose an image file.';
+      return;
+    }
+
+    editUploadStatus.style.display = 'block';
+    editUploadStatus.style.color = '#47034E';
+    editUploadStatus.textContent = 'Uploading…';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try{
+      const res = await fetch(`${API}/upload`, { method: 'POST', credentials: 'include', body: formData });
+      const data = await res.json();
+      if(!res.ok){
+        editUploadStatus.style.color = '#b3261e';
+        editUploadStatus.textContent = data.error || 'Upload failed';
+        return;
+      }
+      document.getElementById('editImageUrl').value = data.url;
+      editImagePreview.src = data.url;
+      editImagePreview.style.display = 'block';
+      editUploadStatus.style.color = '#1e7a3d';
+      editUploadStatus.textContent = 'Image uploaded ✓';
+    }catch(err){
+      editUploadStatus.style.color = '#b3261e';
+      editUploadStatus.textContent = 'Could not reach the server.';
+    }
+  }
+
+  document.getElementById('saveEditEventBtn').addEventListener('click', async () => {
+    if(!currentEditId) return;
+
+    const title = document.getElementById('editTitle').value.trim();
+    const event_date = document.getElementById('editEventDate').value;
+    if(!title || !event_date){
+      showEditEventMsg('Event name and date are required.', 'error');
+      return;
+    }
+
+    const startTimeRaw = document.getElementById('editStartTime').value;
+    const endTimeRaw = document.getElementById('editEndTime').value;
+
+    const body = {
+      title,
+      description: document.getElementById('editDescription').value,
+      event_date,
+      start_time: startTimeRaw ? `${startTimeRaw}:00` : null,
+      end_time: endTimeRaw ? `${endTimeRaw}:00` : null,
+      venue: document.getElementById('editVenue').value,
+      capacity: editUnlimitedCapacity.checked ? null : (editCapacityInput.value || null),
+      image_url: document.getElementById('editImageUrl').value,
+    };
+
+    const btn = document.getElementById('saveEditEventBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try{
+      const res = await fetch(`${API}/events/${currentEditId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      if(!res.ok){
+        showEditEventMsg(data.error || 'Could not save changes.', 'error');
+        return;
+      }
+      closeEditModal();
+      loadEvents();
+      showToast('Event updated', 'Your changes have been saved.');
+    }catch(err){
+      showEditEventMsg('Could not reach the server.', 'error');
+    }finally{
+      btn.disabled = false;
+      btn.textContent = 'Save changes';
+    }
+  });
 
   const deleteModalOverlay = document.getElementById('deleteModalOverlay');
   document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
@@ -4415,6 +4651,9 @@ function renderEventCard(ev){
 
   return `
     <div class="event-card">
+      <div class="edit-btn" data-id="${ev.id}" title="Edit event">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </div>
       <div class="delete-btn" data-id="${ev.id}" title="Delete event">✕</div>
       <img class="thumb" src="${img}" alt="Event Image">
       <div class="body">
@@ -4484,6 +4723,8 @@ function renderEventCard(ev){
         return;
       }
 
+      lastLoadedEvents = events;
+
       container.innerHTML = `<div class="events-grid">${draftCardHTML}${events.map(renderEventCard).join('')}</div>`;
 
       const draftCardEl = document.getElementById('draftCard');
@@ -4496,6 +4737,13 @@ function renderEventCard(ev){
           e.stopPropagation();
           pendingDeleteId = btn.dataset.id;
           deleteModalOverlay.classList.add('show');
+        });
+      });
+
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditModal(parseInt(btn.dataset.id, 10));
         });
       });
     }catch(err){
