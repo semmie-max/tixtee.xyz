@@ -1128,6 +1128,23 @@ input, textarea{
 .tx-toast-close:hover{ color: var(--text-color); }
 .tx-toast-close svg{ width: 14px; height: 14px; }
 
+.tx-toast-link-row{
+  display: flex; align-items: stretch; margin-top: 10px;
+  border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;
+}
+.tx-toast-link-row input{
+  flex: 1; min-width: 0; border: none; outline: none; margin: 0;
+  padding: 9px 10px; font-size: 12px; background: var(--field-group-bg);
+  color: var(--text-color); font-family: 'Inter', sans-serif;
+}
+.tx-toast-link-row button{
+  flex-shrink: 0; border: none; border-left: 1px solid var(--border-color);
+  background: #f3e9f4; color: #47034E; cursor: pointer;
+  width: 36px; display: flex; align-items: center; justify-content: center;
+}
+.tx-toast-link-row button:hover{ background: var(--hover-bg); }
+.tx-toast-link-row button svg{ width: 15px; height: 15px; }
+
 @media (max-width: 480px){
   .tx-toast{ left: 16px; right: 16px; bottom: 16px; min-width: 0; max-width: none; }
 }
@@ -1137,14 +1154,22 @@ input, textarea{
 
 /* ---------- Alert dialog (replaces native alert()) ---------- */
 .tx-alert-overlay{
-  position:fixed; inset:0; background:rgba(21,0,23,0.5);
-  display:none; align-items:center; justify-content:center; z-index:800; padding:20px;
+  position:fixed; bottom:24px; right:24px; z-index:800;
+  display:none; padding:0; background:transparent;
+  transform:translateX(420px); opacity:0;
+  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease;
 }
-.tx-alert-overlay.show{ display:flex; }
+.tx-alert-overlay.show{
+  display:block; transform:translateX(0); opacity:1;
+}
 .tx-alert{
   background:var(--card-color); border:1px solid var(--border-color); border-radius:16px;
-  padding:20px; width:100%; max-width:380px;
+  padding:20px; width:340px; max-width:calc(100vw - 32px);
   box-shadow:0 16px 44px rgba(21,0,23,0.16);
+}
+@media (max-width: 480px){
+  .tx-alert-overlay{ left:16px; right:16px; bottom:16px; }
+  .tx-alert{ width:auto; }
 }
 .tx-alert-icon{
   width:36px; height:36px; border-radius:10px; background:var(--tag-bg, #f3e9f4); color:#47034E;
@@ -1503,6 +1528,13 @@ input, textarea{
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
   Calendar
 </a>
+<div class="nav-item" id="notificationsNavBtn" style="position:relative;">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+  Notifications
+  <span class="t-badge" id="notifBadge" data-open="false" style="position:absolute; top:6px; left:22px;">
+    <span class="t-badge-dot" id="notifBadgeCount">0</span>
+  </span>
+</div>
     <div class="nav-item">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
       Ratings
@@ -1972,6 +2004,22 @@ input, textarea{
     <div id="ticketFlashText"></div>
     <div class="flash-sub" id="ticketFlashSub"></div>
   </div>
+  <!-- NOTIFICATIONS SHEET -->
+  <div class="tx-sheet-overlay" id="notifSheetOverlay">
+    <div class="tx-sheet">
+      <div class="tx-sheet-header">
+        <div class="tx-sheet-title">Notifications</div>
+        <div class="tx-sheet-desc">Updates about your ticket sales and events.</div>
+      </div>
+      <div class="tx-sheet-body" id="notifSheetBody">
+        <p class="sub">Loading…</p>
+      </div>
+      <div class="tx-sheet-footer">
+        <button type="button" class="btn-secondary" id="closeNotifSheetBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TEAM SHEET -->
   <div class="tx-sheet-overlay" id="teamSheetOverlay">
     <div class="tx-sheet">
@@ -2017,6 +2065,12 @@ input, textarea{
     <div class="tx-toast-body">
       <div class="tx-toast-title" id="txToastTitle">Saved</div>
       <div class="tx-toast-desc" id="txToastDesc"></div>
+      <div class="tx-toast-link-row" id="txToastLinkRow" style="display:none;">
+        <input type="text" id="txToastLinkInput" readonly>
+        <button type="button" id="txToastCopyBtn" aria-label="Copy link">
+          <svg id="txToastCopyIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
     </div>
     <button type="button" class="tx-toast-close" id="txToastClose" aria-label="Dismiss">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -2726,6 +2780,101 @@ async function checkGroupChatUnread(){
 checkGroupChatUnread();
 setInterval(checkGroupChatUnread, 15000);
 
+let allNotifications = [];
+
+async function loadNotificationsBadge(){
+  try{
+    const res = await fetch(`${API}/notifications`, { credentials:'include' });
+    const notifs = await res.json();
+    allNotifications = notifs;
+
+    const unreadCount = notifs.filter(n => !n.is_read).length;
+    const badge = document.getElementById('notifBadge');
+    const countEl = document.getElementById('notifBadgeCount');
+
+    if(unreadCount > 0){
+      countEl.textContent = unreadCount;
+      badge.setAttribute('data-open', 'true');
+    } else {
+      badge.setAttribute('data-open', 'false');
+    }
+  }catch(err){}
+}
+loadNotificationsBadge();
+setInterval(loadNotificationsBadge, 20000);
+
+function renderNotifications(){
+  const body = document.getElementById('notifSheetBody');
+
+  if(!allNotifications.length){
+    body.innerHTML = `<p class="sub">No notifications yet.</p>`;
+    return;
+  }
+
+  body.innerHTML = allNotifications.map(n => {
+    if(n.type === 'sales_end_prompt' && !n.is_read){
+      return `
+        <div class="entry-check-item" style="flex-direction:column; align-items:stretch; gap:10px;">
+          <div>
+            <div class="entry-check-name">${n.title}</div>
+            <div class="entry-check-meta">${n.message}</div>
+          </div>
+          <input type="datetime-local" id="salesEndInput-${n.id}">
+          <button type="button" class="btn-primary" style="width:100%; justify-content:center;" onclick="saveSalesEndTime(${n.id}, ${n.event_id})">Save sales end time</button>
+        </div>`;
+    }
+    return `
+      <div class="entry-check-item">
+        <div>
+          <div class="entry-check-name">${n.title}</div>
+          <div class="entry-check-meta">${n.message}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function saveSalesEndTime(notifId, eventId){
+  const input = document.getElementById(`salesEndInput-${notifId}`);
+  if(!input.value){
+    showAlert('Please pick a date and time first.', 'Missing info', true);
+    return;
+  }
+
+  try{
+    const res = await fetch(`${API}/events/${eventId}/sales-end`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      credentials:'include',
+      body: JSON.stringify({ sales_end_date: input.value })
+    });
+    const data = await res.json();
+    if(!res.ok){ showAlert(data.error || 'Could not save this.', 'Error', true); return; }
+
+    await fetch(`${API}/notifications/${notifId}/read`, { method:'POST', credentials:'include' });
+    showToast('Saved', 'Ticket sales end time updated.');
+    loadNotificationsBadge().then(renderNotifications);
+  }catch(err){
+    showAlert('Could not reach the server.', 'Error', true);
+  }
+}
+
+document.getElementById('notificationsNavBtn').addEventListener('click', async () => {
+  document.getElementById('notifSheetOverlay').classList.add('show');
+  await loadNotificationsBadge();
+  renderNotifications();
+
+  const unreadInfoOnly = allNotifications.filter(n => !n.is_read && n.type !== 'sales_end_prompt');
+  if(unreadInfoOnly.length){
+    await fetch(`${API}/notifications/read-all`, { method:'POST', credentials:'include' });
+  }
+});
+document.getElementById('closeNotifSheetBtn').addEventListener('click', () => {
+  document.getElementById('notifSheetOverlay').classList.remove('show');
+});
+document.getElementById('notifSheetOverlay').addEventListener('click', (e) => {
+  if(e.target.id === 'notifSheetOverlay') document.getElementById('notifSheetOverlay').classList.remove('show');
+});
+
 
 
   document.getElementById('supportNavBtn').addEventListener('click', () => {
@@ -2934,6 +3083,7 @@ function showToast(title, desc){
   const toast = document.getElementById('txToast');
   document.getElementById('txToastTitle').textContent = title;
   document.getElementById('txToastDesc').textContent = desc || '';
+  document.getElementById('txToastLinkRow').style.display = 'none';
 
   clearTimeout(txToastTimer);
   toast.classList.add('show');
@@ -2942,6 +3092,43 @@ function showToast(title, desc){
     toast.classList.remove('show');
   }, 20000);
 }
+
+function showEventSuccessToast(title, desc, url){
+  const toast = document.getElementById('txToast');
+  document.getElementById('txToastTitle').textContent = title;
+  document.getElementById('txToastDesc').textContent = desc || '';
+
+  const linkRow = document.getElementById('txToastLinkRow');
+  const linkInput = document.getElementById('txToastLinkInput');
+  linkInput.value = url;
+  linkRow.style.display = 'flex';
+
+  clearTimeout(txToastTimer);
+  toast.classList.add('show');
+
+  txToastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 20000);
+}
+
+const txToastCopyBtn = document.getElementById('txToastCopyBtn');
+const txToastCopyIcon = document.getElementById('txToastCopyIcon');
+const COPY_ICON_SVG = txToastCopyIcon.innerHTML;
+const CHECK_ICON_SVG = '<polyline points="20 6 9 17 4 12"></polyline>';
+
+txToastCopyBtn.addEventListener('click', async () => {
+  const linkInput = document.getElementById('txToastLinkInput');
+  try{
+    await navigator.clipboard.writeText(linkInput.value);
+  }catch(err){
+    linkInput.select();
+    document.execCommand('copy');
+  }
+  txToastCopyIcon.innerHTML = CHECK_ICON_SVG;
+  setTimeout(() => {
+    txToastCopyIcon.innerHTML = COPY_ICON_SVG;
+  }, 1800);
+});
 
 document.getElementById('txToastClose').addEventListener('click', () => {
   clearTimeout(txToastTimer);
@@ -4020,11 +4207,13 @@ const isVirtual = format === 'virtual' || format === 'hybrid';
         return;
       }
 
+      const publishedUrl = `https://tixtee.xyz/e/${body.custom_url || data.id}`;
+
       document.getElementById('eventForm').reset();
       eventDraft = null;
 
       showOverviewView();
-      showToast('Event published', 'Your event is live and ready for tickets.');
+      showEventSuccessToast('Event published', 'Your event is live. Share the link below.', publishedUrl);
     }catch(err){
       showMsg('Could not reach the server — is the backend running?', 'error');
     }
@@ -4119,8 +4308,16 @@ function renderEventCard(ev){
       const events = await res.json();
       document.getElementById('statEvents').textContent = events.length;
       document.getElementById('statChats').textContent = events.filter(e => e.has_groupchat).length;
-      document.getElementById('statTickets').textContent = '0';
-      document.getElementById('statEarnings').textContent = '₦0';
+
+      try{
+        const statsRes = await fetch(`${API}/events/stats/summary`, { credentials: 'include' });
+        const stats = await statsRes.json();
+        document.getElementById('statTickets').textContent = stats.tickets_issued || 0;
+        document.getElementById('statEarnings').textContent = `₦${Number(stats.earnings || 0).toLocaleString('en-NG')}`;
+      }catch(err){
+        document.getElementById('statTickets').textContent = '0';
+        document.getElementById('statEarnings').textContent = '₦0';
+      }
 
       const draftCardHTML = eventDraft ? `
         <div class="event-card draft-card" id="draftCard">
