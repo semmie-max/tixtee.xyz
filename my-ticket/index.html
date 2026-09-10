@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Ticket Code</title>
+<style>
+  body{font-family:'Inter',sans-serif; background:#f7f5f8; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;}
+  .card{background:#fff; border-radius:20px; padding:40px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.06); max-width:340px;}
+  .code{font-size:40px; font-weight:800; letter-spacing:8px; color:#47034E; margin:20px 0;}
+  .holder{font-size:14px; color:#666;}
+  .error{color:#b3261e; font-size:14px;}
+</style>
+</head>
+<body>
+  <div class="card" id="card">Loading your ticket...</div>
+  <script>
+    const API = 'https://api.tixtee.xyz/api';
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('orderId');
+    const token = params.get('token');
+
+    async function loadTicket(){
+      const card = document.getElementById('card');
+      if(!orderId || !token){
+        card.innerHTML = '<div class="error">This link is missing information.</div>';
+        return;
+      }
+      try{
+        const res = await fetch(`${API}/tickets/my-ticket/${orderId}?token=${token}`);
+        const data = await res.json();
+        if(!res.ok){
+          card.innerHTML = `<div class="error">${data.error || 'Could not load ticket.'}</div>`;
+          return;
+        }
+        card.innerHTML = `
+          <div class="holder">${data.holder_name}</div>
+          <div class="code">${data.ticket_code}</div>
+          <div class="holder">Show this code at the door</div>
+        `;
+      }catch(err){
+        card.innerHTML = '<div class="error">Could not reach the server.</div>';
+      }
+    }
+    loadTicket();
+  </script>
+</body>
+</html>
