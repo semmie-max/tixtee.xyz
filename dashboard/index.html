@@ -1505,6 +1505,51 @@ input, textarea{
 .tx-onboard-next{ background:#47034E; color:#fff; display:inline-flex; align-items:center; gap:8px; }
 .tx-onboard-next:hover{ background:#5c0665; }
 .tx-onboard-next svg{ width:15px; height:15px; }
+
+.tx-empty{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center;
+  padding:60px 20px;
+  gap:24px;
+}
+.tx-empty-header{
+  display:flex; flex-direction:column; align-items:center;
+  gap:10px;
+}
+.tx-empty-media{
+  width:56px; height:56px;
+  margin-bottom:6px;
+  border-radius:14px;
+  background:var(--hover-bg);
+  color:#47034E;
+  display:flex; align-items:center; justify-content:center;
+}
+.tx-empty-media svg{
+  width:26px; height:26px;
+}
+.tx-empty-title{
+  font-size:16px; font-weight:700; color:var(--text-color);
+}
+.tx-empty-desc{
+  font-size:13px; color:var(--muted-color); max-width:320px;
+}
+.tx-empty-content{
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+}
+.tx-empty-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 16px; border-radius:10px; font-size:13px; font-weight:600;
+  cursor:pointer; border:none;
+}
+.tx-empty-btn svg{ width:14px; height:14px; }
+.tx-empty-btn-primary{
+  background:#47034E; color:#fff;
+}
+.tx-empty-btn-primary:hover{ background:#5c0665; }
+.tx-empty-btn-outline{
+  background:none; color:var(--text-color); border:1px solid var(--border-color);
+}
+.tx-empty-btn-outline:hover{ background:var(--hover-bg); }
 </style>
 </head>
 <body>
@@ -2250,6 +2295,7 @@ input, textarea{
 
             <label>Tell us about your event</label>
             <textarea id="description" placeholder="Describe the experience"></textarea>
+            <div class="pill-hint" id="descriptionCount" style="margin-top:-10px;"></div>
 
             <label>Event Category</label>
             <p class="pill-hint">Set the scene. Choose your category.</p>
@@ -4394,16 +4440,15 @@ function renderEventCard(ev){
       if(!events.length && !eventDraft){
         container.innerHTML = `
           <div class="tx-empty">
-            <div class="tx-empty-media">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div class="tx-empty-header">
+              <div class="tx-empty-media">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div class="tx-empty-title">No events yet</div>
+              <div class="tx-empty-desc">Create your first event to start selling tickets.</div>
             </div>
-            <div class="tx-empty-title">No events yet</div>
-            <div class="tx-empty-desc">Create your first event to start selling tickets.</div>
-            <div class="tx-empty-actions">
-              <button type="button" class="tx-empty-btn tx-empty-btn-primary" id="emptyStateCreateBtn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Create event
-              </button>
+            <div class="tx-empty-content">
+              <button type="button" class="tx-empty-btn tx-empty-btn-primary" id="emptyStateCreateBtn">Create event</button>
               <button type="button" class="tx-empty-btn tx-empty-btn-outline" id="emptyStateSupportBtn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 Get help
@@ -4939,12 +4984,22 @@ deleteModal.addEventListener("click", (e) => {
 });
 
 
-confirmDelete.onclick = () => {
+confirmDelete.onclick = async () => {
+  confirmDelete.disabled = true;
+  confirmDelete.textContent = 'Deleting…';
 
-  // call your backend delete account API here
+  try{
+    const res = await fetch(`${API}/auth/account`, { method: 'DELETE', credentials: 'include' });
+    if(!res.ok) throw new Error();
 
-  showAlert("Account deleted", "Done");
-
+    deleteModal.classList.remove('show');
+    window.location.href = '/login';
+  }catch(err){
+    showAlert('Could not delete your account. Is the backend running?', 'Error', true);
+  }finally{
+    confirmDelete.disabled = false;
+    confirmDelete.textContent = 'Delete Account';
+  }
 };
 
 document.getElementById("savePreferencesBtn").addEventListener("click", () => {
