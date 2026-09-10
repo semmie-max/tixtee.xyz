@@ -1523,6 +1523,24 @@ input, textarea{
   background:var(--hover-bg);
   color:#47034E;
   display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.tx-empty-media::before,
+.tx-empty-media::after{
+  content:'';
+  position:absolute;
+  width:56px; height:56px;
+  border-radius:14px;
+  background:var(--hover-bg);
+  z-index:-1;
+}
+.tx-empty-media::before{
+  transform:rotate(-8deg) translate(-4px, 2px);
+  opacity:0.7;
+}
+.tx-empty-media::after{
+  transform:rotate(8deg) translate(4px, 2px);
+  opacity:0.4;
 }
 .tx-empty-media svg{
   width:26px; height:26px;
