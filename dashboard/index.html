@@ -3633,6 +3633,44 @@ async function deleteTeamMember(id){
   document.getElementById('addLineupBtn').addEventListener('click', addLineupRow);
   addLineupRow();
 
+  const customUrlInput = document.getElementById('custom_url');
+  const customUrlStatus = document.createElement('div');
+  customUrlStatus.id = 'customUrlStatus';
+  customUrlStatus.style.fontSize = '11px';
+  customUrlStatus.style.margin = '-10px 0 16px';
+  customUrlInput.insertAdjacentElement('afterend', customUrlStatus);
+
+  let customUrlCheckTimer = null;
+
+  customUrlInput.addEventListener('input', () => {
+    const slug = customUrlInput.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    clearTimeout(customUrlCheckTimer);
+
+    if(!slug){
+      customUrlStatus.textContent = '';
+      return;
+    }
+
+    customUrlStatus.style.color = '#9a9a9a';
+    customUrlStatus.textContent = 'Checking availability…';
+
+    customUrlCheckTimer = setTimeout(async () => {
+      try{
+        const res = await fetch(`${API}/events/check-url/${slug}`, { credentials: 'include' });
+        const data = await res.json();
+        if(data.available){
+          customUrlStatus.style.color = '#1e7a3d';
+          customUrlStatus.textContent = `tixtee.xyz/e/${slug} is available`;
+        } else {
+          customUrlStatus.style.color = '#b3261e';
+          customUrlStatus.textContent = 'That link is already taken';
+        }
+      }catch(err){
+        customUrlStatus.textContent = '';
+      }
+    }, 500);
+  });
+
   function addTicketRow(){
     const row = document.createElement('div');
     row.className = 'ticket-row';
