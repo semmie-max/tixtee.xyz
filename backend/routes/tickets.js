@@ -135,6 +135,45 @@ router.get('/checked-in', requireAuth, requireAdmin, async (req, res) => {
     res.status(500).json({ error: 'Could not load checked-in guests' });
   }
 });
+/**
+ * GET /api/tickets/my-ticket/:orderId
+ * Public route for the buyer to view their own ticket code, using the access_token
+ * sent to them in their confirmation email. Not behind requireAuth.
+ */
+router.get('/my-ticket/:orderId', async (req, res) => {
+  try {
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ error: 'Missing access token.' });
+
+    const [rows] = await pool.query(
+      `SELECT o.ticket_code, o.buyer_name, o.status, e.event_date, e.start_time
+       FROM orders o
+       JOIN events e ON e.id = o.event_id
+       WHERE o.id = ? AND o.access_token = ?`,
+      [req.params.orderId, token]
+    );
+
+    if (!rows.length) return res.status(404).json({ error: 'Ticket not found.' });
+    const order = rows[0];
+    if (order.status !== 'paid') return res.status(400).json({ error: 'This order has not been paid for.' });
+
+    const eventStart = new Date(`${order.event_date.toISOString().slice(0,10)}T${order.start_time || '00:00:00'}`);
+    const unlockTime = new Date(eventStart.getTime() - 2 * 60 * 60 * 1000);
+
+    if (new Date() < unlockTime) {
+      return res.status(403).json({
+        error: "Your ticket code isn't available yet.",
+        code_locked: true,
+        unlock_time: unlockTime.toISOString()
+      });
+    }
+
+    res.json({ ticket_code: order.ticket_code, holder_name: order.buyer_name });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not load ticket.' });
+  }
+});
 
 
 module.exports = router;

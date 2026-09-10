@@ -30,7 +30,13 @@
         const res = await fetch(`${API}/tickets/my-ticket/${orderId}?token=${token}`);
         const data = await res.json();
         if(!res.ok){
-          card.innerHTML = `<div class="error">${data.error || 'Could not load ticket.'}</div>`;
+          if(data.code_locked){
+            const unlockDate = new Date(data.unlock_time);
+            const label = unlockDate.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            card.innerHTML = `<div class="holder">Your ticket code isn't available yet.</div><div class="holder">It unlocks at ${label}</div>`;
+          } else {
+            card.innerHTML = `<div class="error">${data.error || 'Could not load ticket.'}</div>`;
+          }
           return;
         }
         card.innerHTML = `
