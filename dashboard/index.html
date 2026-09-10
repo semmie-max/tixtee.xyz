@@ -2740,11 +2740,30 @@ function to24Hour(t){
       document.getElementById('gate').style.display = 'none';
       document.getElementById('dashboardContent').style.display = 'flex';
       loadEvents();
+      maybeShowWelcomeToast(data.name);
     }catch(err){
       window.location.href = '/login';
     }
   }
   checkSession();
+
+  function maybeShowWelcomeToast(name){
+    const today = new Date().toDateString();
+    const lastWelcome = localStorage.getItem('tixtee_last_welcome');
+    if(lastWelcome === today) return;
+
+    localStorage.setItem('tixtee_last_welcome', today);
+    const firstName = (name || 'there').split(' ')[0];
+
+    setTimeout(() => {
+      toastManager.add({
+        title: `Welcome back, ${firstName}`,
+        description: 'Here is what is happening with your events today.',
+        type: 'success',
+        duration: 6000
+      });
+    }, 500);
+  }
   maybeShowOnboarding();
   document.getElementById('groupChatStatCard').addEventListener('click', () => {
   localStorage.setItem('tixtee_last_seen_chat_time', String(latestChatMessageTime || 0));
@@ -2789,12 +2808,27 @@ checkGroupChatUnread();
 setInterval(checkGroupChatUnread, 15000);
 
 let allNotifications = [];
+let seenNotifIds = new Set(JSON.parse(localStorage.getItem('tixtee_seen_notif_ids') || '[]'));
 
 async function loadNotificationsBadge(){
   try{
     const res = await fetch(`${API}/notifications`, { credentials:'include' });
     const notifs = await res.json();
     allNotifications = notifs;
+
+    const newOnes = notifs.filter(n => !n.is_read && !seenNotifIds.has(n.id));
+    newOnes.forEach(n => {
+      toastManager.add({
+        title: n.title,
+        description: n.message,
+        type: n.type === 'sales_end_prompt' ? 'error' : 'success',
+        duration: 8000
+      });
+      seenNotifIds.add(n.id);
+    });
+    if(newOnes.length){
+      localStorage.setItem('tixtee_seen_notif_ids', JSON.stringify([...seenNotifIds]));
+    }
 
     const unreadCount = notifs.filter(n => !n.is_read).length;
     const badge = document.getElementById('notifBadge');
