@@ -2293,9 +2293,7 @@ input, textarea{
       <div class="step-indicator">
       <div class="step active" id="stepDot1"><div class="dot">1</div>Event Setup</div>
       <div class="step-line"></div>
-      <div class="step" id="stepDot2"><div class="dot">2</div>Ticketing & Policies</div>
-      <div class="step-line"></div>
-      <div class="step" id="stepDot3"><div class="dot">3</div>Engagement & Promotion</div>
+      <div class="step" id="stepDot2"><div class="dot">2</div>Ticketing, Policies & Promotion</div>
     </div>
 
     <div class="msg" id="msg"></div>
@@ -2499,7 +2497,7 @@ input, textarea{
       </div>
 
       <div class="wizard-step" data-step="2">
-        <h2>Tickets & Rules</h2>
+        <h2>Tickets, Rules & Promotion</h2>
 
         <div class="accordion-section open">
           <div class="accordion-header">
@@ -2524,15 +2522,7 @@ input, textarea{
             </div>
         </div>
 
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(1)">Return</button>
-          <button type="button" class="btn-primary" style="flex:1; justify-content:center;" onclick="goToStep(3)">Promotion</button>
-        </div>
-      </div>
-      <div class="wizard-step" data-step="3">
-        <h2>Reach More People</h2>
-
-        <div class="accordion-section open">
+        <div class="accordion-section">
           <div class="accordion-header">
             <h3>The Atmosphere</h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -2592,7 +2582,7 @@ input, textarea{
         </div>
 
         <div style="display:flex; gap:10px; margin-top:20px;">
-          <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(2)">Previous</button>
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="goToStep(1)">Return</button>
           <button type="submit" class="btn-primary" style="flex:1; justify-content:center;">Start Selling</button>
         </div>
       </div>
@@ -4085,7 +4075,7 @@ async function deleteTeamMember(id){
   function goToStep(n){
     document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
     document.querySelector(`.wizard-step[data-step="${n}"]`).classList.add('active');
-    [1,2,3].forEach(i => {
+    [1,2].forEach(i => {
       document.getElementById('stepDot'+i).classList.toggle('active', i <= n);
     });
   }
