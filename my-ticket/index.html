@@ -20,6 +20,77 @@
     const orderId = params.get('orderId');
     const token = params.get('token');
 
+    function renderTransferForm(){
+      return `
+        <div style="margin-top:24px; padding-top:20px; border-top:1px solid #eee;">
+          <div id="transferPrompt">
+            <button type="button" id="showTransferBtn" style="background:none; border:1px solid #47034E; color:#47034E; padding:10px 18px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">Transfer this ticket</button>
+          </div>
+          <div id="transferForm" style="display:none; text-align:left; margin-top:14px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:#666; margin-bottom:6px;">Recipient's name</label>
+            <input type="text" id="recipientName" style="width:100%; padding:10px 12px; margin-bottom:12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
+            <label style="display:block; font-size:12px; font-weight:600; color:#666; margin-bottom:6px;">Recipient's email</label>
+            <input type="email" id="recipientEmail" style="width:100%; padding:10px 12px; margin-bottom:12px; border:1px solid #ddd; border-radius:8px; font-size:13px;">
+            <div id="transferMsg" style="font-size:12.5px; margin-bottom:10px;"></div>
+            <button type="button" id="submitTransferBtn" style="width:100%; background:#47034E; color:#fff; border:none; padding:11px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer;">Send ticket</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function wireTransferForm(){
+      const showBtn = document.getElementById('showTransferBtn');
+      const form = document.getElementById('transferForm');
+      const prompt = document.getElementById('transferPrompt');
+      const submitBtn = document.getElementById('submitTransferBtn');
+      const msg = document.getElementById('transferMsg');
+
+      if(!showBtn) return;
+
+      showBtn.addEventListener('click', () => {
+        prompt.style.display = 'none';
+        form.style.display = 'block';
+      });
+
+      submitBtn.addEventListener('click', async () => {
+        const recipient_name = document.getElementById('recipientName').value.trim();
+        const recipient_email = document.getElementById('recipientEmail').value.trim();
+
+        if(!recipient_name || !recipient_email){
+          msg.style.color = '#b3261e';
+          msg.textContent = 'Please fill in both fields.';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        try{
+          const res = await fetch(`${API}/tickets/${orderId}/transfer`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ token, recipient_name, recipient_email })
+          });
+          const data = await res.json();
+
+          if(!res.ok){
+            msg.style.color = '#b3261e';
+            msg.textContent = data.error || 'Could not transfer ticket.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send ticket';
+            return;
+          }
+
+          document.getElementById('card').innerHTML = `<div class="holder">Ticket transferred.</div><div class="holder">${recipient_name} will receive an email with their ticket.</div>`;
+        }catch(err){
+          msg.style.color = '#b3261e';
+          msg.textContent = 'Could not reach the server.';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send ticket';
+        }
+      });
+    }
+
     async function loadTicket(){
       const card = document.getElementById('card');
       if(!orderId || !token){
@@ -33,7 +104,8 @@
           if(data.code_locked){
             const unlockDate = new Date(data.unlock_time);
             const label = unlockDate.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-            card.innerHTML = `<div class="holder">Your ticket code isn't available yet.</div><div class="holder">It unlocks at ${label}</div>`;
+            card.innerHTML = `<div class="holder">Your ticket code isn't available yet.</div><div class="holder">It unlocks at ${label}</div>${data.can_transfer ? renderTransferForm() : ''}`;
+            wireTransferForm();
           } else {
             card.innerHTML = `<div class="error">${data.error || 'Could not load ticket.'}</div>`;
           }
@@ -43,7 +115,9 @@
           <div class="holder">${data.holder_name}</div>
           <div class="code">${data.ticket_code}</div>
           <div class="holder">Show this code at the door</div>
+          ${data.can_transfer ? renderTransferForm() : ''}
         `;
+        wireTransferForm();
       }catch(err){
         card.innerHTML = '<div class="error">Could not reach the server.</div>';
       }
