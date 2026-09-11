@@ -666,6 +666,8 @@ input, textarea{
     80%{ transform:translateX(3px); }
   }
   .accordion-header-left{ display:flex; align-items:center; gap:10px; }
+  .static-section-header{ padding:14px 16px; background:var(--field-group-bg); }
+  .static-section-header h3{ font-size:13px; font-weight:700; color:var(--text-color); margin:0; }
 
   /* ---------- branded date & time picker ---------- */
   .datetime-field{
@@ -2340,21 +2342,27 @@ input, textarea{
 
             <label>Event Category</label>
             <p class="pill-hint">Set the scene. Choose your category.</p>
-            <div class="category-pills" id="categoryPillsVisible"></div>
-            <div class="category-pills" id="categoryPillsHidden" style="display:none;"></div>
-            <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">Show more categories</button>
+            <div class="combobox-wrap" id="categoryComboboxWrap">
+              <div class="combobox-trigger" id="categoryTrigger">
+                <span id="categoryTriggerLabel">Music & Concerts</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              </div>
+              <div class="combobox-popup" id="categoryPopup">
+                <div class="combobox-search-row">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="categorySearchInput" placeholder="Search categories…" autocomplete="off">
+                </div>
+                <div class="combobox-list" id="categoryList"></div>
+                <div class="combobox-empty" id="categoryEmpty" style="display:none;">No categories found.</div>
+              </div>
+            </div>
             <input type="hidden" id="category" value="Music & Concerts">
           </div>
         </div>
 
-        <div class="accordion-section" id="whenWhereSection">
-          <div class="accordion-header">
-            <div class="accordion-header-left">
-              <h3>Time & Place</h3>
-              <span class="accordion-hint" id="whenWhereHint"></span>
-            </div>
-            <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <div class="accordion-section open" id="whenWhereSection">
+          <div class="static-section-header">
+            <h3>Time & Place</h3>
           </div>
           <div class="accordion-body">
             <label>Event date &amp; time</label>
@@ -2429,14 +2437,9 @@ input, textarea{
           </div>
         </div>
 
-        <div class="accordion-section" id="organizerSection">
-          <div class="accordion-header">
-            <div class="accordion-header-left">
-              <h3>Branding</h3>
-              <span class="accordion-hint" id="organizerHint"></span>
-            </div>
-            <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-            <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <div class="accordion-section open" id="organizerSection">
+          <div class="static-section-header">
+            <h3>Branding</h3>
           </div>
           <div class="accordion-body">
             <div class="grid2">
@@ -4934,43 +4937,73 @@ function addFaqRow(){
     "Food And Drink", "Health & Wellness", "Fashion & Beauty", "Community",
     "Religious", "Family & Kids", "Charity", "Private Events"
   ];
-  const CATEGORY_VISIBLE_COUNT = 6;
 
-  const categoryPillsVisible = document.getElementById('categoryPillsVisible');
-  const categoryPillsHidden = document.getElementById('categoryPillsHidden');
-  const seeMoreCategoriesBtn = document.getElementById('seeMoreCategoriesBtn');
+  const categoryTrigger = document.getElementById('categoryTrigger');
+  const categoryTriggerLabel = document.getElementById('categoryTriggerLabel');
+  const categoryPopup = document.getElementById('categoryPopup');
+  const categorySearchInput = document.getElementById('categorySearchInput');
+  const categoryList = document.getElementById('categoryList');
+  const categoryEmpty = document.getElementById('categoryEmpty');
   const categoryHidden = document.getElementById('category');
 
-  function makeCategoryPill(name){
-    const pill = document.createElement('div');
-    pill.className = 'category-pill' + (name === categoryHidden.value ? ' active' : '');
-    pill.textContent = name;
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      categoryHidden.value = name;
-    });
-    return pill;
-  }
+  function renderCategoryList(filter){
+    const q = (filter || '').trim().toLowerCase();
+    const matches = CATEGORY_OPTIONS.filter(c => c.toLowerCase().includes(q));
 
-  function renderCategoryPills(){
-    categoryPillsVisible.innerHTML = '';
-    categoryPillsHidden.innerHTML = '';
-    CATEGORY_OPTIONS.forEach((name, i) => {
-      const pill = makeCategoryPill(name);
-      if(i < CATEGORY_VISIBLE_COUNT){
-        categoryPillsVisible.appendChild(pill);
-      } else {
-        categoryPillsHidden.appendChild(pill);
-      }
+    categoryList.innerHTML = matches.map(c => `
+      <div class="combobox-item${c === categoryHidden.value ? ' selected' : ''}" data-value="${c}">${c}</div>
+    `).join('');
+
+    categoryEmpty.style.display = matches.length ? 'none' : 'block';
+
+    categoryList.querySelectorAll('.combobox-item').forEach(item => {
+      item.addEventListener('click', () => {
+        categoryHidden.value = item.dataset.value;
+        categoryTriggerLabel.textContent = item.dataset.value;
+        closeCategoryPopup();
+      });
     });
   }
-  renderCategoryPills();
 
-  seeMoreCategoriesBtn.addEventListener('click', () => {
-    const isHidden = categoryPillsHidden.style.display === 'none';
-    categoryPillsHidden.style.display = isHidden ? 'flex' : 'none';
-    seeMoreCategoriesBtn.textContent = isHidden ? 'Show fewer categories' : 'Show more categories';
+  function positionCategoryPopup(){
+    const rect = categoryTrigger.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const popupWidth = Math.min(rect.width, viewportWidth - 32);
+
+    categoryPopup.style.width = popupWidth + 'px';
+    categoryPopup.style.left = Math.min(rect.left, viewportWidth - popupWidth - 16) + 'px';
+    categoryPopup.style.top = (rect.bottom + 6) + 'px';
+    categoryPopup.style.maxHeight = Math.min(340, window.innerHeight - rect.bottom - 20) + 'px';
+  }
+
+  function openCategoryPopup(){
+    categoryTrigger.classList.add('open');
+    positionCategoryPopup();
+    categoryPopup.classList.add('show');
+    categorySearchInput.value = '';
+    renderCategoryList('');
+    categorySearchInput.focus();
+  }
+  function closeCategoryPopup(){
+    categoryTrigger.classList.remove('open');
+    categoryPopup.classList.remove('show');
+  }
+
+  categoryTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if(categoryPopup.classList.contains('show')) closeCategoryPopup(); else openCategoryPopup();
+  });
+  categoryPopup.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => closeCategoryPopup());
+  window.addEventListener('resize', () => {
+    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
+  });
+  window.addEventListener('scroll', () => {
+    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
+  }, true);
+
+  categorySearchInput.addEventListener('input', () => {
+    renderCategoryList(categorySearchInput.value);
   });
 
   const AGE_LIMIT_OPTIONS = [
