@@ -2357,11 +2357,11 @@ input, textarea{
           </div>
         </div>
 
-        <div class="accordion-section locked" id="whenWhereSection">
+        <div class="accordion-section" id="whenWhereSection">
           <div class="accordion-header">
             <div class="accordion-header-left">
               <h3>Time & Place</h3>
-              <span class="accordion-hint" id="whenWhereHint">Almost There</span>
+              <span class="accordion-hint" id="whenWhereHint"></span>
             </div>
             <svg class="accordion-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
@@ -2439,7 +2439,7 @@ input, textarea{
           </div>
         </div>
 
-        <div class="accordion-section locked" id="organizerSection">
+        <div class="accordion-section" id="organizerSection">
           <div class="accordion-header">
             <div class="accordion-header-left">
               <h3>Branding</h3>
@@ -4690,54 +4690,16 @@ function renderEventCard(ev){
     }
   }
 
-  // ---------- step-1 accordion gating ----------
-  const basicsSection = document.getElementById('basicsSection');
-  const whenWhereSection = document.getElementById('whenWhereSection');
-  const organizerSection = document.getElementById('organizerSection');
-  const whenWhereHint = document.getElementById('whenWhereHint');
-  const organizerHint = document.getElementById('organizerHint');
-
-    function basicsComplete(){
-    return document.getElementById('title').value.trim().length > 0;
-  }
-  function whenWhereComplete(){
-    return document.getElementById('event_date').value.trim().length > 0;
-  }
-
+  // ---------- step-1 accordion (locking removed — all sections open freely) ----------
   function updateAccordionLocks(){
-    const basicsDone = basicsComplete();
-    const whenWhereDone = whenWhereComplete();
-
-    whenWhereSection.classList.toggle('locked', !basicsDone);
-    whenWhereHint.textContent = basicsDone ? '' : 'Finish "The Basics" first';
-    if(!basicsDone) whenWhereSection.classList.remove('open');
-
-    const organizerLocked = !basicsDone || !whenWhereDone;
-    organizerSection.classList.toggle('locked', organizerLocked);
-    organizerHint.textContent = organizerLocked
-      ? (basicsDone ? 'Finish "When & Where" first' : 'Finish "The Basics" first')
-      : '';
-    if(organizerLocked) organizerSection.classList.remove('open');
-  }
-
-  function shakeSection(section){
-    section.classList.add('shake');
-    setTimeout(() => section.classList.remove('shake'), 350);
+    // no-op: kept as a stub so other calls to this function don't break
   }
 
   document.querySelectorAll('.accordion-header').forEach(header => {
     header.addEventListener('click', () => {
       const section = header.closest('.accordion-section');
-      if(section.classList.contains('locked')){
-        shakeSection(section);
-        return;
-      }
       section.classList.toggle('open');
     });
-  });
-
-  ['title', 'description'].forEach(id => {
-    document.getElementById(id).addEventListener('input', updateAccordionLocks);
   });
 
   const descriptionField = document.getElementById('description');
@@ -4746,11 +4708,6 @@ function renderEventCard(ev){
     const remaining = 500 - descriptionField.value.length;
     descriptionCount.textContent = `${remaining} characters remaining`;
   });
-  document.getElementById('venue').addEventListener('input', updateAccordionLocks);
-  document.getElementById('virtual_link').addEventListener('input', updateAccordionLocks);
-  document.getElementById('virtualToggle').addEventListener('click', () => setTimeout(updateAccordionLocks, 0));
-
-  updateAccordionLocks();
 
   // ---------- branded date & time picker ----------
   const dtpField = document.getElementById('datetimeField');
