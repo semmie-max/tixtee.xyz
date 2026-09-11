@@ -271,6 +271,7 @@ input, textarea{
   .lineup-row input, .ticket-row input{margin-bottom:0;}
   .lineup-row input.lineup-name{flex:2;}
   .lineup-row select{margin-bottom:0; flex:1;}
+  .lineup-role-pills{ flex:1 1 auto; min-width:180px; display:flex; flex-wrap:wrap; gap:6px; }
   .ticket-row input.ticket-name{flex:2;}
   .ticket-row input.ticket-price, .ticket-row input.ticket-qty{flex:1;}
   .remove-row{
@@ -415,7 +416,7 @@ input, textarea{
     .ticket-row input.ticket-name{
       flex:1 1 100%;
     }
-    .lineup-row select,
+    .lineup-row .lineup-role-pills,
     .ticket-row input.ticket-price,
     .ticket-row input.ticket-qty{
       flex:1 1 auto;
@@ -2339,20 +2340,9 @@ input, textarea{
 
             <label>Event Category</label>
             <p class="pill-hint">Set the scene. Choose your category.</p>
-            <div class="combobox-wrap" id="categoryComboboxWrap">
-              <div class="combobox-trigger" id="categoryTrigger">
-                <span id="categoryTriggerLabel">Music & Concerts</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </div>
-              <div class="combobox-popup" id="categoryPopup">
-                <div class="combobox-search-row">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  <input type="text" id="categorySearchInput" placeholder="Search categories…" autocomplete="off">
-                </div>
-                <div class="combobox-list" id="categoryList"></div>
-                <div class="combobox-empty" id="categoryEmpty" style="display:none;">No categories found.</div>
-              </div>
-            </div>
+            <div class="category-pills" id="categoryPillsVisible"></div>
+            <div class="category-pills" id="categoryPillsHidden" style="display:none;"></div>
+            <button type="button" class="see-more-btn" id="seeMoreCategoriesBtn">Show more categories</button>
             <input type="hidden" id="category" value="Music & Concerts">
           </div>
         </div>
@@ -2469,15 +2459,8 @@ input, textarea{
               </div>
               <div>
                 <label>Age Range</label>
-
-<select id="age_limit">
-    <option value="">Set Age Range</option>
-    <option value="all-ages">All Ages</option>
-    <option value="13+">13+</option>
-    <option value="16+">16+</option>
-    <option value="18+">18+</option>
-    <option value="21+">21+</option>
-</select>
+                <div class="category-pills" id="ageLimitPills"></div>
+                <input type="hidden" id="age_limit" value="">
               </div>
             </div>
             <p class="sub" style="margin-top:-6px;">Set Your Visuals.</p>
@@ -4109,20 +4092,30 @@ async function deleteTeamMember(id){
 
   
 
+  const LINEUP_ROLES = ['Performer', 'Speaker', 'DJ', 'Host', 'Other'];
+
   function addLineupRow(){
     const row = document.createElement('div');
     row.className = 'lineup-row';
     row.innerHTML = `
       <input type="text" placeholder="Name" class="lineup-name">
-      <select class="lineup-role">
-        <option value="Performer">Performer</option>
-        <option value="Speaker">Speaker</option>
-        <option value="DJ">DJ</option>
-        <option value="Host">Host</option>
-        <option value="Other">Other</option>
-      </select>
+      <div class="category-pills lineup-role-pills"></div>
+      <input type="hidden" class="lineup-role" value="Performer">
       <div class="remove-row">✕</div>
     `;
+    const pillsWrap = row.querySelector('.lineup-role-pills');
+    const roleHidden = row.querySelector('.lineup-role');
+    LINEUP_ROLES.forEach(role => {
+      const pill = document.createElement('div');
+      pill.className = 'category-pill' + (role === 'Performer' ? ' active' : '');
+      pill.textContent = role;
+      pill.addEventListener('click', () => {
+        pillsWrap.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        roleHidden.value = role;
+      });
+      pillsWrap.appendChild(pill);
+    });
     row.querySelector('.remove-row').addEventListener('click', () => row.remove());
     document.getElementById('lineupRows').appendChild(row);
   }
@@ -4941,73 +4934,70 @@ function addFaqRow(){
     "Food And Drink", "Health & Wellness", "Fashion & Beauty", "Community",
     "Religious", "Family & Kids", "Charity", "Private Events"
   ];
+  const CATEGORY_VISIBLE_COUNT = 6;
 
-  const categoryTrigger = document.getElementById('categoryTrigger');
-  const categoryTriggerLabel = document.getElementById('categoryTriggerLabel');
-  const categoryPopup = document.getElementById('categoryPopup');
-  const categorySearchInput = document.getElementById('categorySearchInput');
-  const categoryList = document.getElementById('categoryList');
-  const categoryEmpty = document.getElementById('categoryEmpty');
+  const categoryPillsVisible = document.getElementById('categoryPillsVisible');
+  const categoryPillsHidden = document.getElementById('categoryPillsHidden');
+  const seeMoreCategoriesBtn = document.getElementById('seeMoreCategoriesBtn');
   const categoryHidden = document.getElementById('category');
 
-  function renderCategoryList(filter){
-    const q = (filter || '').trim().toLowerCase();
-    const matches = CATEGORY_OPTIONS.filter(c => c.toLowerCase().includes(q));
+  function makeCategoryPill(name){
+    const pill = document.createElement('div');
+    pill.className = 'category-pill' + (name === categoryHidden.value ? ' active' : '');
+    pill.textContent = name;
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      categoryHidden.value = name;
+    });
+    return pill;
+  }
 
-    categoryList.innerHTML = matches.map(c => `
-      <div class="combobox-item${c === categoryHidden.value ? ' selected' : ''}" data-value="${c}">${c}</div>
-    `).join('');
-
-    categoryEmpty.style.display = matches.length ? 'none' : 'block';
-
-    categoryList.querySelectorAll('.combobox-item').forEach(item => {
-      item.addEventListener('click', () => {
-        categoryHidden.value = item.dataset.value;
-        categoryTriggerLabel.textContent = item.dataset.value;
-        closeCategoryPopup();
-      });
+  function renderCategoryPills(){
+    categoryPillsVisible.innerHTML = '';
+    categoryPillsHidden.innerHTML = '';
+    CATEGORY_OPTIONS.forEach((name, i) => {
+      const pill = makeCategoryPill(name);
+      if(i < CATEGORY_VISIBLE_COUNT){
+        categoryPillsVisible.appendChild(pill);
+      } else {
+        categoryPillsHidden.appendChild(pill);
+      }
     });
   }
+  renderCategoryPills();
 
-  function positionCategoryPopup(){
-    const rect = categoryTrigger.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const popupWidth = Math.min(rect.width, viewportWidth - 32);
-
-    categoryPopup.style.width = popupWidth + 'px';
-    categoryPopup.style.left = Math.min(rect.left, viewportWidth - popupWidth - 16) + 'px';
-    categoryPopup.style.top = (rect.bottom + 6) + 'px';
-    categoryPopup.style.maxHeight = Math.min(340, window.innerHeight - rect.bottom - 20) + 'px';
-  }
-
-  function openCategoryPopup(){
-    categoryTrigger.classList.add('open');
-    positionCategoryPopup();
-    categoryPopup.classList.add('show');
-    categorySearchInput.value = '';
-    renderCategoryList('');
-    categorySearchInput.focus();
-  }
-  function closeCategoryPopup(){
-    categoryTrigger.classList.remove('open');
-    categoryPopup.classList.remove('show');
-  }
-
-  categoryTrigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if(categoryPopup.classList.contains('show')) closeCategoryPopup(); else openCategoryPopup();
+  seeMoreCategoriesBtn.addEventListener('click', () => {
+    const isHidden = categoryPillsHidden.style.display === 'none';
+    categoryPillsHidden.style.display = isHidden ? 'flex' : 'none';
+    seeMoreCategoriesBtn.textContent = isHidden ? 'Show fewer categories' : 'Show more categories';
   });
-  categoryPopup.addEventListener('click', (e) => e.stopPropagation());
-  document.addEventListener('click', () => closeCategoryPopup());
-  window.addEventListener('resize', () => {
-    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
-  });
-  window.addEventListener('scroll', () => {
-    if(categoryPopup.classList.contains('show')) positionCategoryPopup();
-  }, true);
 
-  categorySearchInput.addEventListener('input', () => {
-    renderCategoryList(categorySearchInput.value);
+  const AGE_LIMIT_OPTIONS = [
+    { value: 'all-ages', label: 'All Ages' },
+    { value: '13+', label: '13+' },
+    { value: '16+', label: '16+' },
+    { value: '18+', label: '18+' },
+    { value: '21+', label: '21+' }
+  ];
+  const ageLimitPills = document.getElementById('ageLimitPills');
+  const ageLimitHidden = document.getElementById('age_limit');
+
+  AGE_LIMIT_OPTIONS.forEach(opt => {
+    const pill = document.createElement('div');
+    pill.className = 'category-pill';
+    pill.textContent = opt.label;
+    pill.addEventListener('click', () => {
+      const alreadyActive = pill.classList.contains('active');
+      ageLimitPills.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
+      if(alreadyActive){
+        ageLimitHidden.value = '';
+      } else {
+        pill.classList.add('active');
+        ageLimitHidden.value = opt.value;
+      }
+    });
+    ageLimitPills.appendChild(pill);
   });
 
 
