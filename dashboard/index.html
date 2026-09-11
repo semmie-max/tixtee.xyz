@@ -2315,6 +2315,23 @@ input, textarea{
             <svg class="accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
           <div class="accordion-body">
+            <label>Event Cover</label>
+            <img class="image-preview" id="imagePreview" src="" alt="">
+            <div class="upload-status" id="uploadStatus"></div>
+            <div class="dropzone" id="dropzone">
+              <div class="icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <p>Drag & drop your image here</p>
+              <div class="hint">or choose from your device</div>
+              <input type="file" id="imageInput" accept="image/*">
+            </div>
+            <input type="hidden" id="image_url">
+
             <label>Name your event</label>
             <input type="text" id="title" placeholder="What are you calling it?">
 
@@ -2514,66 +2531,6 @@ input, textarea{
       </div>
       <div class="wizard-step" data-step="3">
         <h2>Reach More People</h2>
-
-        <label>Event Cover</label>
-        <img class="image-preview" id="imagePreview" src="" alt="">
-        <div class="upload-status" id="uploadStatus"></div>
-        <div class="dropzone" id="dropzone">
-          <div class="icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-          </div>
-          <p>Drag & drop your image here</p>
-          <div class="hint">or choose from your device</div>
-          <input type="file" id="imageInput" accept="image/*">
-        </div>
-        <input type="hidden" id="image_url">
-
-        <div class="field-group">
-          <div class="field-group-title">Pick a Card Style</div>
-          <div class="template-grid" id="templateGrid">
-            <div class="template-option active" data-template="classic">
-              <div class="template-preview tpl-classic">
-                <div class="tpl-img"></div>
-                <div class="tpl-body">
-                  <div class="tpl-line tpl-line-sm"></div>
-                  <div class="tpl-line tpl-line-lg"></div>
-                </div>
-              </div>
-              <div class="template-label">Standard</div>
-            </div>
-            <div class="template-option" data-template="overlay">
-              <div class="template-preview tpl-overlay">
-                <div class="tpl-scrim"></div>
-                <div class="tpl-overlay-text">
-                  <div class="tpl-line tpl-line-sm light"></div>
-                  <div class="tpl-line tpl-line-lg light"></div>
-                </div>
-              </div>
-              <div class="template-label">Overlay</div>
-            </div>
-            <div class="template-option" data-template="poster">
-              <div class="template-preview tpl-poster">
-                <div class="tpl-badge"></div>
-                <div class="tpl-img tall"></div>
-              </div>
-              <div class="template-label">Poster</div>
-            </div>
-            <div class="template-option" data-template="minimal">
-              <div class="template-preview tpl-minimal">
-                <div class="tpl-dot"></div>
-                <div class="tpl-line tpl-line-sm"></div>
-                <div class="tpl-line tpl-line-lg"></div>
-                <div class="tpl-line tpl-line-md"></div>
-              </div>
-              <div class="template-label">Minimal</div>
-            </div>
-          </div>
-        </div>
-        <input type="hidden" id="event_template" value="classic">
 
         <div class="accordion-section open">
           <div class="accordion-header">
@@ -4235,14 +4192,6 @@ async function deleteTeamMember(id){
   document.getElementById('addTicketBtn').addEventListener('click', addTicketRow);
   addTicketRow();
 
-  document.querySelectorAll('.template-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.template-option').forEach(o => o.classList.remove('active'));
-      opt.classList.add('active');
-      document.getElementById('event_template').value = opt.dataset.template;
-    });
-  });
-
   const dropzone = document.getElementById('dropzone');
   const imageInput = document.getElementById('imageInput');
   const imagePreview = document.getElementById('imagePreview');
@@ -4519,7 +4468,7 @@ const isVirtual = format === 'virtual' || format === 'hybrid';
       allow_transfers: false,
       price: tickets.length ? tickets[0].price : null,
       image_url: document.getElementById('image_url').value,
-      event_template: document.getElementById('event_template').value,
+      event_template: 'overlay',
       has_groupchat: document.getElementById('has_groupchat').checked,
       category: document.getElementById('category').value,
             event_format: format,
