@@ -2936,12 +2936,26 @@ function renderNotifications(){
     }
     return `
       <div class="entry-check-item">
-        <div>
+        <div style="flex:1;">
           <div class="entry-check-name">${n.title}</div>
           <div class="entry-check-meta">${n.message}</div>
         </div>
+        ${n.is_read
+          ? ''
+          : `<button type="button" class="tx-alert-btn-ghost" style="color:#47034E; white-space:nowrap;" onclick="markNotificationRead(${n.id})">Mark as read</button>`
+        }
       </div>`;
   }).join('');
+}
+
+async function markNotificationRead(id){
+  try{
+    await fetch(`${API}/notifications/${id}/read`, { method:'POST', credentials:'include' });
+    await loadNotificationsBadge();
+    renderNotifications();
+  }catch(err){
+    showAlert('Could not mark this as read.', 'Error', true);
+  }
 }
 
 async function saveSalesEndTime(notifId, eventId){
